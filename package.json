@@ -6,8 +6,10 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run build && npm run lint && node ./dist/src/index.js",
-    "lint": "tslint -c tslint.json -p tsconfig.json"
+    "start-dev": "npm run build && npm run lint && node ./dist/src/index.js",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "postinstall": "npm run build",
+    "start": "node ./dist/src/index.js"
   },
   "repository": {
     "type": "git",
