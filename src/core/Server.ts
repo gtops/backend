@@ -10,7 +10,7 @@ export class Server {
 		const { port } = Config.server;
 		Server.init(server);
 		Server.initRoutes(server);
-		server.listen(port, Server.listen);
+		server.listen(process.env.PORT || port, Server.listen);
 	}
 
 	private static listen() {
