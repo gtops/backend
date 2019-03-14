@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "experimentalDecorators": true,
     "module": "commonjs",
     "target": "es6",
     "noImplicitAny": true,
@@ -8,7 +9,7 @@
     "outDir": "dist",
     "baseUrl": ".",
     "resolveJsonModule": true,
-    "esModuleInterop": true,
+    "esModuleInterop": false,
     "paths": {
       "*": [
         "node_modules/*"

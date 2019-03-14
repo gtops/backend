@@ -1,5 +1,6 @@
-import restify, { ServerOptions } from "restify";
-import { Config } from "./config/Config";
+import * as restify from "restify";
+import { ServerOptions } from "restify";
+import { Config } from "./config";
 import { Server } from "./core/Server";
 
 const SERVER_OPTION: ServerOptions = {

@@ -11,4 +11,9 @@ export interface IConfig {
 		password: string;
 		port: number;
 	};
+	cors: {
+		originUrls: string[];
+		allowHeaders: string[];
+		exposeHeaders: string[];
+	};
 }

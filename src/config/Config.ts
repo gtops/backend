@@ -1,4 +1,4 @@
-import * as data from "../../config.json";
+import * as config from "../../config.json";
 import { IConfig } from "./IConfig";
 
-export const Config: IConfig = data;
+export const Config: IConfig = config;
