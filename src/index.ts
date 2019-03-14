@@ -1,7 +1,10 @@
-import restify from "restify";
+import restify, { ServerOptions } from "restify";
+import { Config } from "./config/Config";
+import { Server } from "./core/Server";
 
-const app = restify.createServer();
+const SERVER_OPTION: ServerOptions = {
+	name: Config.server.name
+};
 
-app.listen(5000, () => {
-    console.log(`Server is listening on port ${5000}`);
-});
+const server: restify.Server = restify.createServer(SERVER_OPTION);
+export const seed = Server.run(server);

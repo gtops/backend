@@ -5,6 +5,7 @@
   "rules": {
     "no-namespace": false,
     "no-empty-interface": false,
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore", "allow-pascal-case"],
     "whitespace": [
       true,
       "check-decl",
@@ -57,7 +58,7 @@
     ],
     "indent": [
       true,
-      "spaces"
+      "tabs"
     ],
     "only-arrow-functions": [
       true,
