@@ -4,11 +4,13 @@ import * as cors from "restify-cors-middleware";
 import { CorsMiddleware } from "restify-cors-middleware";
 import { Config } from "../config";
 import { ParticipantController } from "../controller";
+import { client } from "./Database";
 
 export class Server {
 	public static async run(server: restify.Server) {
 		const { port } = Config.server;
 		Server.init(server);
+		await client.connect();
 		Server.initRoutes(server);
 		server.listen(process.env.PORT || port, Server.listen);
 	}
