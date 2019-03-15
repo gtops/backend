@@ -1,5 +1,5 @@
 import { Client, ClientConfig } from "pg";
-import { Config } from "../config/Config";
+import { Config } from "../config";
 
 class Database {
 	public static configure(): ClientConfig {
