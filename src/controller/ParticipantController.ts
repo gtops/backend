@@ -8,9 +8,11 @@ export class ParticipantController {
 
 	public async getDataParticipant(request: Request, response: Response, next: Next) {
 		try {
+			const { uid } = request.params;
+			console.log(uid);
 			await this.services.getDataParticipant()
 				.then((data) => {
-					response.send(data);
+					response.send({message: data, uid});
 				});
 		} catch (error) {
 			response.send(error);

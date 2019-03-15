@@ -35,6 +35,6 @@ export class Server {
 	private static initRoutes(server: restify.Server) {
 		const participantController = new ParticipantController();
 
-		server.get("/api/v1/participant", participantController.getDataParticipant);
+		server.get("/api/v1/participant/:uid", participantController.getDataParticipant);
 	}
 }
