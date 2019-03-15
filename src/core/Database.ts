@@ -9,7 +9,8 @@ class Database {
 			database: name,
 			user: username,
 			password,
-			port
+			port,
+			ssl: true
 		};
 	}
 }
