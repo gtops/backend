@@ -1,0 +1,28 @@
+{
+  "server": {
+    "name": "GTO server",
+    "port": 3000,
+    "url": "http://localhost:3000"
+  },
+  "database": {
+    "host": "ec2-54-221-201-212.compute-1.amazonaws.com",
+    "name": "d54e2grebtl7ts",
+    "username": "csxfagfbolmfuw",
+    "password": "ae2986a8e632cb01864482cafa265b760cbec646383b23f435a13f6c07ca134b",
+    "port": 5432,
+    "ssl": true
+  },
+  "cors": {
+    "originUrls": ["http://localhost:3000"],
+    "allowHeaders": ["x-guide-key", "Cache-Control", "Content-Type", "Content-Disposition"],
+    "exposeHeaders": []
+  },
+  "jwt": {
+    "secret": "@!yud5#@1vfd&%",
+    "tokenTimeLive": "60m"
+  },
+  "other": {
+    "passwordCrypt": "@#wvf1e%&q@1",
+    "uidMask": "**-**-*******"
+  }
+}
