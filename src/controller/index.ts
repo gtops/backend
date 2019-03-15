@@ -1,1 +1,0 @@
-export { ParticipantController } from "./ParticipantController";

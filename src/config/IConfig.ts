@@ -10,10 +10,19 @@ export interface IConfig {
 		username: string;
 		password: string;
 		port: number;
+		ssl: boolean;
 	};
 	cors: {
 		originUrls: string[];
 		allowHeaders: string[];
 		exposeHeaders: string[];
+	};
+	jwt: {
+		secret: string;
+		tokenTimeLive: string;
+	};
+	other: {
+		passwordCrypt: string;
+		uidMask: string;
 	};
 }

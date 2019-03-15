@@ -3,19 +3,19 @@ import { Request, Response } from "restify";
 import * as cors from "restify-cors-middleware";
 import { CorsMiddleware } from "restify-cors-middleware";
 import { Config } from "../config";
-import { ParticipantController } from "../controller";
+import { ParticipantController } from "../controllers";
 import { client } from "./Database";
 
 export class Server {
-	public static async run(server: restify.Server) {
+	public static async run(server: restify.Server): Promise<void> {
 		const { port } = Config.server;
 		Server.init(server);
-		await client.connect();
 		Server.initRoutes(server);
+		await client.connect();
 		server.listen(process.env.PORT || port, Server.listen);
 	}
 
-	private static listen() {
+	private static listen(): void {
 		const { url } = Config.server;
 		console.log(`Server is running at: ${ url }`);
 	}
@@ -34,9 +34,7 @@ export class Server {
 		server.get("/", (request: Request, response: Response) => response.send("Pashalka dlya jahi"));
 	}
 
-	private static initRoutes(server: restify.Server) {
-		const participantController = new ParticipantController();
-
-		server.get("/api/v1/participant/:uid", participantController.getDataParticipant);
+	private static initRoutes(server: restify.Server): void {
+		server.get("/api/v1/participant/:uid", ParticipantController.getDataParticipant);
 	}
 }

@@ -18,6 +18,11 @@
       "check-type-operator",
       "check-preblock"
     ],
+    "typedef": [
+      true,
+      "call-signature",
+      "property-declaration"
+    ],
     "semicolon": [
       true,
       "always"
@@ -65,6 +70,7 @@
       "allow-declarations",
       "allow-named-functions"
     ],
-    "member-ordering": false
+    "member-ordering": false,
+    "no-trailing-whitespace": [true, "ignore-comments", "ignore-blank-lines"]
   }
 }
