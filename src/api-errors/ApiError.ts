@@ -15,5 +15,5 @@ class ApiError extends Error {
 
 export const errors = {
 	IncorrectUid: new ApiError(EHttpStatus.BAD, "Некорректный uid пользователя", 100),
-	NotFoundUid: new ApiError(EHttpStatus.NOT_FOUND, "Пользователя с данным uid не существует", 101)
+	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101)
 };
