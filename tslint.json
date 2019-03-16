@@ -71,6 +71,6 @@
       "allow-named-functions"
     ],
     "member-ordering": false,
-    "no-trailing-whitespace": [true, "ignore-comments", "ignore-blank-lines"]
+    "no-trailing-whitespace": [false, "ignore-comments", "ignore-blank-lines"]
   }
 }
