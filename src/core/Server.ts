@@ -31,6 +31,8 @@ export class Server {
 		server.use(restify.plugins.bodyParser());
 		server.use(restify.plugins.authorizationParser());
 		server.use(restify.plugins.multipartBodyParser());
+		server.use(CORS.actual);
+		server.pre(CORS.preflight);
 		server.get("/", (request: Request, response: Response) => response.send("Pashalka dlya jahi"));
 	}
 
