@@ -25,7 +25,7 @@ export class ParticipantServices {
 		LEFT JOIN participant_on_competition ON participant_on_competition.participant_id = participant.participant_id
 		LEFT JOIN competition ON competition.competition_id = participant_on_competition.competition_id
 		LEFT JOIN result_participant_on_trial ON result_participant_on_trial.participant_on_competition_id = participant_on_competition.participant_on_competition_id
-		LEFT JOIN trial ON trial.trial_id = trial_on_competition.trial_id
+		LEFT JOIN trial ON trial.trial_id = result_participant_on_trial.trial_id
 		LEFT JOIN final_result_participant_on_competition ON final_result_participant_on_competition.participant_on_competition_id = participant_on_competition.participant_on_competition_id
 		WHERE participant.participant_id = '${participantId}';
 		`;
