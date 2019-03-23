@@ -1,9 +1,11 @@
 import { Client, ClientConfig } from "pg";
-import { Config } from "../config";
+import { IDescriptionENV } from "../config/IDescriptionENV";
+import { Tool } from "../tools/Tool";
 
 class Database {
 	public static configure(): ClientConfig {
-		const { host, password, port, username, name, ssl } = Config.database;
+		const env: IDescriptionENV = Tool.getEnvironment();
+		const { host, password, port, username, name, ssl } = env.database;
 		return {
 			host,
 			database: name,

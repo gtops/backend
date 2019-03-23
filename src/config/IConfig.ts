@@ -1,17 +1,8 @@
+import { IDescriptionENV } from "./IDescriptionENV";
+
 export interface IConfig {
-	server: {
-		name: string;
-		port: number;
-		url: string;
-	};
-	database: {
-		host: string;
-		name: string;
-		username: string;
-		password: string;
-		port: number;
-		ssl: boolean;
-	};
+	production: IDescriptionENV;
+	development: IDescriptionENV;
 	cors: {
 		originUrls: string[];
 		allowHeaders: string[];

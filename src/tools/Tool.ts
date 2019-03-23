@@ -1,5 +1,7 @@
 import { isNaN } from "lodash";
+import { get } from "lodash";
 import { Config } from "../config";
+import { IDescriptionENV } from "../config/IDescriptionENV";
 
 export class Tool {
 	public static isUid(uid: string): boolean {
@@ -18,5 +20,13 @@ export class Tool {
 		}
 
 		return true;
+	}
+	
+	public static getEnvironment(): IDescriptionENV {
+		const env: IDescriptionENV = get(Config, process.env.NODE_ENV);
+		if (!env) {
+			throw Error("Environment variable must be set");
+		}
+		return env;
 	}
 }
