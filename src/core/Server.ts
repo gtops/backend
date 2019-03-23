@@ -5,10 +5,14 @@ import { CorsMiddleware } from "restify-cors-middleware";
 import { Config } from "../config";
 import { ParticipantController } from "../controllers";
 import { client } from "./Database";
+import { IDescriptionENV } from "../config/IDescriptionENV";
+import { Tool } from "../tools/Tool";
 
 export class Server {
+	private static readonly env: IDescriptionENV = Tool.getEnvironment();
+
 	public static async run(server: restify.Server): Promise<void> {
-		const { port } = Config.server;
+		const { port } = Server.env.server;
 		Server.init(server);
 		Server.initRoutes(server);
 		await client.connect();
@@ -16,7 +20,7 @@ export class Server {
 	}
 
 	private static listen(): void {
-		const { url } = Config.server;
+		const { url } = Server.env.server;
 		console.log(`Server is running at: ${ url }`);
 	}
 

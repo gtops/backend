@@ -6,10 +6,10 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start-dev": "del-cli dist && npm run build && node ./dist/src/index.js",
+    "start-dev": "del-cli dist && npm run build && cross-env NODE_ENV=development node ./dist/src/index.js",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "postinstall": "npm run build",
-    "start": "node ./dist/src/index.js"
+    "start": "cross-env NODE_ENV=production node ./dist/src/index.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
     "restify-cors-middleware": "^1.1.1"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
     "tslint": "^5.13.1",
     "typescript": "^3.3.3333"
   }
