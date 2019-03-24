@@ -3,10 +3,10 @@ import { Request, Response } from "restify";
 import * as cors from "restify-cors-middleware";
 import { CorsMiddleware } from "restify-cors-middleware";
 import { Config } from "../config";
-import { ParticipantController } from "../controllers";
-import { client } from "./Database";
 import { IDescriptionENV } from "../config/IDescriptionENV";
+import { ParticipantController } from "../controllers";
 import { Tool } from "../tools/Tool";
+import { client } from "./Database";
 
 export class Server {
 	private static readonly env: IDescriptionENV = Tool.getEnvironment();

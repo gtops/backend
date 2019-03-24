@@ -1,1 +1,1 @@
-export { ParticipantServices } from  "./ParticipantServices";
+export { ParticipantServices } from "./participant";

@@ -1,17 +1,16 @@
 import { first } from "lodash";
-import { errors } from "../api-errors";
-import { client } from "../core/Database";
+import { errors } from "../../api-errors";
+import { client } from "../../core/Database";
+import { IParticipantResult } from "./IParticipantResult";
 
 export class ParticipantServices {
-	public async getDataParticipant(uid: string): Promise<any> {
+	public async getDataParticipant(uid: string): Promise<IParticipantResult[]> {
 		let query = `SELECT participant_id FROM participant WHERE uid = '${uid}'`;
 		let result = await client.query(query);
 		if (result.rows.length === 0) {
 			throw errors.NotFoundParticipantUid;
 		}
 		const participantId = first(result.rows).participant_id;
-
-		console.log(participantId);
 
 		// tslint:disable:max-line-length
 		query = `
@@ -29,11 +28,23 @@ export class ParticipantServices {
 		LEFT JOIN final_result_participant_on_competition ON final_result_participant_on_competition.participant_on_competition_id = participant_on_competition.participant_on_competition_id
 		WHERE participant.participant_id = '${participantId}';
 		`;
+		// tslint:enable:max-line-length
 
 		result = await client.query(query);
+		const participantResult: IParticipantResult[] = result.rows;
 
-		console.log(result.rows);
+		return Promise.all(participantResult.map((item: IParticipantResult) => {
+			return item.secondary_result === null ? this.calculateSecondaryResult(item) : item;
+		}));
+	}
 
-		return result.rows;
+	private async calculateSecondaryResult(item: IParticipantResult): Promise<IParticipantResult> {
+		const query = ``;
+		await client.query(query);
+		// TODO: сделать расчет вторичного результата
+
+		item.secondary_result = 100;
+
+		return item;
 	}
 }
