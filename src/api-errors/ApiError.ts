@@ -1,6 +1,6 @@
 import { EHttpStatus } from "./EHttpStatus";
 
-class ApiError extends Error {
+export class ApiError extends Error {
 	private status: number;
 	private title: string;
 	private code: number;
@@ -16,6 +16,10 @@ class ApiError extends Error {
 export const errors = {
 	IncorrectUid: new ApiError(EHttpStatus.BAD, "Некорректный uid пользователя", 100),
 	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101),
+
+	UserNotFound: new ApiError(EHttpStatus.NOT_FOUND, "Пользователь с таким логином не найден", 130),
+	IncorrectPassword: new ApiError(EHttpStatus.BAD, "Неверный пароль", 131),
+	UserAlreadyExist: new ApiError(EHttpStatus.BAD, "Пользователь с таким логином или эмайлом существует", 132),
 
 	UnknownController: new ApiError(EHttpStatus.INTERNAL, "Задан неизвестный контроллер", 500),
 	NotAssignedRouteMethod: new ApiError(EHttpStatus.INTERNAL, "Неопределённый метод роута", 501),

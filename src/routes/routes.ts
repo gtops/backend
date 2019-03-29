@@ -1,6 +1,8 @@
-import { IRoutes } from "./interfaces/IRoutes";
-import test from "./test";
+import { IRoutes } from "../core/routes/interfaces/IRoutes";
+import authorization from "./authorization";
+import participant from "./participant";
 
 export const routes: IRoutes = {
-	...test
+	...participant,
+	...authorization
 };

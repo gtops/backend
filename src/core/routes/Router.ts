@@ -1,9 +1,10 @@
 import { nth } from "lodash";
 import * as restify from "restify";
 import { errors } from "../../api-errors";
-import { IRoutes } from "../../routes/interfaces/IRoutes";
 import { IController } from "./interfaces/IController";
 import { EMethod, IRouteDefinition } from "./interfaces/IRouteDefinition";
+import { IRoutes } from "./interfaces/IRoutes";
+import { validateMiddleware } from "../../middleware/Validator";
 
 export class Router {
 	private readonly pathToControllers = "../../controllers";
@@ -23,6 +24,7 @@ export class Router {
 	public async init(): Promise<void> {
 		await this.loadControllers();
 		for (const key of Object.keys(this.routes)) {
+			const validator = this.routes[key].validate;
 			const route = Router.routeDefinition(key, this.routes[key].handler);
 			const Controller = this.controllers[route.controller];
 
@@ -40,7 +42,11 @@ export class Router {
 				throw errors.UnknownRouteHandle;
 			}
 
-			this.server[method.toLocaleLowerCase()](path, handle.bind(Controller));
+			if (validator) {
+				this.server[method.toLocaleLowerCase()](path, validateMiddleware(validator), handle.bind(Controller));
+			} else {
+				this.server[method.toLocaleLowerCase()](path, handle.bind(Controller));
+			}
 		}
 	}
 
