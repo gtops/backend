@@ -11,4 +11,4 @@ const SERVER_OPTION: ServerOptions = {
 };
 
 const server: restify.Server = restify.createServer(SERVER_OPTION);
-export const seed = Server.run(server);
+export const seed = Server.run(server).catch(console.error);

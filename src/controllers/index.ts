@@ -1,1 +1,1 @@
-export { ParticipantController } from "./participant";
+export { ParticipantController } from "./ParticipantController";

@@ -4,9 +4,10 @@ import * as cors from "restify-cors-middleware";
 import { CorsMiddleware } from "restify-cors-middleware";
 import { Config } from "../config";
 import { IDescriptionENV } from "../config/IDescriptionENV";
-import { ParticipantController } from "../controllers";
+import { routes } from "../routes/routes";
 import { Tool } from "../tools/Tool";
 import { client } from "./Database";
+import { Router } from "./routes/Router";
 
 export class Server {
 	private static readonly env: IDescriptionENV = Tool.getEnvironment();
@@ -14,8 +15,9 @@ export class Server {
 	public static async run(server: restify.Server): Promise<void> {
 		const { port } = Server.env.server;
 		Server.init(server);
-		Server.initRoutes(server);
 		await client.connect();
+		const router = new Router(server, routes);
+		await router.init();
 		server.listen(process.env.PORT || port, Server.listen);
 	}
 
@@ -37,10 +39,6 @@ export class Server {
 		server.use(restify.plugins.multipartBodyParser());
 		server.use(CORS.actual);
 		server.pre(CORS.preflight);
-		server.get("/", (request: Request, response: Response) => response.send("Pashalka dlya jahi"));
-	}
-
-	private static initRoutes(server: restify.Server): void {
-		server.get("/api/v1/participant/:uid", ParticipantController.getDataParticipant);
+		server.get("/", (request: Request, response: Response) => response.send("It's work"));
 	}
 }

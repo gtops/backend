@@ -1,8 +1,8 @@
 import { autobind } from "core-decorators";
 import { Next, Request, Response } from "restify";
-import { errors } from "../../api-errors";
-import { ParticipantServices } from "../../services";
-import { Tool } from "../../tools/Tool";
+import { errors } from "../api-errors";
+import { ParticipantServices } from "../services";
+import { Tool } from "../tools/Tool";
 
 @autobind
 export class ParticipantController {

@@ -1,7 +1,7 @@
 import { head } from "lodash";
-import { errors } from "../../api-errors";
-import { client } from "../../core/Database";
-import { IParticipantResult } from "./IParticipantResult";
+import { errors } from "../api-errors";
+import { client } from "../core/Database";
+import { IParticipantResult } from "./interfaces/participant/IParticipantResult";
 
 export class ParticipantServices {
 	public async getDataParticipant(uid: string): Promise<IParticipantResult[]> {

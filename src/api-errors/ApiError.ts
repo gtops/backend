@@ -15,5 +15,9 @@ class ApiError extends Error {
 
 export const errors = {
 	IncorrectUid: new ApiError(EHttpStatus.BAD, "Некорректный uid пользователя", 100),
-	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101)
+	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101),
+
+	UnknownController: new ApiError(EHttpStatus.INTERNAL, "Задан неизвестный контроллер", 500),
+	NotAssignedRouteMethod: new ApiError(EHttpStatus.INTERNAL, "Неопределённый метод роута", 501),
+	UnknownRouteHandle: new ApiError(EHttpStatus.INTERNAL, "Неизвестный обработчик маршрута", 502),
 };
