@@ -1,16 +1,17 @@
 import { nth } from "lodash";
 import * as restify from "restify";
 import { errors } from "../../api-errors";
+import { ACL } from "../../middleware/ACL";
+import { validateMiddleware } from "../../middleware/Validator";
 import { IController } from "./interfaces/IController";
 import { EMethod, IRouteDefinition } from "./interfaces/IRouteDefinition";
 import { IRoutes } from "./interfaces/IRoutes";
-import { validateMiddleware } from "../../middleware/Validator";
 
 export class Router {
 	private readonly pathToControllers = "../../controllers";
 	private controllers: IController = {};
 
-	constructor(private readonly server: restify.Server, private readonly routes: IRoutes) {}
+	constructor(private readonly server: restify.Server, private readonly routes: IRoutes, private readonly acl: ACL) {}
 
 	private static routeDefinition(key: string, handle: string): IRouteDefinition {
 		return {
@@ -47,6 +48,8 @@ export class Router {
 			} else {
 				this.server[method.toLocaleLowerCase()](path, handle.bind(Controller));
 			}
+
+			this.acl.allow(this.routes[key].allowRoles, path, method);
 		}
 	}
 

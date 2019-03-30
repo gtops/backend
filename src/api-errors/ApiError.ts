@@ -14,6 +14,9 @@ export class ApiError extends Error {
 }
 
 export const errors = {
+	InvalidToken: new ApiError(EHttpStatus.UNAUTHORIZED, "Токен истек или не валиден", 1),
+	PermissionError: new ApiError(EHttpStatus.FORBIDDEN, "Недостаточно прав", 2),
+
 	IncorrectUid: new ApiError(EHttpStatus.BAD, "Некорректный uid пользователя", 100),
 	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101),
 
@@ -24,4 +27,5 @@ export const errors = {
 	UnknownController: new ApiError(EHttpStatus.INTERNAL, "Задан неизвестный контроллер", 500),
 	NotAssignedRouteMethod: new ApiError(EHttpStatus.INTERNAL, "Неопределённый метод роута", 501),
 	UnknownRouteHandle: new ApiError(EHttpStatus.INTERNAL, "Неизвестный обработчик маршрута", 502),
+	ServerError: new ApiError(EHttpStatus.INTERNAL, "Произошла ошибка на сервере", 503)
 };

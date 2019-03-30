@@ -17,7 +17,7 @@ export default {
 			login: Joi.string().required(),
 			password: Joi.string().required(),
 			email: Joi.string().required(),
-			role: Joi.string().required(),
+			role: Joi.number().required(),
 		})
 	}
 };
