@@ -1,6 +1,7 @@
 import { head } from "lodash";
 import { errors } from "../api-errors";
 import { client } from "../core/Database";
+import { IFinalResult } from "./interfaces/participant/IFinalResult";
 import { IParticipantResult } from "./interfaces/participant/IParticipantResult";
 
 export class ParticipantServices {
@@ -20,6 +21,7 @@ export class ParticipantServices {
 		    trial.trial_id,
 		    result_participant_on_trial.primary_result,
 		    result_participant_on_trial.secondary_result,
+		    result_participant_on_trial.result_participant_on_trial_id,
 		    result_participant_on_trial.unique_number,
 		    participant.gender_id,
 		    participant_on_competition.participant_on_competition_id,
@@ -45,27 +47,36 @@ export class ParticipantServices {
 
 	private async calculateSecondaryResult(item: IParticipantResult): Promise<IParticipantResult> {
 		const query = `
-		SELECT secondary_result 
-		FROM type_of_trial_with_age_category
-		WHERE type_of_trial_with_age_category.trial_id = '${item.trial_id}' AND
-		      type_of_trial_with_age_category.gender_id = '${item.gender_id}' AND
-		      type_of_trial_with_age_category.age_category_id = '${item.age_category_id}' AND
-		      type_of_trial_with_age_category.primary_result = '${item.primary_result}'`;
+		SELECT *
+		FROM (
+			WITH pivoted_array AS (
+				SELECT UNNEST(results) AS result
+			    FROM type_of_trial_with_age_category
+			    WHERE type_of_trial_with_age_category.trial_id = ${item.trial_id}
+			        AND type_of_trial_with_age_category.gender_id = ${item.gender_id}
+			        AND type_of_trial_with_age_category.age_category_id = ${item.age_category_id}
+			    ORDER BY result DESC)
+			SELECT ROW_NUMBER() OVER() AS secondary_result, result AS primary_result
+			FROM pivoted_array
+		) AS result
+		WHERE result.primary_result <= ${item.primary_result} LIMIT 1`;
 		const res = await client.query(query);
-		item.secondary_result = res.rows.length === 0 ? 0 :
-			await this.updateParticipantSecondaryResult(head(res.rows).secondary_result, item.participant_on_competition_id);
+		const finalResult: IFinalResult = head(res.rows);
+
+		item.secondary_result = finalResult.secondary_result === 0 ? 0 :
+			await this.updateParticipantSecondaryResult(finalResult.secondary_result, item.result_participant_on_trial_id);
 
 		return item;
 	}
 
 	private async updateParticipantSecondaryResult(
 		secondaryResult: number,
-		participantOnCompetitionId: number
+		resultParticipantOnTrialId: number
 	): Promise<number> {
 		const query = `
 		UPDATE result_participant_on_trial
-		SET result_participant_on_trial.secondary_result = '${secondaryResult}'
-		WHERE result_participant_on_trial.participant_on_competition_id = '${participantOnCompetitionId}'`;
+		SET secondary_result = ${secondaryResult}
+		WHERE result_participant_on_trial_id = ${resultParticipantOnTrialId}`;
 		await client.query(query);
 
 		return secondaryResult;

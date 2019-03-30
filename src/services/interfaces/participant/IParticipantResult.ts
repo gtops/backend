@@ -7,5 +7,6 @@ export interface IParticipantResult {
 	name_of_trial: string;
 	primary_result: number;
 	secondary_result: number | null;
+	result_participant_on_trial_id: number;
 	unique_number: string;
 }
