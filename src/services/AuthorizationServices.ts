@@ -4,9 +4,9 @@ import * as md5 from "md5";
 import { errors } from "../api-errors";
 import { Config } from "../config";
 import { client } from "../core/Database";
-import { ILoginParams } from "./interfaces/authorization/ILoginParams";
-import { IUserData } from "./interfaces/authorization/IUserData";
-import { IUserRegistrationParams } from "./interfaces/authorization/IUserRegistrationParams";
+import { ILoginParams } from "../interfaces/authorization/ILoginParams";
+import { IUserData } from "../interfaces/authorization/IUserData";
+import { IUserRegistrationParams } from "../interfaces/authorization/IUserRegistrationParams";
 
 export class AuthorizationServices {
 	public async login(params: ILoginParams): Promise<string> {

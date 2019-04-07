@@ -1,10 +1,14 @@
 import { head } from "lodash";
 import { errors } from "../api-errors";
 import { client } from "../core/Database";
-import { IFinalResult } from "./interfaces/participant/IFinalResult";
-import { IParticipantResult } from "./interfaces/participant/IParticipantResult";
+import { IFinalResult } from "../interfaces/participant/IFinalResult";
+import { IParticipantResult } from "../interfaces/participant/IParticipantResult";
+import { CalculationServices } from "./CalculationServices";
+import { ICalculateResult } from "../interfaces/calculation/ICalculateResult";
 
 export class ParticipantServices {
+	private services = new CalculationServices();
+
 	public async getDataParticipant(uid: string): Promise<IParticipantResult[]> {
 		let query = `SELECT participant_id FROM participant WHERE uid = '${uid}'`;
 		let result = await client.query(query);
@@ -32,8 +36,7 @@ export class ParticipantServices {
 		LEFT JOIN competition ON competition.competition_id = participant_on_competition.competition_id
 		LEFT JOIN result_participant_on_trial ON result_participant_on_trial.participant_on_competition_id = participant_on_competition.participant_on_competition_id
 		LEFT JOIN trial ON trial.trial_id = result_participant_on_trial.trial_id
-		LEFT JOIN final_result_participant_on_competition ON final_result_participant_on_competition.participant_on_competition_id = participant_on_competition.participant_on_competition_id
-		WHERE participant.participant_id = '${participantId}';
+		WHERE participant.participant_id = ${participantId};
 		`;
 		// tslint:enable:max-line-length
 
@@ -46,24 +49,9 @@ export class ParticipantServices {
 	}
 
 	private async calculateSecondaryResult(item: IParticipantResult): Promise<IParticipantResult> {
-		const query = `
-		SELECT *
-		FROM (
-			WITH pivoted_array AS (
-				SELECT UNNEST(results) AS result
-			    FROM type_of_trial_with_age_category
-			    WHERE type_of_trial_with_age_category.trial_id = ${item.trial_id}
-			        AND type_of_trial_with_age_category.gender_id = ${item.gender_id}
-			        AND type_of_trial_with_age_category.age_category_id = ${item.age_category_id}
-			    ORDER BY result DESC)
-			SELECT ROW_NUMBER() OVER() AS secondary_result, result AS primary_result
-			FROM pivoted_array
-		) AS result
-		WHERE result.primary_result <= ${item.primary_result} LIMIT 1`;
-		const res = await client.query(query);
-		const finalResult: IFinalResult = head(res.rows);
+		const finalResult: ICalculateResult = await this.services.calculate(item);
 
-		item.secondary_result = finalResult.secondary_result === 0 ? 0 :
+		item.secondary_result = !finalResult.secondary_result ? 0 :
 			await this.updateParticipantSecondaryResult(finalResult.secondary_result, item.result_participant_on_trial_id);
 
 		return item;
