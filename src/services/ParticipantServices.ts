@@ -49,7 +49,7 @@ export class ParticipantServices {
 	}
 
 	private async calculateSecondaryResult(item: IParticipantResult): Promise<IParticipantResult> {
-		const finalResult: ICalculateResult = await this.services.calculate(item);
+		const finalResult: ICalculateResult = await this.services.calculate(item, false);
 
 		item.secondary_result = !finalResult.secondary_result ? 0 :
 			await this.updateParticipantSecondaryResult(finalResult.secondary_result, item.result_participant_on_trial_id);

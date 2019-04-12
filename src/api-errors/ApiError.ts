@@ -24,6 +24,8 @@ export const errors = {
 	IncorrectPassword: new ApiError(EHttpStatus.BAD, "Неверный пароль", 131),
 	UserAlreadyExist: new ApiError(EHttpStatus.BAD, "Пользователь с таким логином или эмайлом существует", 132),
 
+	TrialsNotFound: new ApiError(EHttpStatus.NOT_FOUND, "Соревнований не найдено", 160),
+
 	UnknownController: new ApiError(EHttpStatus.INTERNAL, "Задан неизвестный контроллер", 500),
 	NotAssignedRouteMethod: new ApiError(EHttpStatus.INTERNAL, "Неопределённый метод роута", 501),
 	UnknownRouteHandle: new ApiError(EHttpStatus.INTERNAL, "Неизвестный обработчик маршрута", 502),
