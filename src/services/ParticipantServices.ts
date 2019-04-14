@@ -1,7 +1,6 @@
 import { head } from "lodash";
 import { errors } from "../api-errors";
 import { client } from "../core/Database";
-import { IFinalResult } from "../interfaces/participant/IFinalResult";
 import { IParticipantResult } from "../interfaces/participant/IParticipantResult";
 import { CalculationServices } from "./CalculationServices";
 import { ICalculateResult } from "../interfaces/calculation/ICalculateResult";
@@ -49,7 +48,7 @@ export class ParticipantServices {
 	}
 
 	private async calculateSecondaryResult(item: IParticipantResult): Promise<IParticipantResult> {
-		const finalResult: ICalculateResult = await this.services.calculate(item, false);
+		const finalResult: ICalculateResult = await this.services.calculate(item);
 
 		item.secondary_result = !finalResult.secondary_result ? 0 :
 			await this.updateParticipantSecondaryResult(finalResult.secondary_result, item.result_participant_on_trial_id);

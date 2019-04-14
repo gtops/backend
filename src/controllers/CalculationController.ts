@@ -23,11 +23,12 @@ export class CalculationController {
 
 	public async calculate(request: IRequest, response: Response, next: Next): Promise<void> {
 		try {
-			await this.services.calculate(request.body, false)
+			await this.services.calculate(request.body)
 				.then((result) => {
 					response.send(result);
 				});
 		} catch (error) {
+			console.log(error);
 			if (!error.status) {
 				error = errors.ServerError;
 			}
