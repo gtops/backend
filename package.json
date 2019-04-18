@@ -25,6 +25,7 @@
     "@types/joi": "^14.3.2",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/lodash": "^4.14.123",
+    "@types/nodemailer": "^4.6.7",
     "@types/pg": "^7.4.13",
     "@types/restify": "^7.2.8",
     "@types/restify-cors-middleware": "^1.0.1",
@@ -34,9 +35,11 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
+    "nodemailer": "^6.1.0",
     "pg": "^7.8.2",
-    "restify": "^8.1.0",
-    "restify-cors-middleware": "^1.1.1"
+    "restify": "^8.3.0",
+    "restify-cors-middleware": "^1.1.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "cross-env": "^5.2.0",

@@ -8,11 +8,20 @@ export class CalculationController {
 
 	public async getParticipantTrial(request: IRequest, response: Response, next: Next): Promise<void> {
 		try {
+			/*const options = {
+				from: "fedok251@gmail.com",
+				to: "rybakov.f@mail.ru",
+				subject: "Hello ✔",
+				text: "Hello world?",
+			};
+			const r = await EmailServices.send(options);
+			console.log(r);*/
 			await this.services.getParticipantTrial(request.body)
 				.then((result) => {
 					response.send(result);
 				});
 		} catch (error) {
+			console.log(error);
 			if (!error.status) {
 				error = errors.ServerError;
 			}

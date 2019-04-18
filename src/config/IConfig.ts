@@ -1,6 +1,7 @@
 import { IDescriptionENV } from "./IDescriptionENV";
 
 export interface IConfig {
+	projectName: string;
 	production: IDescriptionENV;
 	development: IDescriptionENV;
 	cors: {
@@ -12,8 +13,27 @@ export interface IConfig {
 		secret: string;
 		tokenTimeLive: string;
 	};
-	other: {
-		passwordCrypt: string;
-		uidMask: string;
+	jwtInviteLink: {
+		secret: string;
+		tokenTimeLive: string;
 	};
+	addressFrontendServer: {
+		url: string;
+		port?: number;
+	};
+	other: {
+		uidMask: string; // Only * (number) and - (symbol)
+	};
+	email: {
+		addressFrom: string;
+		SMTPData: {
+			host: string;
+			port: number;
+			auth: {
+				user: string;
+				pass: string;
+			}
+		}
+	};
+
 }

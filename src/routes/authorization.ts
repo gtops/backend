@@ -7,17 +7,24 @@ export default {
 		allowRoles: [ERoles.GUEST],
 		validate: Joi.object().keys({
 			login: Joi.string().required(),
-			password: Joi.string().required(),
+			password: Joi.string().required()
 		})
 	},
 	"POST /api/authorization/registration": {
 		handler: "AuthorizationController.registration",
-		allowRoles: [ERoles.GLOBAL_ADMIN],
+		allowRoles: [ERoles.INVITED_USER],
 		validate: Joi.object().keys({
 			login: Joi.string().required(),
 			password: Joi.string().required(),
+			email: Joi.string().required()
+		})
+	},
+	"POST /api/authorization/invite": {
+		handler: "AuthorizationController.invite",
+		allowRoles: [ERoles.GUEST],
+		validate: Joi.object().keys({
 			email: Joi.string().required(),
-			role: Joi.number().required(),
+			role_id: Joi.number().required()
 		})
 	}
 };

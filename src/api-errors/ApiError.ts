@@ -16,6 +16,7 @@ export class ApiError extends Error {
 export const errors = {
 	InvalidToken: new ApiError(EHttpStatus.UNAUTHORIZED, "Токен истек или не валиден", 1),
 	PermissionError: new ApiError(EHttpStatus.FORBIDDEN, "Недостаточно прав", 2),
+	TokenNotFound: new ApiError(EHttpStatus.NOT_FOUND, "Токе не найден", 3),
 
 	IncorrectUid: new ApiError(EHttpStatus.BAD, "Некорректный uid пользователя", 100),
 	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101),

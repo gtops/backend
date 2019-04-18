@@ -3,6 +3,7 @@ import { Next, Response } from "restify";
 import { errors } from "../api-errors";
 import { IRequest } from "../core/routes/interfaces/IRequest";
 import { AuthorizationServices } from "../services";
+import { ACL } from "../middleware/ACL";
 
 @autobind
 export class AuthorizationController {
@@ -23,9 +24,26 @@ export class AuthorizationController {
 
 	public async registration(request: IRequest, response: Response, next: Next): Promise<void> {
 		try {
-			await this.services.registration(request.body);
+			const data = request.body;
+			const roleId = request.role_id;
+			await this.services.registration(data, roleId);
 			response.send({ message: "Регистрация успешно пройдена" });
 		} catch (error) {
+			if (!error.status) {
+				error = errors.ServerError;
+			}
+			response.send(error);
+		}
+		next();
+	}
+
+	public async invite(request: IRequest, response: Response, next: Next): Promise<void> {
+		try {
+			const { email, role_id } = request.body;
+			await this.services.invite(email, role_id);
+			response.send({ message: `Приглашение успешно отправлено на почту: ${email}`});
+		} catch (error) {
+			console.log(error);
 			if (!error.status) {
 				error = errors.ServerError;
 			}
