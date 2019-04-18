@@ -21,7 +21,7 @@ export default {
 	},
 	"POST /api/authorization/invite": {
 		handler: "AuthorizationController.invite",
-		allowRoles: [ERoles.GUEST],
+		allowRoles: [ERoles.GLOBAL_ADMIN],
 		validate: Joi.object().keys({
 			email: Joi.string().required(),
 			role_id: Joi.number().required()

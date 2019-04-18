@@ -18,7 +18,6 @@ export class ParticipantController {
 
 			await this.services.getDataParticipant(uid)
 				.then((data) => {
-					console.log(uid);
 					response.send({ message: data });
 				});
 		} catch (error) {

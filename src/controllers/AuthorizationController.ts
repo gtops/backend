@@ -3,7 +3,6 @@ import { Next, Response } from "restify";
 import { errors } from "../api-errors";
 import { IRequest } from "../core/routes/interfaces/IRequest";
 import { AuthorizationServices } from "../services";
-import { ACL } from "../middleware/ACL";
 
 @autobind
 export class AuthorizationController {
