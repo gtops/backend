@@ -18,4 +18,18 @@ export class UserController {
 		}
 		next();
 	}
+
+	public async getUserInfo(request: IRequest, response: Response, next: Next): Promise<void> {
+		try {
+			const userId = request.user_id;
+			const result = await this.services.getUserInfo(userId);
+			response.send(result);
+		} catch (error) {
+			if (!error.status) {
+				error = errors.ServerError;
+			}
+			response.send(error);
+		}
+		next();
+	}
 }
