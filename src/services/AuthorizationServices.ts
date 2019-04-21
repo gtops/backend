@@ -37,10 +37,10 @@ export class AuthorizationServices {
 		return jwt.sign(tokenData, secret, options);
 	}
 
-	public async registration(data: IUserRegistrationParams, roleId: number): Promise<void> {
+	public async registration(data: IUserRegistrationParams, roleId: number, email: string): Promise<void> {
 		let query = `
 			SELECT "user".user_id FROM "user"
-			WHERE "user".login = '${data.login}' OR "user".email = '${data.email}'`;
+			WHERE "user".login = '${data.login}' OR "user".email = '${email}'`;
 		const result = await client.query(query);
 
 		if (head(result.rows)) {
@@ -49,7 +49,7 @@ export class AuthorizationServices {
 
 		query = `
 			INSERT INTO "user"(login, password, role_id, email, created_at, updated_at) 
-			VALUES ('${data.login}', '${md5(data.password)}', ${roleId}, '${data.email}', NOW(), NOW())`;
+			VALUES ('${data.login}', '${md5(data.password)}', ${roleId}, '${email}', NOW(), NOW())`;
 		await client.query(query);
 	}
 

@@ -15,8 +15,7 @@ export default {
 		allowRoles: [ERoles.INVITED_USER],
 		validate: Joi.object().keys({
 			login: Joi.string().required(),
-			password: Joi.string().required(),
-			email: Joi.string().required()
+			password: Joi.string().required()
 		})
 	},
 	"POST /api/authorization/invite": {
@@ -26,5 +25,9 @@ export default {
 			email: Joi.string().required(),
 			role_id: Joi.number().required()
 		})
+	},
+	"GET /api/authorization/registration/email": {
+		handler: "AuthorizationController.getRegistrationEmail",
+		allowRoles: [ERoles.INVITED_USER],
 	}
 };

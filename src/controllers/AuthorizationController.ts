@@ -25,7 +25,8 @@ export class AuthorizationController {
 		try {
 			const data = request.body;
 			const roleId = request.role_id;
-			await this.services.registration(data, roleId);
+			const email = request.email;
+			await this.services.registration(data, roleId, email);
 			response.send({ message: "Регистрация успешно пройдена" });
 		} catch (error) {
 			if (!error.status) {
@@ -40,7 +41,21 @@ export class AuthorizationController {
 		try {
 			const { email, role_id } = request.body;
 			await this.services.invite(email, role_id);
-			response.send({ message: `Приглашение успешно отправлено на почту: ${email}`});
+			response.send({ message: `Приглашение успешно отправлено на почту: ${email}` });
+		} catch (error) {
+			console.log(error);
+			if (!error.status) {
+				error = errors.ServerError;
+			}
+			response.send(error);
+		}
+		next();
+	}
+
+	public async getRegistrationEmail(request: IRequest, response: Response, next: Next): Promise<void> {
+		try {
+			const email = request.email;
+			response.send({ email });
 		} catch (error) {
 			console.log(error);
 			if (!error.status) {
