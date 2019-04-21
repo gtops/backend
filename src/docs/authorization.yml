@@ -1,0 +1,100 @@
+openapi: 3.0.0
+info:
+  title: ГТО
+  description: Документация api запросов для ГТО ПС
+  version: 0.0.1
+
+servers:
+  - url: https://gtops.herokuapp.com/
+
+paths:
+  /api/authorization/invite:
+    post:
+      tags:
+        - Запросы к для авторизации
+      summary:
+        Высылает приглашение пользователю для регистрации
+      parameters:
+        - name: token
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Ключ для доступа к API из внешних сервисов.
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/entities/InviteParams'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/entities/Message'
+        '404':
+          $ref: '#/responses/NotFound'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '5XX':
+          $ref: '#/responses/Unexpected'
+
+responses:
+  NotFound:
+    description: Указанный ресурс не найден
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  Unauthorized:
+    description: Не авторизованный
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  Unexpected:
+    description: Ошибка сервера
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  BadRequest:
+    description: Проверьте запрос отправленный серверу
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  Error:
+    type: object
+    properties:
+      code:
+        type: number
+      status:
+        type: number
+      title:
+        type: string
+    required:
+      - code
+      - title
+      - status
+
+entities:
+  InviteParams:
+    type: object
+    properties:
+      email:
+        type: string
+      role_id:
+        type: number
+    required:
+      - email
+      - role_id
+
+  Message:
+    type: object
+    properties:
+      message:
+        type: string
