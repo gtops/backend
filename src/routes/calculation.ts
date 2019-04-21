@@ -16,7 +16,7 @@ export default {
 		validate: Joi.object().keys({
 			trial_id: Joi.number().required(),
 			gender_id: Joi.number().required(),
-			age_category_id: Joi.date().required(),
+			age_category_id: Joi.number().required(),
 			primary_result: Joi.number().required(),
 		})
 	}
