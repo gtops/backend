@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: ГТО
+  description: Документация api запросов для ГТО ПС
+  version: 0.0.1
+
+servers:
+  - url: https://gtops.herokuapp.com/
+
+paths:
+  /api/user/roles:
+    get:
+      tags:
+        - запросы пользователя
+      summary:
+        запросы на получения списка ролей
+      parameters:
+        - name: token
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Ключ для доступа к API из внешних сервисов.
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/responses/Roles'
+        '404':
+          $ref: '#/responses/NotFound'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '5XX':
+          $ref: '#/responses/Unexpected'
+
+  /api/user:
+    get:
+      tags:
+        - запросы пользователя
+      summary:
+        получение информации о пользователе
+      parameters:
+        - name: token
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Ключ для доступа к API из внешних сервисов.
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/responses/UserInfo'
+        '404':
+          $ref: '#/responses/NotFound'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '5XX':
+          $ref: '#/responses/Unexpected'
+
+
+responses:
+  UserInfo:
+    type: object
+    properties:
+      user_id:
+        type: number
+      email:
+        type: string
+      name_of_role:
+        type: string
+  Roles:
+    type: object
+    properties:
+      name_of_role:
+        type: string
+      role_id:
+        type: number
+  NotFound:
+    description: Указанный ресурс не найден
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  Unauthorized:
+    description: Не авторизованный
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  Unexpected:
+    description: Ошибка сервера
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  BadRequest:
+    description: Проверьте запрос отправленный серверу
+    content:
+      application/json:
+        schema:
+          $ref: '#/responses/Error'
+  Error:
+    type: object
+    properties:
+      code:
+        type: number
+      status:
+        type: number
+      title:
+        type: string
+    required:
+      - code
+      - title
+      - status
+
+entities:

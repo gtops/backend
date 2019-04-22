@@ -41,6 +41,104 @@ paths:
           $ref: '#/responses/Unauthorized'
         '5XX':
           $ref: '#/responses/Unexpected'
+  /api/authorization/login:
+    post:
+      tags:
+        - Запросы к для авторизации
+      summary:
+        проводит авторизацию при правильно переданных данных
+      parameters:
+        - name: token
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Ключ для доступа к API из внешних сервисов.
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/entities/LoginParams'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/entities/Message'
+        '404':
+          $ref: '#/responses/NotFound'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '5XX':
+          $ref: '#/responses/Unexpected'
+
+
+  /api/authorization/registration:
+    post:
+      tags:
+        - Запросы к для авторизации
+      summary:
+        проводит регистрацию пользователя по введенным им данным
+      parameters:
+        - name: invite_token
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Ключ для доступа к API из внешних сервисов.
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/entities/LoginParams'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/entities/Message'
+        '404':
+          $ref: '#/responses/NotFound'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '5XX':
+          $ref: '#/responses/Unexpected'
+
+
+  /api/authorization/registration/email:
+    get:
+      tags:
+        - Запросы к для авторизации
+      summary:
+        запрос на получения email
+      parameters:
+        - name: token
+          in: header
+          schema:
+            type: string
+            format: uuid
+          description: Ключ для доступа к API из внешних сервисов.
+          required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/responses/GetResponse'
+        '404':
+          $ref: '#/responses/NotFound'
+        '400':
+          $ref: '#/responses/BadRequest'
+        '401':
+          $ref: '#/responses/Unauthorized'
+        '5XX':
+          $ref: '#/responses/Unexpected'
 
 responses:
   NotFound:
@@ -80,8 +178,14 @@ responses:
       - code
       - title
       - status
+  GetResponse:
+    type: object
+    properties:
+      email:
+        type: string
 
 entities:
+
   InviteParams:
     type: object
     properties:
@@ -92,6 +196,17 @@ entities:
     required:
       - email
       - role_id
+
+  LoginParams:
+    type: object
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+      required:
+        -login
+        -password
 
   Message:
     type: object
