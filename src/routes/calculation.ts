@@ -7,7 +7,10 @@ export default {
 		allowRoles: [ERoles.GUEST],
 		validate: Joi.object().keys({
 			gender_id: Joi.number().required(),
-			old: Joi.date().required(),
+			age_sign: Joi.object().keys({
+				old: Joi.date(),
+				age_category_id: Joi.number()
+			}).required(),
 		})
 	},
 	"POST /api/calculate": {

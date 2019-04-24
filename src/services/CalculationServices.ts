@@ -14,8 +14,8 @@ export class CalculationServices {
 		       count_trial_for_bronze
 		FROM standard_parent
 		         LEFT JOIN age_category ON age_category.age_category_id = standard_parent.age_category_id
-		WHERE age_category.min_age <= ${params.old} AND age_category.max_age >= ${params.old}
-		  AND standard_parent.gender_id = ${params.gender_id}`;
+		WHERE ${this.getAgeSign} AND standard_parent.gender_id = ${params.gender_id}`;
+
 		const trialsQuery = `
 		SELECT array_agg(json_build_object(
 				'trial_id', trial.trial_id,
@@ -31,8 +31,7 @@ export class CalculationServices {
 		              ON group_in_standard_parent.group_in_standard_parent_id = trial_in_group.group_in_standard_parent_id
 		         LEFT JOIN standard_parent ON standard_parent.standard_parent_id = group_in_standard_parent.standard_parent_id
 		         LEFT JOIN age_category ON age_category.age_category_id = standard_parent.age_category_id
-		WHERE age_category.min_age <= ${params.old} AND age_category.max_age >= ${params.old}
-		  AND standard_parent.gender_id = ${params.gender_id}
+		WHERE ${this.getAgeSign} AND standard_parent.gender_id = ${params.gender_id}
 		GROUP BY trial_in_group.group_in_standard_parent_id`;
 
 		const result = await Promise.all([client.query(trialsDataQuery), client.query(trialsQuery)]);
@@ -61,5 +60,11 @@ export class CalculationServices {
 		WHERE result.primary_result <= ${params.primary_result} LIMIT 1`;
 		const result = await client.query(query);
 		return head(result.rows) ? head(result.rows) : {};
+	}
+
+	private getAgeSign(params: IParticipantParams): string {
+		return params.age_sign.old ?
+			`age_category.min_age <= ${params.age_sign.old} AND age_category.max_age >= ${params.age_sign.old}` :
+			`standard_parent.age_category_id = ${params.age_sign.age_category_id}`;
 	}
 }
