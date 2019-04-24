@@ -8,5 +8,9 @@ export default {
 		validate: Joi.object().keys({
 			uid: Joi.string().required(),
 		})
+	},
+	"GET /api/participant/categories": {
+		handler: "ParticipantController.getListAgeCategories",
+		allowRoles: [ERoles.GUEST]
 	}
 };

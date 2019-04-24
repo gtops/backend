@@ -18,7 +18,22 @@ export class ParticipantController {
 
 			await this.services.getDataParticipant(uid)
 				.then((data) => {
-					response.send({ message: data });
+					response.send(data);
+				});
+		} catch (error) {
+			if (!error.status) {
+				error = errors.ServerError;
+			}
+			response.send(error);
+		}
+		next();
+	}
+
+	public async getListAgeCategories(request: IRequest, response: Response, next: Next): Promise<void> {
+		try {
+			await this.services.getListAgeCategories()
+				.then((data) => {
+					response.send(data);
 				});
 		} catch (error) {
 			if (!error.status) {

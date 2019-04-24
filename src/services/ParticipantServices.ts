@@ -4,6 +4,7 @@ import { client } from "../core/Database";
 import { IParticipantResult } from "../interfaces/participant/IParticipantResult";
 import { CalculationServices } from "./CalculationServices";
 import { ICalculateResult } from "../interfaces/calculation/ICalculateResult";
+import { IAgeCategories } from "../interfaces/participant/IAgeCategories";
 
 export class ParticipantServices {
 	private services = new CalculationServices();
@@ -45,6 +46,20 @@ export class ParticipantServices {
 		return Promise.all(participantResult.map((item: IParticipantResult) => {
 			return item.secondary_result === null ? this.calculateSecondaryResult(item) : item;
 		}));
+	}
+
+	public async getListAgeCategories(): Promise<IAgeCategories[]> {
+		const query = `
+		SELECT
+		       standard_parent.age_category_id,
+		       standard_parent.gender_id,
+		       age_category.max_age,
+		       age_category.min_age
+		FROM standard_parent
+		LEFT JOIN age_category ON age_category.age_category_id = standard_parent.age_category_id`;
+		const result = await client.query(query);
+
+		return result.rows;
 	}
 
 	private async calculateSecondaryResult(item: IParticipantResult): Promise<IParticipantResult> {
