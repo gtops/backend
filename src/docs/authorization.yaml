@@ -11,7 +11,7 @@ paths:
   /api/authorization/invite:
     post:
       tags:
-        - Запросы к для авторизации
+        - Запросы для авторизации
       summary:
         Высылает приглашение пользователю для регистрации
       parameters:
@@ -44,7 +44,7 @@ paths:
   /api/authorization/login:
     post:
       tags:
-        - Запросы к для авторизации
+        - Запросы для авторизации
       summary:
         проводит авторизацию при правильно переданных данных
       parameters:
@@ -79,7 +79,7 @@ paths:
   /api/authorization/registration:
     post:
       tags:
-        - Запросы к для авторизации
+        - Запросы для авторизации
       summary:
         проводит регистрацию пользователя по введенным им данным
       parameters:
@@ -114,7 +114,7 @@ paths:
   /api/authorization/registration/email:
     get:
       tags:
-        - Запросы к для авторизации
+        - Запросы для авторизации
       summary:
         запрос на получения email
       parameters:
@@ -205,8 +205,8 @@ entities:
       password:
         type: string
       required:
-        -login
-        -password
+        - login
+        - password
 
   Message:
     type: object

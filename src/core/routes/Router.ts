@@ -1,6 +1,7 @@
 import { nth } from "lodash";
 import * as restify from "restify";
 import { errors } from "../../api-errors";
+import { loadDocs } from "../../docs";
 import { ACL } from "../../middleware/ACL";
 import { validateMiddleware } from "../../middleware/Validator";
 import { IController } from "./interfaces/IController";
@@ -51,6 +52,7 @@ export class Router {
 
 			this.acl.allow(this.routes[key].allowRoles, path, method);
 		}
+		await loadDocs(this.server);
 	}
 
 	private async loadControllers(): Promise<void> {

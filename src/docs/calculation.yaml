@@ -152,10 +152,10 @@ entities:
       primary_result:
         type: number
       required:
-        -trial_id
-        -gender_id
-        -age_category_id
-        -primary_result
+        - trial_id
+        - gender_id
+        - age_category_id
+        - primary_result
   data:
     type: object
     properties:
@@ -164,5 +164,5 @@ entities:
       old:
         type: number
       required:
-        -gender_id
-        -old
+        - gender_id
+        - old
