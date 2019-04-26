@@ -3,7 +3,7 @@ import { describe, Done, it } from "mocha";
 import { userLoginData } from "../../data/AuthorizationData";
 import { SERVER_AGENT } from "../../index";
 import { EAuthorization } from "../../routes/EAuthorization";
-import { token } from "../../scheme/Authorization/token";
+import { token } from "../../scheme/authorization/token";
 
 should();
 
