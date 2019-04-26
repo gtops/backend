@@ -4,6 +4,7 @@ export interface IConfig {
 	projectName: string;
 	production: IDescriptionENV;
 	development: IDescriptionENV;
+	test: IDescriptionENV;
 	cors: {
 		originUrls: string[];
 		allowHeaders: string[];

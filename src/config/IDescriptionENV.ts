@@ -10,6 +10,6 @@ export interface IDescriptionENV {
 		username: string;
 		password: string;
 		port: number;
-		ssl: boolean;
+		ssl?: boolean;
 	};
 }
