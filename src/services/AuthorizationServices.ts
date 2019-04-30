@@ -50,7 +50,7 @@ export class AuthorizationServices {
 		query = `
 			INSERT INTO "user"(login, password, role_id, email, created_at, updated_at) 
 			VALUES ('${data.login}', '${md5(data.password)}', ${roleId}, '${email}', NOW(), NOW())`;
-		await client.query(query);
+		// await client.query(query);
 	}
 
 	public async invite(email: string, roleId: number): Promise<void> {

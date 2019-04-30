@@ -10,6 +10,7 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "esModuleInterop": false,
+    "emitDecoratorMetadata": true,
     "paths": {
       "*": [
         "node_modules/*"
