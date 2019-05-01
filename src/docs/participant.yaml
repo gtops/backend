@@ -26,7 +26,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/responses/UserInfo'
+                $ref: '#/entities/UserInfo'
         '404':
           $ref: '#/responses/NotFound'
         '400':
@@ -37,30 +37,6 @@ paths:
           $ref: '#/responses/Unexpected'
 
 responses:
-  UserInfo:
-    type: object
-    properties:
-      participant_on_competition_id:
-        type: number
-      date_of_competition:
-        type: date
-      trial_id:
-        type: number
-      gender_id:
-        type: number
-      age_category_id:
-        type: number
-      name_of_trial:
-        type: string
-      primary_result:
-        type: number
-      secondary_result:
-        type: number | null
-      result_participant_on_trial_id:
-        type: number
-      unique_number:
-        type: string
-
   NotFound:
     description: Указанный ресурс не найден
     content:
@@ -100,3 +76,26 @@ responses:
       - status
 
 entities:
+  UserInfo:
+    type: object
+    properties:
+      participant_on_competition_id:
+        type: number
+      date_of_competition:
+        type: date
+      trial_id:
+        type: number
+      gender_id:
+        type: number
+      age_category_id:
+        type: number
+      name_of_trial:
+        type: string
+      primary_result:
+        type: number
+      secondary_result:
+        type: number | null
+      result_participant_on_trial_id:
+        type: number
+      unique_number:
+        type: string

@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/responses/TrialData'
+                $ref: '#/entities/TrialData'
         '404':
           $ref: '#/responses/NotFound'
         '400':
@@ -50,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/responses/ResponseSecondaryResult'
+                $ref: '#/entities/ResponseSecondaryResult'
         '404':
           $ref: '#/responses/NotFound'
         '400':
@@ -62,45 +62,6 @@ paths:
 
 
 responses:
-  ResponseSecondaryResult:
-    type: object
-    properties:
-      secondary_result:
-        type: number
-      primary_result:
-        type: number
-
-  TrialData:
-    type: object
-    properties:
-      age_category_id:
-        type: number
-      count_all_trials:
-        type: number
-      count_trial_for_gold:
-        type: number
-      count_trial_for_silver:
-        type: number
-      count_trial_for_bronze:
-        type: number
-      trials:
-        type: object
-        properties:
-          trial_group:
-            type: object
-            properties:
-              trial_id:
-                type: number
-              name_of_trial:
-                type: string
-              result_for_gold:
-                type: number
-              result_for_silver:
-                type: number
-              result_for_bronze:
-                type: number
-              is_main_trial:
-                type: boolean
   NotFound:
     description: Указанный ресурс не найден
     content:
@@ -140,6 +101,52 @@ responses:
       - status
 
 entities:
+  ResponseSecondaryResult:
+    type: object
+    properties:
+      secondary_result:
+        type: number
+      primary_result:
+        type: number
+
+  TrialData:
+    type: object
+    properties:
+      age_category_id:
+        type: number
+      count_all_trials:
+        type: number
+      count_trial_for_gold:
+        type: number
+      count_trial_for_silver:
+        type: number
+      count_trial_for_bronze:
+        type: number
+      trials:
+        $ref: '#/entities/DataToTrial'
+
+  DataToTrial:
+    type: object
+    properties:
+      trial_group:
+        $ref: '#/entities/DataInGroupOfTrial'
+
+  DataInGroupOfTrial:
+    type: object
+    properties:
+      trial_id:
+        type: number
+      name_of_trial:
+        type: string
+      result_for_gold:
+        type: number
+      result_for_silver:
+        type: number
+      result_for_bronze:
+        type: number
+      is_main_trial:
+        type: boolean
+
   DataToCalculate:
     type: object
     properties:

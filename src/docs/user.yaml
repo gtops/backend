@@ -27,7 +27,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/responses/Roles'
+                $ref: '#/entities/Roles'
         '404':
           $ref: '#/responses/NotFound'
         '400':
@@ -56,7 +56,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/responses/UserInfo'
+                $ref: '#/entities/UserInfo'
         '404':
           $ref: '#/responses/NotFound'
         '400':
@@ -68,22 +68,6 @@ paths:
 
 
 responses:
-  UserInfo:
-    type: object
-    properties:
-      user_id:
-        type: number
-      email:
-        type: string
-      name_of_role:
-        type: string
-  Roles:
-    type: object
-    properties:
-      name_of_role:
-        type: string
-      role_id:
-        type: number
   NotFound:
     description: Указанный ресурс не найден
     content:
@@ -123,3 +107,19 @@ responses:
       - status
 
 entities:
+  UserInfo:
+    type: object
+    properties:
+      user_id:
+        type: number
+      email:
+        type: string
+      name_of_role:
+        type: string
+  Roles:
+    type: object
+    properties:
+      name_of_role:
+        type: string
+      role_id:
+        type: number
