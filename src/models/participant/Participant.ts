@@ -1,26 +1,23 @@
 import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
 import { getOptions } from "../tools/options";
 
-@Table(getOptions("user"))
-export class User extends Model<User> {
+@Table(getOptions("participant"))
+export class Participant extends Model<Participant> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
-	public user_id: number;
+	public participant_id: number;
 
 	@AllowNull(false)
 	@Unique(true)
 	@Column(DataType.STRING(50))
-	public login: string;
+	public uid: string;
 
 	@AllowNull(false)
-	@Unique(true)
-	@Column(DataType.STRING(50))
-	public email: string;
-
-	@Column(DataType.STRING(50))
-	public password: string;
+	@Unique(false)
+	@Column
+	public data_of_birth: Date;
 
 	@Column(DataType.INTEGER)
-	public role_id: number;
+	public gender_id: number;
 }
