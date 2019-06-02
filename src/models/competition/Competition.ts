@@ -11,6 +11,7 @@ import {
 } from "sequelize-typescript";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
+import { TrialOnCompetition } from "../trialOnCompetition/TrialOnCompetition";
 import { User } from "../user/User";
 
 @Table(getOptions("competition"))
@@ -44,4 +45,7 @@ export class Competition extends Model<Competition> {
 
 	@HasMany(() => Competition)
 	public competition: Competition[];
+
+	@HasMany(() => TrialOnCompetition)
+	public trialOnCompetition: TrialOnCompetition[];
 }

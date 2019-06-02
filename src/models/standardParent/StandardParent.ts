@@ -1,7 +1,18 @@
-import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import {
+	AllowNull, BelongsTo,
+	Column,
+	DataType,
+	ForeignKey,
+	HasMany,
+	Model,
+	PrimaryKey,
+	Table,
+	Unique
+} from "sequelize-typescript";
+import { AgeCategory } from "../ageCategory/AgeCategory";
+import { Gender } from "../gender/Gender";
 import { GroupInStandardParent } from "../groupInStandardParent/GroupInStandardParent";
 import { getOptions } from "../tools/options";
-import { User } from "../user/User";
 
 @Table(getOptions("standard_parent"))
 export class StandardParent extends Model<StandardParent> {
@@ -10,11 +21,13 @@ export class StandardParent extends Model<StandardParent> {
 	@Unique(true)
 	public standard_parent_id: number;
 
+	@ForeignKey(() => Gender)
 	@AllowNull(false)
 	@Unique(false)
 	@Column(DataType.INTEGER)
 	public gender_id: number;
 
+	@ForeignKey(() => AgeCategory)
 	@AllowNull(false)
 	@Unique(false)
 	@Column(DataType.INTEGER)
@@ -42,4 +55,10 @@ export class StandardParent extends Model<StandardParent> {
 
 	@HasMany(() => GroupInStandardParent)
 	public groupInStandardParent: GroupInStandardParent[];
+
+	@BelongsTo(() => Gender)
+	public gender: Gender;
+
+	@BelongsTo(() => AgeCategory)
+	public ageCategory: AgeCategory;
 }

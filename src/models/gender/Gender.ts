@@ -1,5 +1,7 @@
 import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
 import { Participant } from "../participant/Participant";
+import { ResultGuide } from "../resultGuide/ResultGuide";
+import { StandardParent } from "../standardParent/StandardParent";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("gender"))
@@ -16,4 +18,10 @@ export class Gender extends Model<Gender> {
 
 	@HasMany(() => Participant)
 	public participant;
+
+	@HasMany(() => ResultGuide)
+	public resultGuide: ResultGuide[];
+
+	@HasMany(() => StandardParent)
+	public standardParent: StandardParent[];
 }

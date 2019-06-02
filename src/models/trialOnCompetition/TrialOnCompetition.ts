@@ -1,5 +1,18 @@
-import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import {
+	AllowNull,
+	BelongsTo,
+	Column,
+	DataType,
+	ForeignKey,
+	Model,
+	PrimaryKey,
+	Table,
+	Unique
+} from "sequelize-typescript";
+import { Competition } from "../competition/Competition";
+import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
+import { Trial } from "../trial/Trial";
 
 @Table(getOptions("trial_on_competition"))
 export class TrialOnCompetition extends Model<TrialOnCompetition> {
@@ -8,11 +21,13 @@ export class TrialOnCompetition extends Model<TrialOnCompetition> {
 	@Unique(true)
 	public trial_on_competition_id: number;
 
+	@ForeignKey(() => Trial)
 	@AllowNull(false)
 	@Unique(true)
 	@Column(DataType.INTEGER)
 	public trial_id: number;
 
+	@ForeignKey(() => Competition)
 	@AllowNull(false)
 	@Unique(false)
 	@Column(DataType.INTEGER)
@@ -27,4 +42,10 @@ export class TrialOnCompetition extends Model<TrialOnCompetition> {
 	@Unique(true)
 	@Column(DataType.STRING(50))
 	public address: string;
+
+	@BelongsTo(() => Trial)
+	public trial: Trial;
+
+	@BelongsTo(() => Competition)
+	public role: Competition;
 }
