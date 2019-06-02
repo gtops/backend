@@ -12,6 +12,9 @@ export class ResultParticipantOnTrial extends Model<ResultParticipantOnTrial> {
 	public participant_on_competition_id: number;
 
 	@Column(DataType.INTEGER)
+	public order_of_participation: number;
+
+	@Column(DataType.INTEGER)
 	public primary_result: number;
 
 	@Column(DataType.INTEGER)

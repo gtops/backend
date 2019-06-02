@@ -17,4 +17,14 @@ export class TrialOnCompetition extends Model<TrialOnCompetition> {
 	@Unique(false)
 	@Column(DataType.INTEGER)
 	public competition_id: number;
+
+	@AllowNull(false)
+	@Unique(true)
+	@Column
+	public date_of_start_trial: Date;
+
+	@AllowNull(false)
+	@Unique(true)
+	@Column(DataType.STRING(50))
+	public address: string;
 }

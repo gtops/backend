@@ -11,7 +11,12 @@ export class Competition extends Model<Competition> {
 	@AllowNull(false)
 	@Unique(true)
 	@Column
-	public date_of_competition: Date;
+	public date_of_start_competition: Date;
+
+	@AllowNull(false)
+	@Unique(true)
+	@Column
+	public date_of_end_competition: Date;
 
 	@AllowNull(false)
 	@Unique(false)
@@ -19,5 +24,5 @@ export class Competition extends Model<Competition> {
 	public user_id: number;
 
 	@Column(DataType.STRING(50))
-	public name: string;
+	public name_of_competition: string;
 }

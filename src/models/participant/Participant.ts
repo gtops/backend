@@ -11,6 +11,20 @@ export class Participant extends Model<Participant> {
 	@AllowNull(false)
 	@Unique(true)
 	@Column(DataType.STRING(50))
+	public name: string;
+
+	@AllowNull(false)
+	@Unique(true)
+	@Column(DataType.STRING(50))
+	public surname: string;
+
+	@AllowNull(true)
+	@Unique(true)
+	public command_id: number;
+
+	@AllowNull(false)
+	@Unique(true)
+	@Column(DataType.STRING(50))
 	public uid: string;
 
 	@AllowNull(false)
