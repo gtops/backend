@@ -18,6 +18,7 @@ export class GroupInStandardParent extends Model<GroupInStandardParent> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public group_in_standard_parent_id: number;
 
 	@ForeignKey(() => StandardParent)

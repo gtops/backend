@@ -19,6 +19,7 @@ export class ParticipantOnCompetition extends Model<ParticipantOnCompetition> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public participant_on_competition_id: number;
 
 	@ForeignKey(() => Participant)

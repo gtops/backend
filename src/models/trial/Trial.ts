@@ -10,6 +10,7 @@ export class Trial extends Model<Trial> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public trial_id: number;
 
 	@AllowNull(false)

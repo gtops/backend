@@ -9,6 +9,7 @@ export class Gender extends Model<Gender> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public gender_id: number;
 
 	@AllowNull(false)

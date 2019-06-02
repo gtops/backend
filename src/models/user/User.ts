@@ -19,6 +19,7 @@ export class User extends Model<User> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public user_id: number;
 
 	@AllowNull(false)

@@ -19,6 +19,7 @@ export class ResultGuide extends Model<ResultGuide> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public result_guide_id: number;
 
 	@ForeignKey(() => Trial)

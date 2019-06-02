@@ -6,6 +6,7 @@ export class Unit extends Model<Unit> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public unit_id: number;
 
 	@AllowNull(false)

@@ -19,6 +19,7 @@ export class Participant extends Model<Participant> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public participant_id: number;
 
 	@AllowNull(false)
@@ -34,6 +35,7 @@ export class Participant extends Model<Participant> {
 	@ForeignKey(() => Command)
 	@AllowNull(true)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public command_id: number;
 
 	@AllowNull(false)

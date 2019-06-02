@@ -8,6 +8,7 @@ export class AgeCategory extends Model<AgeCategory> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public age_category_id: number;
 
 	@AllowNull(false)

@@ -8,6 +8,7 @@ import { ACL } from "../middleware/ACL";
 import { routes } from "../routes/routes";
 import { Tool } from "../tools/Tool";
 import { client } from "./Database";
+import { databaseContext } from "./DatabaseContext";
 import { Router } from "./routes/Router";
 
 export class Server {
@@ -22,6 +23,7 @@ export class Server {
 		const router = new Router(server, routes, Server.acl);
 		await router.init();
 		server.listen(process.env.PORT || port, Server.listen);
+		await databaseContext.configure();
 	}
 
 	private static listen(): void {

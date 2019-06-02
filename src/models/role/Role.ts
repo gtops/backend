@@ -17,6 +17,7 @@ export class Role extends Model<Role> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public role_id: number;
 
 	@AllowNull(false)

@@ -19,6 +19,7 @@ export class Competition extends Model<Competition> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public competition_id: number;
 
 	@AllowNull(false)
@@ -42,9 +43,6 @@ export class Competition extends Model<Competition> {
 
 	@Column(DataType.STRING(50))
 	public name_of_competition: string;
-
-	@HasMany(() => Competition)
-	public competition: Competition[];
 
 	@HasMany(() => TrialOnCompetition)
 	public trialOnCompetition: TrialOnCompetition[];

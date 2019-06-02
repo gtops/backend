@@ -19,6 +19,7 @@ export class StandardParent extends Model<StandardParent> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public standard_parent_id: number;
 
 	@ForeignKey(() => Gender)

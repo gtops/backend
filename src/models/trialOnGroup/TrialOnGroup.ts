@@ -19,6 +19,7 @@ export class TrialOnGroup extends Model<TrialOnGroup> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public trial_on_group_id: number;
 
 	@ForeignKey(() => GroupInStandardParent)

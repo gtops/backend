@@ -7,10 +7,12 @@ export class Command extends Model<Command> {
 	@PrimaryKey
 	@AllowNull(false)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public command_id: number;
 
 	@AllowNull(true)
 	@Unique(true)
+	@Column(DataType.INTEGER)
 	public competition_id: number;
 
 	@AllowNull(false)

@@ -6,19 +6,20 @@ import { Tool } from "../tools/Tool";
 class DatabaseContext {
 	private readonly _service: Sequelize;
 
-	public constructor() {
+	public async configure(): Promise<Sequelize> {
 		const env: IDescriptionENV = Tool.getEnvironment();
-		// TODO: создай локальную бд пока что
 		const options: SequelizeOptions = {
 			host: "localhost",
 			database: "postgres",
 			username: "postgres",
 			password: "qwerty123",
 			port: 5432,
-			dialect: "postgres",
-			models
+			dialect: "postgres"
 		};
-		this._service = new Sequelize(options);
+		const services = new Sequelize(options);
+		services.addModels(models);
+		await services.sync();
+		return services;
 	}
 
 	public get service(): Sequelize {
@@ -26,5 +27,4 @@ class DatabaseContext {
 	}
 }
 
-export const client = new DatabaseContext();
-export const dbServices = client.service;
+export const databaseContext = new DatabaseContext();
