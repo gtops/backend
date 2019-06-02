@@ -1,5 +1,15 @@
-import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import {
+	AllowNull,
+	Column,
+	DataType,
+	HasMany,
+	Model,
+	PrimaryKey,
+	Table,
+	Unique
+} from "sequelize-typescript";
 import { getOptions } from "../tools/options";
+import { User } from "../user/User";
 
 @Table(getOptions("role"))
 export class Role extends Model<Role> {
@@ -12,4 +22,7 @@ export class Role extends Model<Role> {
 	@Unique(false)
 	@Column(DataType.STRING(50))
 	public name_of_role: string;
+
+	@HasMany(() => User)
+	public user: User[];
 }

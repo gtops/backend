@@ -1,5 +1,6 @@
-import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AllowNull, BelongsTo, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
 import { getOptions } from "../tools/options";
+import { Role } from "../role/Role";
 
 @Table(getOptions("user"))
 export class User extends Model<User> {
@@ -23,4 +24,7 @@ export class User extends Model<User> {
 
 	@Column(DataType.INTEGER)
 	public role_id: number;
+
+	@BelongsTo(() => Role)
+	public role: Role;
 }
