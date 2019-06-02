@@ -4,7 +4,7 @@ import { models } from "../models/models";
 import { Tool } from "../tools/Tool";
 
 class DatabaseContext {
-	private readonly _service: Sequelize;
+	private _service: Sequelize;
 
 	public async configure(): Promise<Sequelize> {
 		const env: IDescriptionENV = Tool.getEnvironment();
@@ -16,10 +16,10 @@ class DatabaseContext {
 			port: 5432,
 			dialect: "postgres"
 		};
-		const services = new Sequelize(options);
-		services.addModels(models);
-		await services.sync();
-		return services;
+		this._service = new Sequelize(options);
+		this._service.addModels(models);
+		await this._service.sync();
+		return this._service;
 	}
 
 	public get service(): Sequelize {
@@ -27,4 +27,4 @@ class DatabaseContext {
 	}
 }
 
-export const databaseContext = new DatabaseContext();
+export const databaseInstance = new DatabaseContext();
