@@ -19,5 +19,5 @@ export class Command extends Model<Command> {
 	public name_of_command: string;
 
 	@HasMany(() => Participant)
-	public participant;
+	public participant: Participant[];
 }

@@ -13,7 +13,6 @@ import { Command } from "../Command/Command";
 import { Gender } from "../gender/Gender";
 import { ParticipantOnCompetition } from "../participantOnCompetition/ParticipantOnCompetition";
 import { getOptions } from "../tools/options";
-import { User } from "../user/User";
 
 @Table(getOptions("participant"))
 export class Participant extends Model<Participant> {

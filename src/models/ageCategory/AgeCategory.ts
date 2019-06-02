@@ -2,7 +2,6 @@ import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique 
 import { ResultGuide } from "../resultGuide/ResultGuide";
 import { StandardParent } from "../standardParent/StandardParent";
 import { getOptions } from "../tools/options";
-import { User } from "../user/User";
 
 @Table(getOptions("age_category"))
 export class AgeCategory extends Model<AgeCategory> {

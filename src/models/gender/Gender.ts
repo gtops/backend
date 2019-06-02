@@ -17,7 +17,7 @@ export class Gender extends Model<Gender> {
 	public gender: string;
 
 	@HasMany(() => Participant)
-	public participant;
+	public participant: Participant[];
 
 	@HasMany(() => ResultGuide)
 	public resultGuide: ResultGuide[];
