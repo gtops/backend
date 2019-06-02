@@ -8,6 +8,7 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
+
 import { getOptions } from "../tools/options";
 import { User } from "../user/User";
 

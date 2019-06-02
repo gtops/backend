@@ -1,4 +1,5 @@
-import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { Participant } from "../participant/Participant";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("command"))
@@ -16,4 +17,7 @@ export class Command extends Model<Command> {
 	@Unique(true)
 	@Column(DataType.STRING(50))
 	public name_of_command: string;
+
+	@HasMany(() => Participant)
+	public participant;
 }

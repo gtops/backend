@@ -1,5 +1,7 @@
-import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { GroupInStandardParent } from "../groupInStandardParent/GroupInStandardParent";
 import { getOptions } from "../tools/options";
+import { User } from "../user/User";
 
 @Table(getOptions("standard_parent"))
 export class StandardParent extends Model<StandardParent> {
@@ -37,4 +39,7 @@ export class StandardParent extends Model<StandardParent> {
 	@Unique(false)
 	@Column(DataType.INTEGER)
 	public count_all_trials: number;
+
+	@HasMany(() => GroupInStandardParent)
+	public groupInStandardParent: GroupInStandardParent[];
 }

@@ -1,6 +1,18 @@
-import { AllowNull, BelongsTo, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
-import { getOptions } from "../tools/options";
+import {
+	AllowNull,
+	BelongsTo,
+	Column,
+	DataType,
+	ForeignKey, HasMany,
+	Model,
+	PrimaryKey,
+	Table,
+	Unique
+} from "sequelize-typescript";
+
+import { Competition } from "../competition/Competition";
 import { Role } from "../role/Role";
+import { getOptions } from "../tools/options";
 
 @Table(getOptions("user"))
 export class User extends Model<User> {
@@ -22,9 +34,13 @@ export class User extends Model<User> {
 	@Column(DataType.STRING(50))
 	public password: string;
 
+	@ForeignKey(() => Role)
 	@Column(DataType.INTEGER)
 	public role_id: number;
 
 	@BelongsTo(() => Role)
 	public role: Role;
+
+	@HasMany(() => Competition)
+	public competition: Competition[];
 }

@@ -15,7 +15,6 @@ import { TrialOnGroup } from "./trialOnGroup/TrialOnGroup";
 import { Unit } from "./unit/Unit";
 import { User } from "./user/User";
 
-
 export const models = [
 	User,
 	AgeCategory,
