@@ -9,9 +9,9 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { AgeCategory } from "../ageCategory/AgeCategory";
+import { AgeCategory } from "../age-category/AgeCategory";
 import { Gender } from "../gender/Gender";
-import { GroupInStandardParent } from "../groupInStandardParent/GroupInStandardParent";
+import { GroupInStandardParent } from "../groupIn-standard-parent/GroupInStandardParent";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("standard_parent"))

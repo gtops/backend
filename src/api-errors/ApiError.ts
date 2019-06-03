@@ -21,7 +21,7 @@ export const errors = {
 	IncorrectUid: new ApiError(EHttpStatus.BAD, "Некорректный uid пользователя", 100),
 	NotFoundParticipantUid: new ApiError(EHttpStatus.NOT_FOUND, "Участника с данным uid не существует", 101),
 
-	UserNotFound: new ApiError(EHttpStatus.NOT_FOUND, "Пользователь с таким логином не найден", 130),
+	UserNotFound: new ApiError(EHttpStatus.NOT_FOUND, "Пользователь не найден", 130),
 	IncorrectPassword: new ApiError(EHttpStatus.BAD, "Неверный пароль", 131),
 	UserAlreadyExist: new ApiError(EHttpStatus.BAD, "Пользователь с таким логином или эмайлом существует", 132),
 

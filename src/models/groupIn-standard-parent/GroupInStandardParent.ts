@@ -9,9 +9,9 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { StandardParent } from "../standardParent/StandardParent";
+import { StandardParent } from "../standard-parent/StandardParent";
 import { getOptions } from "../tools/options";
-import { TrialOnGroup } from "../trialOnGroup/TrialOnGroup";
+import { TrialOnGroup } from "../trial-on-group/TrialOnGroup";
 
 @Table(getOptions("group_in_standard_parent"))
 export class GroupInStandardParent extends Model<GroupInStandardParent> {

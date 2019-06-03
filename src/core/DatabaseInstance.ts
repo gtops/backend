@@ -15,7 +15,7 @@ class DatabaseContext {
 			password: "qwerty123",
 			port: 5432,
 			dialect: "postgres",
-			sync: {force: true}
+			// sync: {force: true}
 		};
 		this._service = new Sequelize(options);
 		this._service.addModels(models);

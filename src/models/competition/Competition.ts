@@ -11,7 +11,7 @@ import {
 } from "sequelize-typescript";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
-import { TrialOnCompetition } from "../trialOnCompetition/TrialOnCompetition";
+import { TrialOnCompetition } from "../trial-on-competition/TrialOnCompetition";
 import { User } from "../user/User";
 
 @Table(getOptions("competition"))

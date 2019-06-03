@@ -9,11 +9,11 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { ResultGuide } from "../resultGuide/ResultGuide";
-import { ResultParticipantOnTrial } from "../resultParticipantOnTrial/ResultParticipantOnTrial";
+import { ResultGuide } from "../result-guide/ResultGuide";
+import { ResultParticipantOnTrial } from "../result-participant-on-trial/ResultParticipantOnTrial";
 import { getOptions } from "../tools/options";
-import { TrialOnCompetition } from "../trialOnCompetition/TrialOnCompetition";
-import { TrialOnGroup } from "../trialOnGroup/TrialOnGroup";
+import { TrialOnCompetition } from "../trial-on-competition/TrialOnCompetition";
+import { TrialOnGroup } from "../trial-on-group/TrialOnGroup";
 import { Unit } from "../unit/Unit";
 
 @Table(getOptions("trial"))

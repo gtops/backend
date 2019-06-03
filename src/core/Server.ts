@@ -16,6 +16,7 @@ export class Server {
 	private static acl: ACL;
 
 	public static async run(server: restify.Server): Promise<void> {
+		await databaseInstance.configure();
 		const { port } = Server.env.server;
 		Server.acl = new ACL();
 		Server.init(server);
@@ -23,7 +24,6 @@ export class Server {
 		const router = new Router(server, routes, Server.acl);
 		await router.init();
 		server.listen(process.env.PORT || port, Server.listen);
-		await databaseInstance.configure();
 	}
 
 	private static listen(): void {
