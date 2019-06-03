@@ -34,7 +34,9 @@ export class ResultGuide extends Model<ResultGuide> {
 	@Column(DataType.INTEGER)
 	public age_category_id: number;
 
-	@Column(DataType.DOUBLE)
+	@Column({
+		type: DataType.STRING
+	})
 	public results: number[];
 
 	@BelongsTo(() => Trial)

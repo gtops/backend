@@ -1,5 +1,6 @@
-import { AllowNull, Column, DataType, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
 import { getOptions } from "../tools/options";
+import { Trial } from "../trial/Trial";
 
 @Table(getOptions("unit"))
 export class Unit extends Model<Unit> {
@@ -13,4 +14,7 @@ export class Unit extends Model<Unit> {
 	@Unique(false)
 	@Column(DataType.STRING(50))
 	public unit_name: string;
+
+	@HasMany(() => Trial)
+	public resultGuide: Trial[];
 }
