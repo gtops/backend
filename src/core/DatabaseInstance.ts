@@ -9,12 +9,12 @@ class DatabaseContext {
 	public async configure(): Promise<Sequelize> {
 		const env: IDescriptionENV = Tool.getEnvironment();
 		const options: SequelizeOptions = {
-			host: "localhost",
-			database: "postgres",
-			username: "postgres",
-			password: "qwerty123",
-			port: 5432,
-			dialect: "postgres",
+			host: "petrodim.beget.tech",
+			database: "petrodim_gto_db",
+			username: "petrodim_gto_db",
+			password: "erIq9N*A",
+			port: 3306,
+			dialect: "mysql",
 			// sync: {force: true}
 		};
 		this._service = new Sequelize(options);
