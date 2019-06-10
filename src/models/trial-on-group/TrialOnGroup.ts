@@ -9,7 +9,7 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { GroupInStandardParent } from "../groupInStandardParent/GroupInStandardParent";
+import { GroupInStandardParent } from "../groupIn-standard-parent/GroupInStandardParent";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
 import { Trial } from "../trial/Trial";

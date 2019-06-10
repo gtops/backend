@@ -1,22 +1,16 @@
-import { head } from "lodash";
-import { client } from "../core/Database";
+import { errors } from "../api-errors";
 import { IRole } from "../interfaces/user/IRole";
-import { IUser } from "../interfaces/user/IUser";
+import { Role } from "../models/role/Role";
+import { User } from "../models/user/User";
 
 export class UserServices {
 	public async getAllRoles(): Promise<IRole[]> {
-		const query = `
-			SELECT role_id, name_of_role FROM role`;
-		const result = await client.query(query);
-		return result.rows;
+		return Role.findAll();
 	}
 
-	public async getUserInfo(userId: number): Promise<IUser> {
-		const query = `
-			SELECT user_id, email, name_of_role FROM "user"
-			LEFT JOIN role ON role.role_id = "user".role_id
-			WHERE user_id = ${userId}`;
-		const result = await client.query(query);
-		return head(result.rows);
+	public async getUserInfo(userId: number): Promise<User> {
+		const user = await User.findByPk(userId);
+		if (user == null) { throw errors.UserNotFound; }
+		return user;
 	}
 }

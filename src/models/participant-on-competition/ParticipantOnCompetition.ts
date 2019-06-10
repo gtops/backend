@@ -11,7 +11,7 @@ import {
 } from "sequelize-typescript";
 import { Competition } from "../competition/Competition";
 import { Participant } from "../participant/Participant";
-import { ResultParticipantOnTrial } from "../resultParticipantOnTrial/ResultParticipantOnTrial";
+import { ResultParticipantOnTrial } from "../result-participant-on-trial/ResultParticipantOnTrial";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("participant_on_competition"))

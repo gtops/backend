@@ -9,8 +9,8 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { AgeCategory } from "../ageCategory/AgeCategory";
-import { ParticipantOnCompetition } from "../participantOnCompetition/ParticipantOnCompetition";
+import { AgeCategory } from "../age-category/AgeCategory";
+import { ParticipantOnCompetition } from "../participant-on-competition/ParticipantOnCompetition";
 import { getOptions } from "../tools/options";
 import { Trial } from "../trial/Trial";
 

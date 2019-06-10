@@ -5,13 +5,12 @@ import * as restify from "restify";
 import * as YAML from "yamljs";
 
 const swaggerUi = require("swagger-ui-restify");
-
-export const authorization = YAML.load("src/docs/authorization.yaml");
-export const calculation = YAML.load("src/docs/calculation.yaml");
-export const participant = YAML.load("src/docs/participant.yaml");
-export const user = YAML.load("src/docs/user.yaml");
-
 const PATH_TO_DOCS = path.resolve(__dirname, "./");
+
+export const authorization = YAML.load(`${PATH_TO_DOCS}/authorization.yaml`);
+export const calculation = YAML.load(`${PATH_TO_DOCS}/calculation.yaml`);
+export const participant = YAML.load(`${PATH_TO_DOCS}/participant.yaml`);
+export const user = YAML.load(`${PATH_TO_DOCS}/user.yaml`);
 
 export const loadDocs = async (server: Server): Promise<void> => {
 	const docs = await import(PATH_TO_DOCS);

@@ -1,7 +1,7 @@
 import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
 import { Participant } from "../participant/Participant";
-import { ResultGuide } from "../resultGuide/ResultGuide";
-import { StandardParent } from "../standardParent/StandardParent";
+import { ResultGuide } from "../result-guide/ResultGuide";
+import { StandardParent } from "../standard-parent/StandardParent";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("gender"))

@@ -9,9 +9,9 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { Command } from "../Command/Command";
+import { Command } from "../command/Command";
 import { Gender } from "../gender/Gender";
-import { ParticipantOnCompetition } from "../participantOnCompetition/ParticipantOnCompetition";
+import { ParticipantOnCompetition } from "../participant-on-competition/ParticipantOnCompetition";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("participant"))
