@@ -9,6 +9,7 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
+import { RefereeOnTrialInCompetition } from "../RefereeOnTrialInCompetition/RefereeOnTrialInCompetition";
 import { ResultGuide } from "../resultGuide/ResultGuide";
 import { ResultParticipantOnTrial } from "../resultParticipantOnTrial/ResultParticipantOnTrial";
 import { getOptions } from "../tools/options";

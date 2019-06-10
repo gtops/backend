@@ -13,6 +13,7 @@ import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
 import { TrialOnCompetition } from "../trialOnCompetition/TrialOnCompetition";
 import { User } from "../user/User";
+import { WorkerOfUserInCompetition } from "../WorkerOfUserInCompetition/WorkerOfUserInCompetition";
 
 @Table(getOptions("competition"))
 export class Competition extends Model<Competition> {
@@ -46,4 +47,7 @@ export class Competition extends Model<Competition> {
 
 	@HasMany(() => TrialOnCompetition)
 	public trialOnCompetition: TrialOnCompetition[];
+
+	@HasMany(() => WorkerOfUserInCompetition)
+	public workerOfUserInCompetition: WorkerOfUserInCompetition[];
 }

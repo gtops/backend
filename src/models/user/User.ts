@@ -11,8 +11,10 @@ import {
 } from "sequelize-typescript";
 
 import { Competition } from "../competition/Competition";
+import { ResultGuide } from "../resultGuide/ResultGuide";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
+import { WorkerOfUser } from "../workerOfUser/WorkerOfUser";
 
 @Table(getOptions("user"))
 export class User extends Model<User> {
@@ -44,4 +46,10 @@ export class User extends Model<User> {
 
 	@HasMany(() => Competition)
 	public competition: Competition[];
+
+	@HasMany(() => WorkerOfUser)
+	public workerOfUser: WorkerOfUser[];
+
+	@HasMany(() => ResultGuide)
+	public resultGuide: ResultGuide[];
 }

@@ -3,13 +3,14 @@ import {
 	BelongsTo,
 	Column,
 	DataType,
-	ForeignKey,
+	ForeignKey, HasMany,
 	Model,
 	PrimaryKey,
 	Table,
 	Unique
 } from "sequelize-typescript";
 import { Competition } from "../competition/Competition";
+import { RefereeOnTrialInCompetition } from "../RefereeOnTrialInCompetition/RefereeOnTrialInCompetition";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
 import { Trial } from "../trial/Trial";
@@ -49,4 +50,7 @@ export class TrialOnCompetition extends Model<TrialOnCompetition> {
 
 	@BelongsTo(() => Competition)
 	public role: Competition;
+
+	@HasMany(() => RefereeOnTrialInCompetition)
+	public referee: RefereeOnTrialInCompetition[];
 }
