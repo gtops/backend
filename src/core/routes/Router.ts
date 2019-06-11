@@ -52,7 +52,7 @@ export class Router {
 
 			this.acl.allow(this.routes[key].allowRoles, path, method);
 		}
-		await loadDocs(this.server);
+		/*await loadDocs(this.server);*/
 	}
 
 	private async loadControllers(): Promise<void> {

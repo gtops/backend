@@ -34,8 +34,7 @@ export class ResultGuide extends Model<ResultGuide> {
 	@ForeignKey(() => AgeCategory)
 	@Column(DataType.INTEGER)
 	public age_category_id: number;
-
-<<<<<<< HEAD:src/models/resultGuide/ResultGuide.ts
+	
 	@ForeignKey(() => User)
 	@Column(DataType.INTEGER)
 	public user_id: number;
@@ -46,9 +45,7 @@ export class ResultGuide extends Model<ResultGuide> {
 	@Column(DataType.BOOLEAN)
 	public is_primary_guide: boolean;
 
-=======
 	// because MySql don't support arrays
->>>>>>> 7034921bcfa2985730d8572f2d4183edafb44495:src/models/result-guide/ResultGuide.ts
 	@Column({
 		type: DataType.STRING,
 		get(): number[] {

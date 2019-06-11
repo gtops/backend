@@ -14,7 +14,7 @@ import { Competition } from "../competition/Competition";
 import { ResultGuide } from "../result-guide/ResultGuide";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
-import { WorkerOfUser } from "../workerOfUser/WorkerOfUser";
+import { WorkerOfUser } from "../worker-of-user/WorkerOfUser";
 
 @Table(getOptions("user"))
 export class User extends Model<User> {

@@ -16,7 +16,7 @@ export class Server {
 	private static acl: ACL;
 
 	public static async run(server: restify.Server): Promise<void> {
-		// await databaseInstance.configure();
+		await databaseInstance.configure();
 		const { port } = Server.env.server;
 		Server.acl = new ACL();
 		Server.init(server);

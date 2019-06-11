@@ -10,8 +10,7 @@ import {
 	Unique
 } from "sequelize-typescript";
 import { Competition } from "../competition/Competition";
-import { RefereeOnTrialInCompetition } from "../RefereeOnTrialInCompetition/RefereeOnTrialInCompetition";
-import { Role } from "../role/Role";
+import { RefereeOnTrialInCompetition } from "../referee-on-trial-in-competition/RefereeOnTrialInCompetition";
 import { getOptions } from "../tools/options";
 import { Trial } from "../trial/Trial";
 

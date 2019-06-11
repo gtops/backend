@@ -9,10 +9,9 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { ParticipantOnCompetition } from "../participantOnCompetition/ParticipantOnCompetition";
 import { getOptions } from "../tools/options";
-import { WorkerOfUser } from "../workerOfUser/WorkerOfUser";
-import { WorkerOfUserInCompetition } from "../WorkerOfUserInCompetition/WorkerOfUserInCompetition";
+import { WorkerOfUser } from "../worker-of-user/WorkerOfUser";
+import { WorkerOfUserInCompetition } from "../worker-of-user-in-competition/WorkerOfUserInCompetition";
 
 @Table(getOptions("position"))
 export class Position extends Model<Position> {

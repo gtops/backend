@@ -11,8 +11,6 @@ import {
 
 import { getOptions } from "../tools/options";
 import { User } from "../user/User";
-import { WorkerOfUser } from "../workerOfUser/WorkerOfUser";
-import { WorkerOfUserInCompetition } from "../WorkerOfUserInCompetition/WorkerOfUserInCompetition";
 
 @Table(getOptions("role"))
 export class Role extends Model<Role> {
@@ -29,10 +27,4 @@ export class Role extends Model<Role> {
 
 	@HasMany(() => User)
 	public user: User[];
-
-	@HasMany(() => WorkerOfUser)
-	public workerOfUser: WorkerOfUser[];
-
-	@HasMany(() => WorkerOfUserInCompetition)
-	public workerOfUserInCompetition: WorkerOfUserInCompetition[];
 }

@@ -9,14 +9,8 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-<<<<<<< HEAD
-import { RefereeOnTrialInCompetition } from "../RefereeOnTrialInCompetition/RefereeOnTrialInCompetition";
-import { ResultGuide } from "../resultGuide/ResultGuide";
-import { ResultParticipantOnTrial } from "../resultParticipantOnTrial/ResultParticipantOnTrial";
-=======
 import { ResultGuide } from "../result-guide/ResultGuide";
 import { ResultParticipantOnTrial } from "../result-participant-on-trial/ResultParticipantOnTrial";
->>>>>>> 7034921bcfa2985730d8572f2d4183edafb44495
 import { getOptions } from "../tools/options";
 import { TrialOnCompetition } from "../trial-on-competition/TrialOnCompetition";
 import { TrialOnGroup } from "../trial-on-group/TrialOnGroup";

@@ -44,14 +44,19 @@ export class Participant extends Model<Participant> {
 	public uid: string;
 
 	@AllowNull(false)
+	@Unique(true)
+	@Column(DataType.STRING(50))
+	public email: string;
+
+	@AllowNull(false)
+	@Unique(true)
+	@Column(DataType.STRING(50))
+	public phone_number: string;
+
+	@AllowNull(false)
 	@Unique(false)
 	@Column
 	public data_of_birth: Date;
-
-	@AllowNull(true)
-	@Unique(false)
-	@Column(DataType.BOOLEAN)
-	public was_confirmed: boolean;
 
 	@ForeignKey(() => Gender)
 	@Column(DataType.INTEGER)

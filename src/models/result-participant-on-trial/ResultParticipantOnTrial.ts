@@ -9,7 +9,6 @@ import {
 	Table,
 	Unique
 } from "sequelize-typescript";
-import { AgeCategory } from "../age-category/AgeCategory";
 import { ParticipantOnCompetition } from "../participant-on-competition/ParticipantOnCompetition";
 import { getOptions } from "../tools/options";
 import { Trial } from "../trial/Trial";
@@ -25,10 +24,6 @@ export class ResultParticipantOnTrial extends Model<ResultParticipantOnTrial> {
 	@ForeignKey(() => ParticipantOnCompetition)
 	@Column(DataType.INTEGER)
 	public participant_on_competition_id: number;
-
-	@AllowNull(true)
-	@Column(DataType.INTEGER)
-	public position_in_start: number;
 
 	@Column(DataType.INTEGER)
 	public order_of_participation: number;
