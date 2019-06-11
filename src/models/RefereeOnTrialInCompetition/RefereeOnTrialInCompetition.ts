@@ -14,7 +14,7 @@ import { Position } from "../Position/Position";
 import { Role } from "../role/Role";
 import { getOptions } from "../tools/options";
 import { Trial } from "../trial/Trial";
-import { TrialOnCompetition } from "../trialOnCompetition/TrialOnCompetition";
+import { TrialOnCompetition } from "../trial-on-competition/TrialOnCompetition";
 import { User } from "../user/User";
 import { WorkerOfUser } from "../workerOfUser/WorkerOfUser";
 import { WorkerOfUserInCompetition } from "../WorkerOfUserInCompetition/WorkerOfUserInCompetition";
