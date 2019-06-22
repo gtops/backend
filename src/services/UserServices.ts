@@ -1,7 +1,7 @@
-import { errors } from "../api-errors";
+import { Role } from "@models/role/Role";
+import { User } from "@models/user/User";
 import { IRole } from "../interfaces/user/IRole";
-import { Role } from "../models/role/Role";
-import { User } from "../models/user/User";
+import { errors } from "@api-errors/ApiError";
 
 export class UserServices {
 	public async getAllRoles(): Promise<IRole[]> {

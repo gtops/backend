@@ -1,7 +1,7 @@
+import { errors } from "@api-errors/ApiError";
+import { IRequest } from "@core/routes/interfaces/IRequest";
 import { autobind } from "core-decorators";
 import { Next, Response } from "restify";
-import { errors } from "../api-errors";
-import { IRequest } from "../core/routes/interfaces/IRequest";
 import { AuthorizationServices } from "../services";
 
 @autobind

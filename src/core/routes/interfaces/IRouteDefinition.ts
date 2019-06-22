@@ -1,4 +1,4 @@
-import { Schema } from "/joi";
+import { Schema } from "joi";
 
 export interface IRouteDefinition {
 	method?: EMethod;

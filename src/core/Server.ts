@@ -1,9 +1,9 @@
+import { config } from "@config/Config";
+import { ACL } from "@middleware/ACL";
 import * as restify from "restify";
 import { Request, Response } from "restify";
 import * as cors from "restify-cors-middleware";
 import { CorsMiddleware } from "restify-cors-middleware";
-import { config } from "../config/Config";
-import { ACL } from "../middleware/ACL";
 import { routes } from "../routes/routes";
 import { client } from "./Database";
 import { databaseInstance } from "./DatabaseInstance";

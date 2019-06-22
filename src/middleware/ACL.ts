@@ -1,10 +1,10 @@
+import { errors } from "@api-errors/ApiError";
+import { config } from "@config/Config";
+import { IRequest } from "@core/routes/interfaces/IRequest";
+import { EMethod } from "@core/routes/interfaces/IRouteDefinition";
 import { autobind } from "core-decorators";
 import * as jwt from "jsonwebtoken";
 import { Next, Request, Response } from "restify";
-import { errors } from "../api-errors";
-import { config } from "../config/Config";
-import { IRequest } from "../core/routes/interfaces/IRequest";
-import { EMethod } from "../core/routes/interfaces/IRouteDefinition";
 import { ERoles } from "./interfaces/ERoles";
 import { IRolesStore } from "./interfaces/IRolesStore";
 

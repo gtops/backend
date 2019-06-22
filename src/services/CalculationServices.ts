@@ -1,9 +1,10 @@
+import { client } from "@core/Database";
 import { head } from "lodash";
-import { client } from "../core/Database";
 import { ICalculateParams } from "../interfaces/calculation/ICalculateParams";
 import { ICalculateResult } from "../interfaces/calculation/ICalculateResult";
 import { IParticipantParams } from "../interfaces/calculation/IParticipantParams";
 import { ITrialData } from "../interfaces/calculation/ITrialData";
+
 export class CalculationServices {
 	public async getParticipantTrial(params: IParticipantParams): Promise<ITrialData> {
 		const trialsDataQuery = `

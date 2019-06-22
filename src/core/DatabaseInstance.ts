@@ -1,5 +1,5 @@
+import { models } from "@models/models";
 import { Sequelize, SequelizeOptions } from "sequelize-typescript";
-import { models } from "../models/models";
 
 class DatabaseContext {
 	private _service: Sequelize;

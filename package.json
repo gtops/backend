@@ -42,6 +42,7 @@
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "mocha": "^6.1.4",
+    "module-alias": "^2.2.0",
     "mysql2": "^1.6.5",
     "nodemailer": "^6.1.0",
     "pg": "^7.8.2",
@@ -59,5 +60,14 @@
     "cross-env": "^5.2.0",
     "tslint": "^5.13.1",
     "typescript": "^3.3.3333"
+  },
+  "_moduleAliases": {
+    "@controllers": "dist/src/controllers",
+    "@services": "dist/src/services",
+    "@core": "dist/src/core",
+    "@models": "dist/src/models",
+    "@middleware": "dist/src/middleware",
+    "@config": "dist/src/config",
+    "@api-errors": "dist/src/api-errors"
   }
 }

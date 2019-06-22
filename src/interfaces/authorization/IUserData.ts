@@ -1,4 +1,4 @@
-import { ERoles } from "../../middleware/interfaces/ERoles";
+import { ERoles } from "@middleware/interfaces/ERoles";
 
 export interface IUserData {
 	user_id: number;

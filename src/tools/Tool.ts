@@ -1,5 +1,5 @@
+import { config } from "@config/Config";
 import { isNaN } from "lodash";
-import { config } from "../config/Config";
 
 export class Tool {
 	public static isUid(uid: string): boolean {

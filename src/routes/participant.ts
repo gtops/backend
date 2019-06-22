@@ -1,5 +1,5 @@
 import * as Joi from "joi";
-import { ERoles } from "../middleware/interfaces/ERoles";
+import { ERoles } from "@middleware/interfaces/ERoles";
 
 export default {
 	"GET /api/participant/:uid": {

@@ -1,12 +1,12 @@
+import { errors } from "@api-errors/ApiError";
+import { config } from "@config/Config";
+import { ERoles } from "@middleware/interfaces/ERoles";
+import { Role } from "@models/role/Role";
+import { User } from "@models/user/User";
 import * as jwt from "jsonwebtoken";
 import * as md5 from "md5";
-import { errors } from "../api-errors";
-import { config } from "../config/Config";
 import { ILoginParams } from "../interfaces/authorization/ILoginParams";
 import { IUserRegistrationParams } from "../interfaces/authorization/IUserRegistrationParams";
-import { ERoles } from "../middleware/interfaces/ERoles";
-import { Role } from "../models/role/Role";
-import { User } from "../models/user/User";
 import { EmailServices } from "./EmailServices";
 
 export class AuthorizationServices {

@@ -1,6 +1,6 @@
+import { config } from "@config/Config";
 import * as nodemailer from "nodemailer";
 import { SendMailOptions, Transporter } from "nodemailer";
-import { config } from "../config/Config";
 
 export class EmailServices {
 	public static transporter: Transporter = nodemailer.createTransport(config.email.SMTPData);

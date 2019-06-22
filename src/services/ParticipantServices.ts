@@ -1,10 +1,10 @@
+import { client } from "@core/Database";
 import { head } from "lodash";
-import { errors } from "../api-errors";
-import { client } from "../core/Database";
 import { ICalculateResult } from "../interfaces/calculation/ICalculateResult";
 import { IAgeCategories } from "../interfaces/participant/IAgeCategories";
 import { IParticipantResult } from "../interfaces/participant/IParticipantResult";
 import { CalculationServices } from "./CalculationServices";
+import { errors } from "@api-errors/ApiError";
 
 export class ParticipantServices {
 	private services = new CalculationServices();

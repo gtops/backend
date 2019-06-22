@@ -1,9 +1,9 @@
+import { errors } from "@api-errors/ApiError";
+import { ACL } from "@middleware/ACL";
+import { validateMiddleware } from "@middleware/Validator";
 import { nth } from "lodash";
 import * as restify from "restify";
-import { errors } from "../../api-errors";
 import { loadDocs } from "../../docs";
-import { ACL } from "../../middleware/ACL";
-import { validateMiddleware } from "../../middleware/Validator";
 import { IController } from "./interfaces/IController";
 import { EMethod, IRouteDefinition } from "./interfaces/IRouteDefinition";
 import { IRoutes } from "./interfaces/IRoutes";

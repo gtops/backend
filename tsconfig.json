@@ -14,6 +14,27 @@
     "paths": {
       "*": [
         "node_modules/*"
+      ],
+      "@services/*": [
+        "src/services/*"
+      ],
+      "@controllers/*": [
+        "src/controllers/*"
+      ],
+      "@core/*": [
+        "src/core/*"
+      ],
+      "@middleware/*": [
+        "src/middleware/*"
+      ],
+      "@models/*": [
+        "src/models/*"
+      ],
+      "@config/*": [
+        "src/config/*"
+      ],
+      "@api-errors/*": [
+        "src/api-errors/*"
       ]
     }
   },

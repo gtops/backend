@@ -1,7 +1,7 @@
+import { IRequest } from "@core/routes/interfaces/IRequest";
+import { UserServices } from "@services/UserServices";
 import { Next, Response } from "restify";
-import { errors } from "../api-errors";
-import { IRequest } from "../core/routes/interfaces/IRequest";
-import { UserServices } from "../services/UserServices";
+import { errors } from "@api-errors/ApiError";
 
 export class UserController {
 	private services = new UserServices();
