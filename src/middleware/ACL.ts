@@ -2,7 +2,7 @@ import { autobind } from "core-decorators";
 import * as jwt from "jsonwebtoken";
 import { Next, Request, Response } from "restify";
 import { errors } from "../api-errors";
-import { Config } from "../config";
+import { config } from "../config/Config";
 import { IRequest } from "../core/routes/interfaces/IRequest";
 import { EMethod } from "../core/routes/interfaces/IRouteDefinition";
 import { ERoles } from "./interfaces/ERoles";
@@ -76,8 +76,8 @@ export class ACL {
 
 	private static getTokenInfo(token: string, type: string): IRequest {
 		try {
-			const secret = type === ACL.authorizationTokenName ? Config.jwt.secret :
-				type === ACL.inviteTokenName ? Config.jwtInviteLink.secret : "";
+			const secret = type === ACL.authorizationTokenName ? config.jwt.secret :
+				type === ACL.inviteTokenName ? config.jwtInviteLink.secret : "";
 			return jwt.verify(token, secret) as IRequest;
 		} catch (err) {
 			throw errors.InvalidToken;

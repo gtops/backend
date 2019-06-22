@@ -1,7 +1,7 @@
 import * as jwt from "jsonwebtoken";
 import * as md5 from "md5";
 import { errors } from "../api-errors";
-import { Config } from "../config";
+import { config } from "../config/Config";
 import { ILoginParams } from "../interfaces/authorization/ILoginParams";
 import { IUserRegistrationParams } from "../interfaces/authorization/IUserRegistrationParams";
 import { ERoles } from "../middleware/interfaces/ERoles";
@@ -27,8 +27,8 @@ export class AuthorizationServices {
 			user_id: userData.user_id,
 			role: userData.role.name_of_role
 		};
-		const secret = Config.jwt.secret;
-		const options = { expiresIn: Config.jwt.tokenTimeLive };
+		const secret = config.jwt.secret;
+		const options = { expiresIn: config.jwt.tokenTimeLive };
 
 		return jwt.sign(tokenData, secret, options);
 	}
@@ -53,17 +53,17 @@ export class AuthorizationServices {
 			throw errors.UserAlreadyExist;
 		}
 
-		const secret = Config.jwtInviteLink.secret;
-		const options = { expiresIn: Config.jwtInviteLink.tokenTimeLive };
+		const secret = config.jwtInviteLink.secret;
+		const options = { expiresIn: config.jwtInviteLink.tokenTimeLive };
 		const tokenData = { email, role: ERoles.INVITED_USER, role_id: roleId };
-		const url = `${Config.addressFrontendServer.url}/user/invite?invite_token=${jwt.sign(tokenData, secret, options)}`;
+		const url = `${config.addressFrontendServer.url}/user/invite?invite_token=${jwt.sign(tokenData, secret, options)}`;
 
 		await EmailServices.send({
-			from: Config.email.addressFrom,
+			from: config.email.addressFrom,
 			to: email,
-			subject: `Приглашение на создание аккаунта в ${Config.projectName}`,
+			subject: `Приглашение на создание аккаунта в ${config.projectName}`,
 			html: `<div>
-                        <p>Вам было выслано приглашение на создание аккаунта в ${Config.projectName}</p>
+                        <p>Вам было выслано приглашение на создание аккаунта в ${config.projectName}</p>
                         <a href="${url}">Ссылка для регистрации</a>
                    </div>`
 		});
