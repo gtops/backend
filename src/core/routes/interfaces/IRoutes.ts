@@ -1,4 +1,4 @@
-import { Schema } from "joi";
+import { Schema } from "@hapi/joi";
 import { ERoles } from "@middleware/interfaces/ERoles";
 
 export interface IRoutes {

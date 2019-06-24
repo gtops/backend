@@ -11,12 +11,11 @@ class DatabaseContext {
 			username: "petrodim_gto_db",
 			password: "erIq9N*A",
 			port: 3306,
-			dialect: "mysql",
-			sync: {force: true}
+			dialect: "mysql"
 		};
 		this._service = new Sequelize(options);
 		this._service.addModels(models);
-		await this._service.sync();
+		// await this._service.sync();
 		return this._service;
 	}
 

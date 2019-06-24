@@ -1,7 +1,7 @@
 import { ApiError } from "@api-errors/ApiError";
 import { EHttpStatus } from "@api-errors/EHttpStatus";
 import { EMethod } from "@core/routes/interfaces/IRouteDefinition";
-import * as Joi from "joi";
+import * as Joi from "@hapi/joi";
 import { attempt, get, merge } from "lodash";
 import { Next, Request, Response } from "restify";
 

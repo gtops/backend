@@ -1,7 +1,7 @@
+import { errors } from "@api-errors/ApiError";
 import { IRequest } from "@core/routes/interfaces/IRequest";
 import { Next, Response } from "restify";
 import { CalculationServices } from "../services";
-import { errors } from "@api-errors/ApiError";
 
 export class CalculationController {
 	private services = new CalculationServices();

@@ -1,4 +1,4 @@
-import { Schema } from "joi";
+import { Schema } from "@hapi/joi";
 
 export interface IRouteDefinition {
 	method?: EMethod;
