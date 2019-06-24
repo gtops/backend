@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/gtops/backend.git"
   },
-  "author": "",
+  "author": "fedor rybakov",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/gtops/backend/issues"

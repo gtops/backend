@@ -55,7 +55,7 @@ export class ResultGuide extends Model<ResultGuide> {
 			this.setDataValue("results", val.join(","));
 		}
 	})
-	public results: string[];
+	public results: number[];
 
 	@BelongsTo(() => Trial)
 	public trial: Trial;
