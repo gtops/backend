@@ -11,7 +11,7 @@ import {
 } from "sequelize-typescript";
 import { AgeCategory } from "../age-category/AgeCategory";
 import { Gender } from "../gender/Gender";
-import { GroupInStandardParent } from "../groupIn-standard-parent/GroupInStandardParent";
+import { GroupInStandardParent } from "../group-in-standard-parent/GroupInStandardParent";
 import { getOptions } from "../tools/options";
 
 @Table(getOptions("standard_parent"))

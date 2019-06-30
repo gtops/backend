@@ -10,8 +10,8 @@ import {
 	Unique
 } from "sequelize-typescript";
 import { getOptions } from "../tools/options";
-import { WorkerOfUser } from "../worker-of-user/WorkerOfUser";
 import { WorkerOfUserInCompetition } from "../worker-of-user-in-competition/WorkerOfUserInCompetition";
+import { WorkerOfUser } from "../worker-of-user/WorkerOfUser";
 
 @Table(getOptions("position"))
 export class Position extends Model<Position> {

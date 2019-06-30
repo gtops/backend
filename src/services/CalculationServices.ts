@@ -1,14 +1,37 @@
-import { client } from "@core/Database";
+import { AgeCategory } from "@models/age-category/AgeCategory";
+import { GroupInStandardParent } from "@models/group-in-standard-parent/GroupInStandardParent";
 import { ResultGuide } from "@models/result-guide/ResultGuide";
-import { findIndex, head } from "lodash";
+import { StandardParent } from "@models/standard-parent/StandardParent";
+import { TrialOnGroup } from "@models/trial-on-group/TrialOnGroup";
+import { Trial } from "@models/trial/Trial";
+import { findIndex } from "lodash";
+import { Op } from "sequelize";
 import { ICalculateParams } from "../interfaces/calculation/ICalculateParams";
 import { ICalculateResult } from "../interfaces/calculation/ICalculateResult";
 import { IParticipantParams } from "../interfaces/calculation/IParticipantParams";
 import { ITrialData } from "../interfaces/calculation/ITrialData";
 
 export class CalculationServices {
-	public async getParticipantTrial(params: IParticipantParams): Promise<ITrialData> {
-		const trialsDataQuery = `
+	public async getParticipantTrial(params: IParticipantParams): Promise<void> {
+		const standardParentData = StandardParent.findOne({
+			include: [{
+				model: AgeCategory,
+				where: {
+					[Op.and]: {
+						min_age: { [Op.lte]: params.age_sign.old },
+						max_age: { [Op.gte]: params.age_sign.old },
+					}
+				}
+			}],
+			attributes: [
+				"count_all_trials", "count_trial_for_gold", "count_trial_for_silver", "count_trial_for_bronze", "age_category_id"
+			],
+			where: {
+				gender_id: params.gender_id
+			}
+		});
+
+		/*const trialsDataQuery = `
 		SELECT age_category.age_category_id,
 		       count_all_trials,
 		       count_trial_for_gold,
@@ -16,9 +39,42 @@ export class CalculationServices {
 		       count_trial_for_bronze
 		FROM standard_parent
 		         LEFT JOIN age_category ON age_category.age_category_id = standard_parent.age_category_id
-		WHERE ${this.getAgeSign} AND standard_parent.gender_id = ${params.gender_id}`;
+		WHERE ${this.getAgeSign} AND standard_parent.gender_id = ${params.gender_id}`;*/
 
-		const trialsQuery = `
+		const trials = StandardParent.findAll({
+			include: [
+				{
+					model: GroupInStandardParent,
+					include: [{
+						model: TrialOnGroup,
+						attributes: ["trial_id", "result_for_gold", "result_for_silver", "result_for_bronze", "is_main_trial"],
+						include: [{
+							model: Trial,
+							attributes: ["name_of_trial"]
+						}]
+					}]
+				},
+				{
+					model: AgeCategory,
+					where: {
+						[Op.and]: {
+							min_age: { [Op.lte]: params.age_sign.old },
+							max_age: { [Op.gte]: params.age_sign.old },
+						}
+					}
+				}
+			],
+			where: {
+				gender_id: params.gender_id
+			},
+			group: ["groupInStandardParent->trialOnGroup.group_in_standard_parent_id"]
+		});
+
+		const result = await Promise.all([standardParentData, trials]);
+		console.log(result[0]);
+		console.log(result[1]);
+
+		/*const trialsQuery = `
 		SELECT array_agg(json_build_object(
 				'trial_id', trial.trial_id,
 		        'name_of_trial', trial.name_of_trial,
@@ -27,33 +83,33 @@ export class CalculationServices {
 		        'result_for_bronze', trial_in_group.result_for_bronze,
 		        'is_main_trial', trial_in_group.is_main_trial
 		    )) as trial_group
-		FROM trial
+		FROM trialReferee_on_trial_in_competition
 		         LEFT JOIN trial_in_group ON trial.trial_id = trial_in_group.trial_id
 		         LEFT JOIN group_in_standard_parent
 		              ON group_in_standard_parent.group_in_standard_parent_id = trial_in_group.group_in_standard_parent_id
 		         LEFT JOIN standard_parent ON standard_parent.standard_parent_id = group_in_standard_parent.standard_parent_id
 		         LEFT JOIN age_category ON age_category.age_category_id = standard_parent.age_category_id
 		WHERE ${this.getAgeSign} AND standard_parent.gender_id = ${params.gender_id}
-		GROUP BY trial_in_group.group_in_standard_parent_id`;
+		GROUP BY trial_in_group.group_in_standard_parent_id`;*/
 
-		const result = await Promise.all([client.query(trialsDataQuery), client.query(trialsQuery)]);
+		// const result = await Promise.all([client.query(trialsDataQuery), client.query(trialsQuery)]);
 
-		return {
+		/*return {
 			...head(result[0].rows),
 			trials: result[1].rows
-		};
+		};*/
 	}
 
 	public async calculate(params: ICalculateParams): Promise<ICalculateResult> {
 		const { trial_id, gender_id, age_category_id, primary_result } = params;
 		return ResultGuide.findOne({
-				where: {
-					trial_id,
-					gender_id,
-					age_category_id,
-				},
-				order: "results DESC"
-			})
+			where: {
+				trial_id,
+				gender_id,
+				age_category_id,
+			},
+			order: "results DESC"
+		})
 			.then((resultGuideData) => {
 				const index = findIndex(resultGuideData.results, (elem: number) => elem <= primary_result);
 				return {

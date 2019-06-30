@@ -2,7 +2,7 @@ import { AgeCategory } from "./age-category/AgeCategory";
 import { Command } from "./command/Command";
 import { Competition } from "./competition/Competition";
 import { Gender } from "./gender/Gender";
-import { GroupInStandardParent } from "./groupIn-standard-parent/GroupInStandardParent";
+import { GroupInStandardParent } from "./group-in-standard-parent/GroupInStandardParent";
 import { ParticipantOnCompetition } from "./participant-on-competition/ParticipantOnCompetition";
 import { Participant } from "./participant/Participant";
 import { Position } from "./position/Position";

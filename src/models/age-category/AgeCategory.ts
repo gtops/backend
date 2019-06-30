@@ -1,4 +1,14 @@
-import { AllowNull, Column, DataType, HasMany, Model, PrimaryKey, Table, Unique } from "sequelize-typescript";
+import {
+	AllowNull,
+	Column,
+	DataType,
+	ForeignKey,
+	HasMany,
+	Model,
+	PrimaryKey,
+	Table,
+	Unique
+} from "sequelize-typescript";
 import { ResultGuide } from "../result-guide/ResultGuide";
 import { StandardParent } from "../standard-parent/StandardParent";
 import { getOptions } from "../tools/options";
@@ -21,9 +31,16 @@ export class AgeCategory extends Model<AgeCategory> {
 	@Column(DataType.INTEGER)
 	public max_age: number;
 
+	@ForeignKey(() => AgeCategory)
+	@Column(DataType.INTEGER)
+	public parent_age_category_id: number;
+
 	@HasMany(() => ResultGuide)
 	public resultGuide: ResultGuide[];
 
 	@HasMany(() => StandardParent)
 	public standardParent: StandardParent[];
+
+	@HasMany(() => AgeCategory)
+	public ageCategory: AgeCategory[];
 }

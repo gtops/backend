@@ -15,7 +15,7 @@ class DatabaseContext {
 		};
 		this._service = new Sequelize(options);
 		this._service.addModels(models);
-		// await this._service.sync();
+		// await this._service.sync({force: true});
 		return this._service;
 	}
 

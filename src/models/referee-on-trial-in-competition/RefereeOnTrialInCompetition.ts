@@ -13,7 +13,7 @@ import { getOptions } from "../tools/options";
 import { TrialOnCompetition } from "../trial-on-competition/TrialOnCompetition";
 import { WorkerOfUserInCompetition } from "../worker-of-user-in-competition/WorkerOfUserInCompetition";
 
-@Table(getOptions("Referee_on_trial_in_competition"))
+@Table(getOptions("referee_on_trial_in_competition"))
 export class RefereeOnTrialInCompetition extends Model<RefereeOnTrialInCompetition> {
 	@PrimaryKey
 	@AllowNull(false)
