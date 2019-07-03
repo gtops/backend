@@ -13,6 +13,7 @@ import {
 import { Competition } from "../competition/Competition";
 import { ResultGuide } from "../result-guide/ResultGuide";
 import { Role } from "../role/Role";
+import { StandardParent } from "../standard-parent/StandardParent";
 import { getOptions } from "../tools/options";
 import { WorkerOfUser } from "../worker-of-user/WorkerOfUser";
 
@@ -52,4 +53,7 @@ export class User extends Model<User> {
 
 	@HasMany(() => ResultGuide)
 	public resultGuide: ResultGuide[];
+
+	@HasMany(() => StandardParent)
+	public standardParent: StandardParent[];
 }

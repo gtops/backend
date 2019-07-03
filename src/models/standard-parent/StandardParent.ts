@@ -1,3 +1,4 @@
+import { User } from "@models/user/User";
 import {
 	AllowNull, BelongsTo,
 	Column,
@@ -34,6 +35,10 @@ export class StandardParent extends Model<StandardParent> {
 	@Column(DataType.INTEGER)
 	public age_category_id: number;
 
+	@ForeignKey(() => User)
+	@Column(DataType.INTEGER)
+	public user_id: number;
+
 	@AllowNull(false)
 	@Unique(false)
 	@Column(DataType.INTEGER)
@@ -54,6 +59,9 @@ export class StandardParent extends Model<StandardParent> {
 	@Column(DataType.INTEGER)
 	public count_all_trials: number;
 
+	@Column(DataType.INTEGER)
+	public version: number;
+
 	@HasMany(() => GroupInStandardParent)
 	public groupInStandardParent: GroupInStandardParent[];
 
@@ -62,4 +70,7 @@ export class StandardParent extends Model<StandardParent> {
 
 	@BelongsTo(() => AgeCategory)
 	public ageCategory: AgeCategory;
+
+	@BelongsTo(() => User)
+	public user: User;
 }
