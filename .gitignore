@@ -1,12 +1,5 @@
-
-.idea
-
-.idea/*
-
-node_modules
-
-dist
-
-dist/*
-
-config.json
+.idea/
+/coverage/
+/vendor/
+/logs/*
+!/logs/README.md
