@@ -1,0 +1,14 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "GTO",
+        "version": "1.0.0"
+    },
+    "host": "petrodim.beget.techs",
+    "basePath": "/",
+    "schemes": [
+        "http"
+    ],
+    "paths": {},
+    "definitions": {}
+}
