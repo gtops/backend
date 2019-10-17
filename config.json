@@ -1,0 +1,9 @@
+{
+  "DB":{
+    "DBDriver":"mysql",
+    "DBHost":"petrodim.beget.tech",
+    "DBName":"petrodim_test_db",
+    "DBUser":"petrodim_test_db",
+    "DBPass":"M2&pWHkR"
+  }
+}

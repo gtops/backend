@@ -7,6 +7,11 @@ use Monolog\Logger;
 use Monolog\Processor\UidProcessor;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
+use App\Swagger\SwaggerWatcher;
+use App\Application\Actions\Swagger;
+use App\Persistance\ModelsEloquant\DataBase;
+use App\Application\Actions\Trial\TrialAction;
+use Illuminate\Database\Capsule\Manager as Capsule;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -24,5 +29,18 @@ return function (ContainerBuilder $containerBuilder) {
 
             return $logger;
         },
+        DataBase::class => function(ContainerInterface $c):Capsule{
+            $db = new DataBase($c->get('privateSettings')['DB']);
+            return $db->getCapsule();
+        },
+        TrialAction::class => function(ContainerInterface $c)
+        {
+            $trialAction = new TrialAction($c->get(DataBase::class));
+            return $trialAction;
+        },
+        SwaggerWatcher::class => function(ContainerInterface $c){
+            $swaggerAction = new Swagger\SwaggerAction($c->get('settings')['pathToProject']);
+            return $swaggerAction;
+        }
     ]);
 };
