@@ -10,8 +10,9 @@ use Psr\Log\LoggerInterface;
 use App\Swagger\SwaggerWatcher;
 use App\Application\Actions\Swagger;
 use App\Persistance\ModelsEloquant\DataBase;
-use App\Application\Actions\Trial\TrialAction;
+use App\Application\Actions\Trial\GetListTrialByGenderAndAgeAction;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use App\Application\Actions\Trial\GetSecondResultOfTrialByFirstResultAction;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -33,9 +34,14 @@ return function (ContainerBuilder $containerBuilder) {
             $db = new DataBase($c->get('privateSettings')['DB']);
             return $db->getCapsule();
         },
-        TrialAction::class => function(ContainerInterface $c)
+        GetListTrialByGenderAndAgeAction::class => function(ContainerInterface $c)
         {
-            $trialAction = new TrialAction($c->get(DataBase::class));
+            $trialAction = new GetListTrialByGenderAndAgeAction($c->get(DataBase::class));
+            return $trialAction;
+        },
+        GetSecondResultOfTrialByFirstResultAction::class => function(ContainerInterface $c){
+            $capsule = $c->get(DataBase::class);
+            $trialAction = new GetSecondResultOfTrialByFirstResultAction();
             return $trialAction;
         },
         SwaggerWatcher::class => function(ContainerInterface $c){

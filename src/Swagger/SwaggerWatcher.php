@@ -25,13 +25,6 @@ class SwaggerWatcher
      * )
      */
 
-    /**
-     * @SWG\Get(
-     *     path="/api/resource.json",
-     *     @SWG \Response(response="200", description="An example resource")
-     * )
-     */
-
     private $pathToProject;
 
     public function __construct($pathToProject)

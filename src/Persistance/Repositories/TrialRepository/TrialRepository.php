@@ -14,6 +14,7 @@ use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
 use App\Persistance\ModelsEloquant\DataBase;
 use App\Persistance\ModelsEloquant\TableTranslator\TableTranslator;
 use Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
 
 class TrialRepository
@@ -43,5 +44,24 @@ class TrialRepository
         }
 
         return $response;
+    }
+
+    public function getSecondResult(float $firstResult, int $allDataStandardId):int
+    {
+        $logger = new Logger('a');
+        $translatorModels = TableTranslator::query()
+            ->where('id_all_data_standard', '=', $allDataStandardId)
+            ->get();
+
+        $values = $translatorModels[0]->value_for_100;
+        $logger->alert($values);
+        $values = explode(';', $values);
+
+//        for($i = 0; $i < count($values); $i++){
+//            if ((int)$values[$i] )
+//        }
+
+        $logger->alert(count($values));
+        return -1;
     }
 }
