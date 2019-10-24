@@ -16,7 +16,7 @@ class SwaggerWatcher
     /**
      * @SWG\Swagger(
      * schemes={"http"},
-     * host="petrodim.beget.techs",
+     * host="petrodim.beget.tech",
      * basePath="/",
      * @SWG\Info(
      * title="GTO",

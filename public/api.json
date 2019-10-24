@@ -4,13 +4,13 @@
         "title": "GTO",
         "version": "1.0.0"
     },
-    "host": "petrodim.beget.techs",
+    "host": "petrodim.beget.tech",
     "basePath": "/",
     "schemes": [
         "http"
     ],
     "paths": {
-        "trial": {
+        "/trial": {
             "get": {
                 "tags": [
                     "Trial"
@@ -64,11 +64,31 @@
                                 }
                             }
                         }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
         },
-        "trial/result": {
+        "/trial/result": {
             "get": {
                 "tags": [
                     "Trial"
@@ -94,15 +114,25 @@
                         "description": "OK",
                         "schema": {
                             "properties": {
-                                "statusCode": {
-                                    "type": "integer"
-                                },
-                                "data": {
+                                "secondResult": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
                                     "type": "array",
                                     "items": {
                                         "properties": {
-                                            "secondResult": {
-                                                "type": "number"
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
                                             }
                                         }
                                     }

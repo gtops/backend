@@ -12,7 +12,7 @@ namespace App\Persistance\Repositories\TrialRepository;
 use App\Domain\Models\Trial;
 use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
 use App\Persistance\ModelsEloquant\DataBase;
-use App\Persistance\ModelsEloquant\TableTranslator\TableTranslator;
+use App\Persistance\ModelsEloquant\ResultGuide\ResultGuide;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
@@ -29,8 +29,8 @@ class TrialRepository
 
         $idAgeCategory = $ageCategories[0]->id_age_category;
 
-        $results =  TableTranslator::query()
-            ->leftJoin('name_sports', 'name_sports.id_name_sport', '=', 'all_data_of_standard.id_name_sport')
+        $results =  ResultGuide::query()
+            ->leftJoin('trial', 'trial.id_trial', '=', 'result_guide.id_trial')
             ->where('id_age_category', '=', $idAgeCategory)
             ->where('gender', '=', $gender)
             ->get();
@@ -39,8 +39,12 @@ class TrialRepository
 
         foreach ($results as $result)
         {
-            $response[] = new Trial($result->name_sport, $result->id_all_data_standard, $result->result_for_silver, $result->result_for_bronze,
-                $result->result_for_gold, 0);
+            $silver = str_replace(',', '.', $result->result_for_silver);
+            $bronze = str_replace(',', '.', $result->result_for_bronze);
+            $gold = str_replace(',', '.', $result->result_for_gold);
+            //добавить фильтрацию для времени в минутах и секундах
+            $response[] = new Trial($result->trial, $result->id_result_guide, (float)$silver, (float)$bronze,
+               (float) $gold, 0);
         }
 
         return $response;
@@ -49,19 +53,26 @@ class TrialRepository
     public function getSecondResult(float $firstResult, int $allDataStandardId):int
     {
         $logger = new Logger('a');
-        $translatorModels = TableTranslator::query()
-            ->where('id_all_data_standard', '=', $allDataStandardId)
+        $translatorModels = ResultGuide::query()
+            ->where('id_result_guide', '=', $allDataStandardId)
             ->get();
 
-        $values = $translatorModels[0]->value_for_100;
+        $values = $translatorModels[0]->results;
         $logger->alert($values);
         $values = explode(';', $values);
 
-//        for($i = 0; $i < count($values); $i++){
-//            if ((int)$values[$i] )
-//        }
+        return $this->getTranslatedResult($values, $firstResult);
+    }
 
-        $logger->alert(count($values));
-        return -1;
+    private function getTranslatedResult(array $results, float $firstResult):int
+    {
+        for($i = 0; $i < count($results); $i++){
+           $keyValue = explode('=', $results[$i]);
+           if ($keyValue[1] <= $firstResult){
+               return $keyValue[0];
+           }
+        }
+
+        return 0;
     }
 }

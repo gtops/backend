@@ -11,6 +11,7 @@ namespace App\Application\Actions\Trial;
 
 use App\Application\Actions\Action;
 use App\Domain\Models\Trial;
+use App\Services\Validators\ValidatorInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
@@ -19,7 +20,7 @@ use App\Services\Presenters\TrialToResponsePresenter;
 /**
  *
  * * @SWG\Get(
- *   path="trial",
+ *   path="/trial",
  *   summary="получение списка испытаний для определенного пола и возраста",
  *   operationId="получение списка испытаний для определенного пола и возраста",
  *   tags={"Trial"},
@@ -34,7 +35,13 @@ use App\Services\Presenters\TrialToResponsePresenter;
  *              @SWG\Property(property="resultForSilver", type="number"),
  *              @SWG\Property(property="resultForGold", type="number")
  *          )
- *     )))
+ *     ))),
+ *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+ *          @SWG\Property(property="errors", type="array", @SWG\Items(
+ *              @SWG\Property(property="type", type="string"),
+ *              @SWG\Property(property="description", type="string")
+ *          ))
+ *     ))
  * )
  *
  */
@@ -42,16 +49,26 @@ use App\Services\Presenters\TrialToResponsePresenter;
 class GetListTrialByGenderAndAgeAction extends Action
 {
     private $capsule;
+    private $validator;
 
-    public function __construct(Capsule $capsule)
+    public function __construct(Capsule $capsule, ValidatorInterface $validator)
     {
         $this->capsule = $capsule;
+        $this->validator = $validator;
     }
 
     protected function action(): Response
     {
         $trialRep = new TrialRepository();
         $params = $this->request->getQueryParams();
+
+        $errors = $this->validator->getErrors($params);
+
+        if (count($errors) > 0){
+            $this->response->getBody()->write(json_encode(array('errors' => $errors)));
+            return $this->response->withStatus(400);
+        }
+
         $trials = $trialRep->getList($params['gender'], $params['age'], $this->capsule);
 
         $trialsToRespond = [];

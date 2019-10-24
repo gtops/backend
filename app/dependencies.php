@@ -13,9 +13,17 @@ use App\Persistance\ModelsEloquant\DataBase;
 use App\Application\Actions\Trial\GetListTrialByGenderAndAgeAction;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use App\Application\Actions\Trial\GetSecondResultOfTrialByFirstResultAction;
+use App\Services\Validators\GetTrialsRouteValidator;
+use \App\Services\Validators\GetSecondResultRouteValidator;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        GetTrialsRouteValidator::class => function(){
+            return new GetTrialsRouteValidator();
+        },
+        GetSecondResultRouteValidator::class => function(){
+            return new \App\Services\Validators\GetSecondResultRouteValidator();
+        },
         LoggerInterface::class => function (ContainerInterface $c) {
             $settings = $c->get('settings');
 
@@ -36,12 +44,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
         GetListTrialByGenderAndAgeAction::class => function(ContainerInterface $c)
         {
-            $trialAction = new GetListTrialByGenderAndAgeAction($c->get(DataBase::class));
+            $trialAction = new GetListTrialByGenderAndAgeAction($c->get(DataBase::class), $c->get(GetTrialsRouteValidator::class));
             return $trialAction;
         },
         GetSecondResultOfTrialByFirstResultAction::class => function(ContainerInterface $c){
             $capsule = $c->get(DataBase::class);
-            $trialAction = new GetSecondResultOfTrialByFirstResultAction();
+
+            $trialAction = new GetSecondResultOfTrialByFirstResultAction($c->get(GetSecondResultRouteValidator::class));
             return $trialAction;
         },
         SwaggerWatcher::class => function(ContainerInterface $c){

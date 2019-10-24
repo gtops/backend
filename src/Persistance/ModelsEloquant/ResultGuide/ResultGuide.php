@@ -6,23 +6,23 @@
  * Time: 12:53
  */
 
-namespace App\Persistance\ModelsEloquant\TableTranslator;
+namespace App\Persistance\ModelsEloquant\ResultGuide;
 
 
 use Illuminate\Database\Eloquent\Model;
 
-class TableTranslator extends Model
+class ResultGuide extends Model
 {
     public $timestamps = false;
-    protected $table = "all_data_of_standard";
-    protected $primaryKey = "id_all_data_standard";
+    protected $table = "result_guide";
+    protected $primaryKey = "id_result_guide";
     protected $fillable = array(
         "id_age_category",
-        "id_name_sport",
+        "id_trial",
         "gender",
-        "value_for_100",
+        "results",
         "id_version",
-        "id_group_standard_in_age_category",
+        "id_group_result_guide",
         "result_for_gold",
         "result_for_silver",
         "result_for_bronze"

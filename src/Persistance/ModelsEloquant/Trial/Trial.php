@@ -14,10 +14,10 @@ use Illuminate\Database\Eloquent\Model;
 class Trial extends Model
 {
     public $timestamps = false;
-    protected $table = "name_sports";
-    protected $primaryKey = "id_name_sport";
+    protected $table = "trial";
+    protected $primaryKey = "id_trial";
 
     protected $fillable = array(
-        "name_sport"
+        "trial"
     );
 }

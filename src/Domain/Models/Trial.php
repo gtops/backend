@@ -18,7 +18,7 @@ class Trial
     private $resultForGold;
     private $secondResult;
 
-    public function __construct(string $trialName, int $trialId, float $resultForSilver, float $resultForBronze, float $resultForGold, int $seccndResult)
+    public function __construct(string $trialName, int $trialId, float $resultForSilver, float $resultForBronze, float $resultForGold, float $seccndResult)
     {
         $this->trialName = $trialName;
         $this->trialId = $trialId;

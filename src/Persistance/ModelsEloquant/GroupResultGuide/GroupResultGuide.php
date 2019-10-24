@@ -6,12 +6,12 @@
  * Time: 23:35
  */
 
-namespace App\Persistance\ModelsEloquant\GroupStandard;
+namespace App\Persistance\ModelsEloquant\GroupResultGuide;
 
 
 use Illuminate\Database\Eloquent\Model;
 
-class GroupStandard extends Model
+class GroupResultGuide extends Model
 {
     public $timestamps = false;
     protected $table = "age_category";
