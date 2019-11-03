@@ -5,5 +5,11 @@
     "DBName":"petrodim_test_db",
     "DBUser":"petrodim_test_db",
     "DBPass":"M2&pWHkR"
+  },
+  "Mailer":{
+    "login": "gto_pgtu@mail.ru",
+    "password":"aassddqqwwee112233",
+    "host": "smtp.mail.ru",
+    "port": "25"
   }
 }

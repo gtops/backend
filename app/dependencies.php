@@ -15,9 +15,16 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use App\Application\Actions\Trial\GetSecondResultOfTrialByFirstResultAction;
 use App\Services\Validators\GetTrialsRouteValidator;
 use \App\Services\Validators\GetSecondResultRouteValidator;
+use App\Application\Actions\Role\GetRoleAction;
+
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        GetRoleAction::class => function(ContainerInterface $c){
+            $db = new DataBase($c->get('privateSettings')['DB']);
+            $roleAction = new \App\Application\Actions\Role\GetRoleAction();
+            return $roleAction;
+        },
         GetTrialsRouteValidator::class => function(){
             return new GetTrialsRouteValidator();
         },

@@ -11,10 +11,8 @@ namespace App\Persistance\Repositories\TrialRepository;
 
 use App\Domain\Models\Trial;
 use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
-use App\Persistance\ModelsEloquant\DataBase;
 use App\Persistance\ModelsEloquant\ResultGuide\ResultGuide;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use Illuminate\Support\Facades\Log;
 use Monolog\Logger;
 
 class TrialRepository
@@ -58,7 +56,6 @@ class TrialRepository
             ->get();
 
         $values = $translatorModels[0]->results;
-        $logger->alert($values);
         $values = explode(';', $values);
 
         return $this->getTranslatedResult($values, $firstResult);

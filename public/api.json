@@ -10,6 +10,37 @@
         "http"
     ],
     "paths": {
+        "/role": {
+            "get": {
+                "tags": [
+                    "Role"
+                ],
+                "summary": "\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u0432\u0441\u0435\u0445 \u0440\u043e\u043b\u0435\u0439(\u043a\u0440\u043e\u043c\u0435 GLOBAL)",
+                "operationId": "\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u0432\u0441\u0435\u0445 \u0440\u043e\u043b\u0435\u0439(\u043a\u0440\u043e\u043c\u0435 GLOBAL)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "roles": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "role_id": {
+                                                "type": "integer"
+                                            },
+                                            "name_of_role": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/trial": {
             "get": {
                 "tags": [
