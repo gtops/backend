@@ -6,6 +6,9 @@ use App\Swagger\SwaggerWatcher;
 use App\Application\Actions\Trial\GetListTrialByGenderAndAgeAction;
 use App\Application\Actions\Trial\GetSecondResultOfTrialByFirstResultAction;
 use App\Application\Actions\Role\GetRoleAction;
+use App\Application\Actions\User\SendInviteAction;
+use App\Application\Actions\User\InviteValidationAction;
+use App\Application\Actions\User\RegistrationAction;
 
 return function (App $app) {
     $app->get('/trial', GetListTrialByGenderAndAgeAction::class);
@@ -14,5 +17,7 @@ return function (App $app) {
     $app->get('/trial/result', GetSecondResultOfTrialByFirstResultAction::class);
 
     $app->get('/role', GetRoleAction::class);
-    $app->post('invite', SendInviteAction::class);
+    $app->post('/organization/invite', SendInviteAction::class);
+    $app->post('/invite/isValid', InviteValidationAction::class);
+    $app->post('/registration', RegistrationAction::class);
 };

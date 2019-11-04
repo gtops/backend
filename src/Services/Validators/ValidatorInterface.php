@@ -11,5 +11,5 @@ namespace App\Services\Validators;
 
 Interface ValidatorInterface
 {
-    public function getErrors($args):array;
+    public function getErrors($args, $options = null):array;
 }

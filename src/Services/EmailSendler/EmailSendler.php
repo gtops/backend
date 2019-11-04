@@ -10,10 +10,28 @@ namespace App\Services\EmailSendler;
 
 
 
+use Monolog\Logger;
+
 class EmailSendler
 {
-    private $transport;
-    public function __construct(string $config)
+    private $mailer;
+    public function __construct($config)
     {
+        $transport = (new \Swift_SmtpTransport($config['host'], $config['port']))
+            ->setUsername($config['login'])
+            ->setPassword($config['password'])
+            ->setEncryption('ssl');
+
+        $this->mailer = new \Swift_Mailer($transport);
+    }
+
+    public function sendInvite($email, $token)
+    {
+        $message = (new \Swift_Message('Invite to registration on GTO service'))
+            ->setFrom(['gto_pgtu@mail.ru' => 'GTO'])
+            ->setTo([$email => 'Yahya'])
+            ->setBody('чтобы зарегистрироваться, пройдите по ссылке: <a href="http://register/'.$token.'">ссылка</a>', 'text/html');
+
+        $this->mailer->send($message);
     }
 }

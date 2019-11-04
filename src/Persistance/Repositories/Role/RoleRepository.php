@@ -15,7 +15,7 @@ class RoleRepository
     public function getRoles():array
     {
         $roles = [];
-        $roleSql = Role::query()->where('name_of_role', '!=', 'GLOBAL_ADMIN')->get();
+        $roleSql = Role::query()->where('name_of_role', '!=', 'Глобальный администратор')->get();
         foreach ($roleSql as $role){
             $roles[] = $role;
         }

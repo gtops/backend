@@ -11,9 +11,9 @@ namespace App\Services\Validators;
 
 use App\Application\Actions\ActionError;
 
-class getTrialsRouteValidator implements ValidatorInterface
+class getTrialsRouteValidator extends Validator implements ValidatorInterface
 {
-    public function getErrors($args): array
+    public function getErrors($args, $options = null): array
     {
         $errors = [];
 

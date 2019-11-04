@@ -10,6 +10,10 @@
     "login": "gto_pgtu@mail.ru",
     "password":"aassddqqwwee112233",
     "host": "smtp.mail.ru",
-    "port": "25"
+    "port": "465"
+  },
+  "Token":{
+    "key":"ochen slozniy parol? ti ne uqadaesh",
+    "leeway": 10
   }
 }
