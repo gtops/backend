@@ -12,6 +12,37 @@ use App\Persistance\Repositories\Role;
 
 class UserRepository
 {
+    public function userIsSetOnDBWithEmail($email)
+    {
+        if (UserElaquent::query()->where('email', '=', $email)->count() == 0){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function userIsSetOnDb($email, $password)
+    {
+        if (UserElaquent::query()
+                ->where('email', '=', $email)
+                ->where('password', '=', $password)
+                ->count() == 0){
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getRoleOfUser($email)
+    {
+        $roles = UserElaquent::query()
+            ->leftJoin('role', 'user.role_id', '=', 'role.role_id')
+            ->where('user.email', '=', $email)
+            ->get();
+
+        return $roles[0]->name_of_role;
+    }
+
     public function createUser($data)
     {
         $roleRep = new Role\RoleRepository();

@@ -33,6 +33,7 @@ namespace App\Application\Actions\User;
 
 
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Persistance\ModelsEloquant\User\User;
 use App\Persistance\Repositories\User\RegistrationToken;
@@ -73,6 +74,13 @@ class RegistrationAction extends Action
 
         $jwtData = (array)$this->tokenHandler->getDecodedToken($params['token'], 3600*24);
         $userRep = new UserRepository();
+        $params['password'] = $this->tokenHandler->getEncodedPassword($params['password']);
+
+        if ($userRep->userIsSetOnDBWithEmail($jwtData['email'])){
+            $this->response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'this email isset'))]));
+            return $this->response->withStatus(400);
+        }
+
         $userRep->createUser([
             'email' => $jwtData['email'],
             'role' => $jwtData['role'],

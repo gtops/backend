@@ -22,15 +22,23 @@ use App\Services\Token\Token;
 use App\Application\Actions\User\InviteValidationAction;
 use App\Application\Actions\User\RegistrationAction;
 use App\Services\Validators\RegistrationRouteValidator;
+use App\Application\Actions\User\LoginAction;
+use App\Services\Validators\LoginValidator;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
-       RegistrationAction::class => function(ContainerInterface $c){
+        LoginAction::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            $validator = new LoginValidator();
+            $loginAction = new LoginAction($c->get(Token::class), $validator);
+            return $loginAction;
+        },
+        RegistrationAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             $validator = new RegistrationRouteValidator();
             $regAction = new RegistrationAction($c->get(Token::class), $validator);
             return $regAction;
-       },
+        },
         InviteValidationAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             $inviteValidateAction = new InviteValidationAction($c->get(Token::class));

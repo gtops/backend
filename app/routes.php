@@ -9,6 +9,7 @@ use App\Application\Actions\Role\GetRoleAction;
 use App\Application\Actions\User\SendInviteAction;
 use App\Application\Actions\User\InviteValidationAction;
 use App\Application\Actions\User\RegistrationAction;
+use App\Application\Actions\User\LoginAction;
 
 return function (App $app) {
     $app->get('/trial', GetListTrialByGenderAndAgeAction::class);
@@ -20,4 +21,6 @@ return function (App $app) {
     $app->post('/organization/invite', SendInviteAction::class);
     $app->post('/invite/isValid', InviteValidationAction::class);
     $app->post('/registration', RegistrationAction::class);
+    $app->post('/login', LoginAction::class);
+
 };

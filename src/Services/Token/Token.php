@@ -30,4 +30,8 @@ class Token
         return JWT::decode($token, $this->key, array('HS256'));
     }
 
+    public function getEncodedPassword(string $password)
+    {
+        return crypt($password, $this->key);
+    }
 }

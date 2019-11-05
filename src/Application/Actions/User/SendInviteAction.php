@@ -77,7 +77,8 @@ class SendInviteAction extends Action
 
         $token = $this->token->getEncodedToken([
             'email' => $email,
-            'role' => $role
+            'role' => $role,
+            'type' => 'access token'
         ], 3600*24);
 
         $regToken = new RegistrationToken();
