@@ -29,12 +29,16 @@ use App\Services\Presenters\TrialToResponsePresenter;
  *   @SWG\Response(response=200, description="OK", @SWG\Schema(
  *          @SWG\Property(property="statusCode", type="integer"),
  *          @SWG\Property(property="data", type="array", @SWG\Items(
- *              @SWG\Property(property="trialName", type="string"),
- *              @SWG\Property(property="trialId", type="integer"),
- *              @SWG\Property(property="resultForBronze", type="number"),
- *              @SWG\Property(property="resultForSilver", type="number"),
- *              @SWG\Property(property="resultForGold", type="number")
+ *              @SWG\Property(property="trials", type="array", @SWG\Items(
+ *                  @SWG\Property(property="trialName", type="string"),
+ *                  @SWG\Property(property="trialId", type="integer"),
+ *                  @SWG\Property(property="resultForBronze", type="number"),
+ *                  @SWG\Property(property="resultForSilver", type="number"),
+ *                  @SWG\Property(property="resultForGold", type="number")
+ *              )),
+ *              @SWG\Property(property="ageCategory", type="string")
  *          )
+ *
  *     ))),
  *  @SWG\Response(response=400, description="Error", @SWG\Schema(
  *          @SWG\Property(property="errors", type="array", @SWG\Items(
@@ -78,7 +82,8 @@ class GetListTrialByGenderAndAgeAction extends Action
             $trialsToRespond[] = $this->getTrialForResponse($trial);
         }
 
-        return $this->respondWithData($trialsToRespond);
+        $nameAgeCategory = $trialRep->getNameOfAgeCategory($params['age']);
+        return $this->respondWithData(['trials' => $trialsToRespond, 'ageCategory' => $nameAgeCategory]);
 
     }
 

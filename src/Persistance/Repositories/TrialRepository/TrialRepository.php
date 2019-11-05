@@ -17,6 +17,16 @@ use Monolog\Logger;
 
 class TrialRepository
 {
+    public function getNameOfAgeCategory(int $age)
+    {
+        $result = AgeCategory::query()
+            ->where('min_age', '<=', $age)
+            ->where('max_age', '>=', $age)
+            ->get();
+
+        return $result[0]->name_age_category;
+    }
+
     public function getList(int $gender, int $age, Capsule $capsule):array
     {
         $ageCategories = AgeCategory::query()

@@ -75,20 +75,30 @@
                                     "type": "array",
                                     "items": {
                                         "properties": {
-                                            "trialName": {
+                                            "trials": {
+                                                "type": "array",
+                                                "items": {
+                                                    "properties": {
+                                                        "trialName": {
+                                                            "type": "string"
+                                                        },
+                                                        "trialId": {
+                                                            "type": "integer"
+                                                        },
+                                                        "resultForBronze": {
+                                                            "type": "number"
+                                                        },
+                                                        "resultForSilver": {
+                                                            "type": "number"
+                                                        },
+                                                        "resultForGold": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "ageCategory": {
                                                 "type": "string"
-                                            },
-                                            "trialId": {
-                                                "type": "integer"
-                                            },
-                                            "resultForBronze": {
-                                                "type": "number"
-                                            },
-                                            "resultForSilver": {
-                                                "type": "number"
-                                            },
-                                            "resultForGold": {
-                                                "type": "number"
                                             }
                                         }
                                     }
