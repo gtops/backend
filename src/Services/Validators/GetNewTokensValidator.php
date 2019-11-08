@@ -42,9 +42,6 @@ class GetNewTokensValidator extends Validator implements ValidatorInterface
 
         $refreshTokenRep = new RefreshToken();
 
-        $logger = new Logger('a');
-        $logger->alert($args['refreshToken']);
-
         if(!$refreshTokenRep->refreshTokenIsSet($args['refreshToken'])){
             $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'token not found');
         }

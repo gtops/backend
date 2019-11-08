@@ -63,7 +63,7 @@ return function (ContainerBuilder $containerBuilder) {
             return $sendInviteAction;
         },
         Token::class => function(ContainerInterface $c){
-            Token::$key = $c->get('privateSettings')['Token'];
+            Token::$key = $c->get('privateSettings')['Token']['key'];
         },
         EmailSendler::class => function(ContainerInterface $c){
             return new EmailSendler($c->get('privateSettings')['Mailer']);

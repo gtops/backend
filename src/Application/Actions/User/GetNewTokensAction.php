@@ -13,9 +13,7 @@
  *   summary="возвращает новую пару аксесс и рефреш токенов",
  *   operationId="возвращает новую пару аксесс и рефреш токенов",
  *   tags={"User"},
- *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
- *      @SWG\Property(property="refreshToken", type="string")
- *    )),
+ *   @SWG\Parameter(in="header", name="refreshToken", type="string"),
  *   @SWG\Response(response=200, description="OK", @SWG\Schema(
  *              @SWG\Property(property="accessToken", type="string"),
  *              @SWG\Property(property="refreshToken", type="string")
@@ -34,8 +32,10 @@ namespace App\Application\Actions\User;
 
 
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Persistance\Repositories\User\RefreshToken;
+use App\Services\Logger;
 use App\Services\Token\Token;
 use App\Services\Validators\ValidatorInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -57,7 +57,14 @@ class GetNewTokensAction extends Action
      */
     protected function action(): Response
     {
-        $params = json_decode($this->request->getBody()->getContents(), true);
+        if(!isset($this->request->getHeader('refreshToken')[0])){
+            $this->response->getBody()->write(json_encode(new ActionError(ActionError::VALIDATION_ERROR, 'not all parameters passed')));
+            return $this->response->withStatus(400);
+        }
+
+        $params = [
+            'refreshToken' => $this->request->getHeader('refreshToken')[0]
+        ];
         $errors = $this->validator->getErrors($params);
 
         if (count($errors) > 0){

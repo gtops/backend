@@ -79,9 +79,6 @@ class LoginAction extends Action
         }
         $role = $userRep->getRoleOfUser($params['email']);
 
-        $logger = new \Monolog\Logger('a');
-        $logger->alert((new \DateTime())->setTimezone(new \DateTimeZone('europe/moscow'))->format('Y-m-d H:i:s'));
-
         $refreshToken = Token::getEncodedToken([
             'email' => $params['email'],
             'role' => $role,

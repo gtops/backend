@@ -26,10 +26,10 @@ use App\Persistance\Repositories\User\RegistrationToken;
  *   summary="Отправка приглашения на регистрацию",
  *   operationId="Отправка приглашения на регистрацию",
  *   tags={"Invite"},
+ *   @SWG\Parameter(in="header", name="Authorization", type="string"),
  *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
  *      @SWG\Property(property="email", type="string"),
- *      @SWG\Property(property="role", type="string"),
- *      @SWG\Property(property="token", type="string")
+ *      @SWG\Property(property="role", type="string")
  *    )),
  *   @SWG\Response(response=200, description="OK"),
  *  @SWG\Response(response=400, description="Error", @SWG\Schema(
@@ -63,7 +63,13 @@ class SendInviteAction extends Action
 
     protected function action(): Response
     {
+        if(!isset($this->request->getHeader('Authorization')[0])){
+            $this->response->getBody()->write(json_encode(new ActionError(ActionError::VALIDATION_ERROR, 'not all parameters passed')));
+            return $this->response->withStatus(400);
+        }
+
         $params = json_decode($this->request->getBody()->getContents(), true);
+        $params['token'] = $this->request->getHeader('Authorization')[0];
         $errors = $this->validator->getErrors($params);
 
         if (count($errors) > 0){
