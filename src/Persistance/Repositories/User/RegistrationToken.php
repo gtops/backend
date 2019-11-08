@@ -15,7 +15,9 @@ class RegistrationToken
     {
         Token::query()->create([
             'token' => $token,
-            'dateTimeToDelete' => (new \DateTime('+1 day'))->format('Y-m-d H:i:s')
+            'dateTimeToDelete' => (new \DateTime('+1 day'))
+                ->setTimezone(new \DateTimeZone('europe/moscow'))
+                ->format('Y-m-d H:i:s')
         ]);
     }
 

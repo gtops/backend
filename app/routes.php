@@ -12,6 +12,7 @@ use App\Application\Actions\User\RegistrationAction;
 use App\Application\Actions\User\LoginAction;
 
 return function (App $app) {
+
     $app->get('/trial', GetListTrialByGenderAndAgeAction::class);
 
     $app->get('/docs', SwaggerWatcher::class);

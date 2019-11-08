@@ -17,6 +17,11 @@ use Monolog\Logger;
 
 class SendInviteValidator extends Validator implements  ValidatorInterface
 {
+    /**
+     * @param $args
+     * @param null $options
+     * @return array
+     */
     public function getErrors($args, $options = null): array
     {
         $errors = [];
@@ -43,13 +48,18 @@ class SendInviteValidator extends Validator implements  ValidatorInterface
             $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'role not found');
         }
 
+        /** @var Token  */
         $tokenHandler = $options['tokenHandler'];
 
         try {
-            $decodedToken = (array)$tokenHandler->getDecodedToken($args['token'], 24*3600);
+            $decodedToken = (array)$tokenHandler->getDecodedToken($args['token']);
         }catch (\Exception $err){
             $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'invalid token');
             return $errors;
+        }
+
+        if($tokenHandler->isOldToken($decodedToken)){
+            $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'invalid token');
         }
 
         if ($decodedToken['role'] != "Глобальный администратор"){

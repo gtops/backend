@@ -72,7 +72,7 @@ class RegistrationAction extends Action
         $regTokenRep = new RegistrationToken();
         $regTokenRep->deleteTokenFromDB($params['token']);
 
-        $jwtData = (array)$this->tokenHandler->getDecodedToken($params['token'], 3600*24);
+        $jwtData = (array)$this->tokenHandler->getDecodedToken($params['token']);
         $userRep = new UserRepository();
         $params['password'] = $this->tokenHandler->getEncodedPassword($params['password']);
 

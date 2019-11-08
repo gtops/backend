@@ -39,10 +39,13 @@ use App\Application\Actions\ActionError;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Persistance\Repositories\User\RefreshToken;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\Logger;
 use App\Services\Token\Token;
 use App\Services\Validators\ValidatorInterface;
+use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class LoginAction extends Action
 {
@@ -78,17 +81,27 @@ class LoginAction extends Action
         }
         $role = $userRep->getRoleOfUser($params['email']);
 
+        $logger = new \Monolog\Logger('a');
+        $logger->alert((new \DateTime())->setTimezone(new \DateTimeZone('europe/moscow'))->format('Y-m-d H:i:s'));
         $refreshToken = $this->tokenHandler->getEncodedToken([
             'email' => $params['email'],
             'role' => $role,
-            'type' => 'refresh token'
-        ], 3600*24);
+            'type' => 'refresh token',
+            'liveTime' => 24 * 7 * 3600,
+            'addedTime' => (new \DateTime)
+                ->setTimezone(new \DateTimeZone('europe/moscow'))
+                ->format('Y-m-d H:i:s')
+        ]);
 
         $accessToken = $this->tokenHandler->getEncodedToken([
             'email' => $params['email'],
             'role' => $role,
-            'type' => 'acess token'
-        ], 120);
+            'type' => 'acess token',
+            'liveTime' => 120,
+            'addedTime' => (new \DateTime())
+                ->setTimezone(new \DateTimeZone('europe/moscow'))
+                ->format('Y-m-d H:i:s')
+        ]);
 
         $rToken = new RefreshToken();
         $rToken->deleteRefreshTokenWithEmail($params['email']);
@@ -98,7 +111,6 @@ class LoginAction extends Action
             'accessToken' => $accessToken,
             'refreshToken' => $refreshToken
         ]));
-
         return $this->response;
     }
 }

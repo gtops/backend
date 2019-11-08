@@ -53,7 +53,9 @@ class RegistrationRouteValidator extends Validator implements ValidatorInterface
 
         try{
             $tokenDataFromDb = $tokRep->getTokenFromDB($args['token']);
-            if (!isset($tokenDataFromDb[0]->token) || $tokenDataFromDb[0]->dateTimeToDelete < (new \DateTime())->format('Y-m-d H:i:s')){
+            if (!isset($tokenDataFromDb[0]->token) || $tokenDataFromDb[0]->dateTimeToDelete < (new \DateTime())
+                    ->setTimezone(new \DateTimeZone('europe/moscow'))
+                    ->format('Y-m-d H:i:s')){
                 $errors[] = new ActionError(ActionError::BAD_REQUEST, 'invalid token');
             }
         }catch (\Exception $err){

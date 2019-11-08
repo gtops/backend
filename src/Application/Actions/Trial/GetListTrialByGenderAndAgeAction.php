@@ -11,6 +11,7 @@ namespace App\Application\Actions\Trial;
 
 use App\Application\Actions\Action;
 use App\Domain\Models\Trial;
+use App\Services\Logger;
 use App\Services\Validators\ValidatorInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Illuminate\Database\Capsule\Manager as Capsule;
