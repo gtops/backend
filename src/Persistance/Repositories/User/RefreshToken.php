@@ -13,7 +13,8 @@ class RefreshToken
 {
     public function refreshTokenIsSet(string $token):bool
     {
-        if (RToken::query()->where('token', '=', $token)->count() == 0){
+        $result = RToken::query()->where('token', '=', $token)->get();
+        if (!isset($result[0]->token)){
             return false;
         }
 

@@ -36,11 +36,8 @@ use Slim\Exception\HttpBadRequestException;
 
 class InviteValidationAction extends Action
 {
-    private $token;
-
-    public function __construct(Token $token)
+    public function __construct()
     {
-        $this->token = $token;
     }
 
     /**

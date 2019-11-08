@@ -10,6 +10,7 @@ use App\Application\Actions\User\SendInviteAction;
 use App\Application\Actions\User\InviteValidationAction;
 use App\Application\Actions\User\RegistrationAction;
 use App\Application\Actions\User\LoginAction;
+use \App\Application\Actions\User\GetNewTokensAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
@@ -17,7 +18,7 @@ return function (App $app) {
     });
 
     $app->get('/trial', GetListTrialByGenderAndAgeAction::class);
-
+    $app->post('/token/refresh', GetNewTokensAction::class);
     $app->get('/docs', SwaggerWatcher::class);
     $app->get('/trial/result', GetSecondResultOfTrialByFirstResultAction::class);
 

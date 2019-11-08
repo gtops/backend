@@ -184,6 +184,63 @@
                 }
             }
         },
+        "/token/refresh": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "\u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043d\u043e\u0432\u0443\u044e \u043f\u0430\u0440\u0443 \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u043e\u0432",
+                "operationId": "\u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043d\u043e\u0432\u0443\u044e \u043f\u0430\u0440\u0443 \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u043e\u0432",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "properties": {
+                                "refreshToken": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "accessToken": {
+                                    "type": "string"
+                                },
+                                "refreshToken": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/invite/isValid": {
             "post": {
                 "tags": [

@@ -46,12 +46,10 @@ use App\Persistance\Repositories\User\UserRepository;
 class RegistrationAction extends Action
 {
     private $validator;
-    private $tokenHandler;
 
-    public function __construct(Token $tokenHandler, ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator)
     {
         $this->validator = $validator;
-        $this->tokenHandler = $tokenHandler;
     }
 
     /**
@@ -62,7 +60,7 @@ class RegistrationAction extends Action
     protected function action(): Response
     {
         $params = json_decode($this->request->getBody()->getContents(), true);
-        $errors = $this->validator->getErrors($params, ['tokenHandler' => $this->tokenHandler]);
+        $errors = $this->validator->getErrors($params);
 
         if (count($errors) > 0){
             $this->response->getBody()->write(json_encode(array('errors' => $errors)));
@@ -72,9 +70,9 @@ class RegistrationAction extends Action
         $regTokenRep = new RegistrationToken();
         $regTokenRep->deleteTokenFromDB($params['token']);
 
-        $jwtData = (array)$this->tokenHandler->getDecodedToken($params['token']);
+        $jwtData = (array)Token::getDecodedToken($params['token']);
         $userRep = new UserRepository();
-        $params['password'] = $this->tokenHandler->getEncodedPassword($params['password']);
+        $params['password'] = Token::getEncodedPassword($params['password']);
 
         if ($userRep->userIsSetOnDBWithEmail($jwtData['email'])){
             $this->response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'this email isset'))]));

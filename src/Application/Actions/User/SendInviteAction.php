@@ -55,17 +55,16 @@ class SendInviteAction extends Action
     private $token;
     private $validator;
 
-    public function __construct(EmailSendler $emailSendler, Token $token, ValidatorInterface $validator)
+    public function __construct(EmailSendler $emailSendler, ValidatorInterface $validator)
     {
         $this->emailSendler = $emailSendler;
-        $this->token = $token;
         $this->validator = $validator;
     }
 
     protected function action(): Response
     {
         $params = json_decode($this->request->getBody()->getContents(), true);
-        $errors = $this->validator->getErrors($params, ['tokenHandler' => $this->token]);
+        $errors = $this->validator->getErrors($params);
 
         if (count($errors) > 0){
             $this->response->getBody()->write(json_encode(array('errors' => $errors)));
@@ -75,11 +74,11 @@ class SendInviteAction extends Action
         $role = $params['role'];
         $email = $params['email'];
 
-        $token = $this->token->getEncodedToken([
+        $token = Token::getEncodedToken([
             'email' => $email,
             'role' => $role,
             'type' => 'access token'
-        ], 3600*24);
+        ]);
 
         $regToken = new RegistrationToken();
         $regToken->addTokenToDB($token);

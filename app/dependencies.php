@@ -24,34 +24,46 @@ use App\Application\Actions\User\RegistrationAction;
 use App\Services\Validators\RegistrationRouteValidator;
 use App\Application\Actions\User\LoginAction;
 use App\Services\Validators\LoginValidator;
+use App\Application\Actions\User\GetNewTokensAction;
+use \App\Services\Validators\GetNewTokensValidator;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        GetNewTokensAction::class=>function(ContainerInterface $c) {
+            $c->get(DataBase::class);
+            $validator = new GetNewTokensValidator();
+            $c->get(Token::class);
+            $tokensAction = new GetNewTokensAction($validator);
+            return $tokensAction;
+        },
         LoginAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             $validator = new LoginValidator();
-            $loginAction = new LoginAction($c->get(Token::class), $validator);
+            $c->get(Token::class);
+            $loginAction = new LoginAction($validator);
             return $loginAction;
         },
         RegistrationAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             $validator = new RegistrationRouteValidator();
-            $regAction = new RegistrationAction($c->get(Token::class), $validator);
+            $c->get(Token::class);
+            $regAction = new RegistrationAction($validator);
             return $regAction;
         },
         InviteValidationAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
-            $inviteValidateAction = new InviteValidationAction($c->get(Token::class));
+            $inviteValidateAction = new InviteValidationAction();
             return $inviteValidateAction;
         },
         SendInviteAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             $validator = new \App\Services\Validators\SendInviteValidator();
-            $sendInviteAction = new SendInviteAction($c->get(EmailSendler::class), $c->get(Token::class), $validator);
+            $c->get(Token::class);
+            $sendInviteAction = new SendInviteAction($c->get(EmailSendler::class), $validator);
             return $sendInviteAction;
         },
         Token::class => function(ContainerInterface $c){
-            return new Token($c->get('privateSettings')['Token']);
+            Token::$key = $c->get('privateSettings')['Token'];
         },
         EmailSendler::class => function(ContainerInterface $c){
             return new EmailSendler($c->get('privateSettings')['Mailer']);

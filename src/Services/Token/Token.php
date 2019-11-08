@@ -12,33 +12,28 @@ use Monolog\Logger;
 
 class Token
 {
-    private $key;
+    public static $key;
 
-    public function __construct(array $option)
+    public static function getEncodedToken(array $tokenData):string
     {
-        $this->key = $option['key'];
+        return JWT::encode($tokenData, Token::$key);
     }
 
-    public function getEncodedToken(array $tokenData):string
+    public static function getDecodedToken(string $token)
     {
-        return JWT::encode($tokenData, $this->key);
+        return JWT::decode($token, Token::$key, array('HS256'));
     }
 
-    public function getDecodedToken(string $token)
+    public static function getEncodedPassword(string $password)
     {
-        return JWT::decode($token, $this->key, array('HS256'));
+        return crypt($password, Token::$key);
     }
 
-    public function getEncodedPassword(string $password)
-    {
-        return crypt($password, $this->key);
-    }
-
-    public function isOldToken($tokenInArray):bool{
+    public static function isOldToken($tokenInArray):bool{
         $leeway = $tokenInArray['liveTime'];
 
         $tokenDate = new \DateTime($tokenInArray['addedTime']);
-        $tokenDate->add(new \DateInterval('PT'.$leeway.'120S'));
+        $tokenDate->add(new \DateInterval('PT'.$leeway.'S'));
 
         $newDate = (new \DateTime())->setTimezone(new \DateTimeZone('europe/moscow'));
 

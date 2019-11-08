@@ -48,17 +48,14 @@ class SendInviteValidator extends Validator implements  ValidatorInterface
             $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'role not found');
         }
 
-        /** @var Token  */
-        $tokenHandler = $options['tokenHandler'];
-
         try {
-            $decodedToken = (array)$tokenHandler->getDecodedToken($args['token']);
+            $decodedToken = (array)Token::getDecodedToken($args['token']);
         }catch (\Exception $err){
             $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'invalid token');
             return $errors;
         }
 
-        if($tokenHandler->isOldToken($decodedToken)){
+        if(Token::isOldToken($decodedToken)){
             $errors[] = new ActionError(ActionError::VALIDATION_ERROR, 'invalid token');
         }
 

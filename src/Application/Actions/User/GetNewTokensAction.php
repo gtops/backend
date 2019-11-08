@@ -2,20 +2,19 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 05.11.2019
- * Time: 1:01
+ * Date: 08.11.2019
+ * Time: 3:41
  */
 
 /**
  *
  * * @SWG\Post(
- *   path="/login",
- *   summary="авторизует пользователей, возвращая аксесс и рефреш токены",
- *   operationId="авторизует пользователей, возвращая аксесс и рефреш токены",
+ *   path="/token/refresh",
+ *   summary="возвращает новую пару аксесс и рефреш токенов",
+ *   operationId="возвращает новую пару аксесс и рефреш токенов",
  *   tags={"User"},
  *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
- *      @SWG\Property(property="email", type="string"),
- *      @SWG\Property(property="password", type="string", description="length min 6 symbols")
+ *      @SWG\Property(property="refreshToken", type="string")
  *    )),
  *   @SWG\Response(response=200, description="OK", @SWG\Schema(
  *              @SWG\Property(property="accessToken", type="string"),
@@ -35,19 +34,14 @@ namespace App\Application\Actions\User;
 
 
 use App\Application\Actions\Action;
-use App\Application\Actions\ActionError;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Persistance\Repositories\User\RefreshToken;
-use App\Persistance\Repositories\User\UserRepository;
-use App\Services\Logger;
 use App\Services\Token\Token;
 use App\Services\Validators\ValidatorInterface;
-use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
-use Symfony\Component\Validator\Constraints\DateTime;
 
-class LoginAction extends Action
+class GetNewTokensAction extends Action
 {
     private $validator;
 
@@ -71,20 +65,11 @@ class LoginAction extends Action
             return $this->response->withStatus(400);
         }
 
-        $userRep = new UserRepository();
-
-        if (!$userRep->userIsSetOnDB($params['email'], Token::getEncodedPassword($params['password']))){
-            $this->response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::VERIFICATION_ERROR, 'wrong login or password'))]));
-            return $this->response->withStatus(400);
-        }
-        $role = $userRep->getRoleOfUser($params['email']);
-
-        $logger = new \Monolog\Logger('a');
-        $logger->alert((new \DateTime())->setTimezone(new \DateTimeZone('europe/moscow'))->format('Y-m-d H:i:s'));
+        $decodedToken = (array)Token::getDecodedToken($params['refreshToken']);
 
         $refreshToken = Token::getEncodedToken([
-            'email' => $params['email'],
-            'role' => $role,
+            'email' => $decodedToken['email'],
+            'role' => $decodedToken['role'],
             'type' => 'refresh token',
             'liveTime' => 24 * 7 * 3600,
             'addedTime' => (new \DateTime)
@@ -93,8 +78,8 @@ class LoginAction extends Action
         ]);
 
         $accessToken = Token::getEncodedToken([
-            'email' => $params['email'],
-            'role' => $role,
+            'email' => $decodedToken['email'],
+            'role' => $decodedToken['role'],
             'type' => 'acess token',
             'liveTime' => 120,
             'addedTime' => (new \DateTime())
@@ -103,8 +88,7 @@ class LoginAction extends Action
         ]);
 
         $rToken = new RefreshToken();
-        $rToken->deleteRefreshTokenWithEmail($params['email']);
-        $rToken->addRefreshToken($refreshToken, $params['email']);
+        $rToken->updateRefreshTokenWithEmail($decodedToken['email'], $refreshToken);
 
         $this->response->getBody()->write(json_encode([
             'accessToken' => $accessToken,
