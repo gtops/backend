@@ -12,6 +12,9 @@ use App\Application\Actions\User\RegistrationAction;
 use App\Application\Actions\User\LoginAction;
 
 return function (App $app) {
+    $app->options('/{routes:.+}', function ($request, $response, $args) {
+        return $response;
+    });
 
     $app->get('/trial', GetListTrialByGenderAndAgeAction::class);
 
