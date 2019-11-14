@@ -93,7 +93,7 @@ class LoginAction extends Action
             'email' => $params['email'],
             'role' => $role,
             'type' => 'acess token',
-            'liveTime' => 120,
+            'liveTime' => 600,
             'addedTime' => (new \DateTime())
                 ->setTimezone(new \DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')

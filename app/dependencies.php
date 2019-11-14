@@ -51,6 +51,7 @@ return function (ContainerBuilder $containerBuilder) {
             return $regAction;
         },
         InviteValidationAction::class => function(ContainerInterface $c){
+            $c->get(Token::class);
             $c->get(DataBase::class);
             $inviteValidateAction = new InviteValidationAction();
             return $inviteValidateAction;

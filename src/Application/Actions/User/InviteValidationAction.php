@@ -16,7 +16,9 @@
  *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
  *      @SWG\Property(property="token", type="string")
  *    )),
- *   @SWG\Response(response=200, description="OK"),
+ *   @SWG\Response(response=200, description="OK", @SWG\Schema(
+ *              @SWG\Property(property="email", type="string")
+ *          )),
  *  @SWG\Response(response=404, description="Not Found")
  *     ))
  * )
@@ -58,7 +60,8 @@ class InviteValidationAction extends Action
         }catch (\Exception $err){
             return $this->response->withStatus(404);
         }
-
+        $tokenData = $decodedToken = (array)Token::getDecodedToken($params['token']);
+        $this->response->getBody()->write(json_encode(['email' => $tokenData['email']]));
         return $this->response->withStatus(200);
     }
 }

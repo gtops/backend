@@ -93,6 +93,7 @@ class SendInviteAction extends Action
             $this->emailSendler->sendInvite($params['email'], $token);
         }catch (\Exception $err){
             $this->response->getBody()->write(json_encode(new ActionError(ActionError::BAD_REQUEST, 'invalid email')));
+            return $this->response->withStatus(400);
         }
 
         return $this->response;
