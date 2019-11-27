@@ -29,7 +29,6 @@ $dependencies($containerBuilder);
 
 // Build PHP-DI Container instance
 $container = $containerBuilder->build();
-
 // Instantiate the app
 AppFactory::setContainer($container);
 $app = AppFactory::create();

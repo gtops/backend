@@ -26,22 +26,26 @@ use App\Application\Actions\User\LoginAction;
 use App\Services\Validators\LoginValidator;
 use App\Application\Actions\User\GetNewTokensAction;
 use \App\Services\Validators\GetNewTokensValidator;
+use \App\Application\Actions\User\Auth;
+use \App\Persistance\Repositories\User\UserRepository;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
-        GetNewTokensAction::class=>function(ContainerInterface $c) {
+        Auth::class => function(ContainerInterface $c){
+            $authService = new \App\Services\Auth\Auth($c->get(UserRepository::class));
+            $auth = new Auth($authService);
+            return $auth;
+        },
+        UserRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new UserRepository();
+        },
+        GetNewTokensAction::class => function(ContainerInterface $c) {
             $c->get(DataBase::class);
             $validator = new GetNewTokensValidator();
             $c->get(Token::class);
             $tokensAction = new GetNewTokensAction($validator);
             return $tokensAction;
-        },
-        LoginAction::class => function(ContainerInterface $c){
-            $c->get(DataBase::class);
-            $validator = new LoginValidator();
-            $c->get(Token::class);
-            $loginAction = new LoginAction($validator);
-            return $loginAction;
         },
         RegistrationAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

@@ -2,116 +2,43 @@
 declare(strict_types=1);
 
 namespace App\Application\Actions;
-
-use App\Domain\DomainException\DomainRecordNotFoundException;
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use Symfony\Component\Validator\Constraints as Assert;
 use Psr\Log\LoggerInterface;
-use Slim\Exception\HttpBadRequestException;
-use Slim\Exception\HttpNotFoundException;
+use Symfony\Component\Validator\Validation;
+use Psr\Http\Message\ResponseInterface as Response;
 
 abstract class Action
 {
     /**
      * @var LoggerInterface
      */
-    protected $logger;
 
-    /**
-     * @var Request
-     */
-    protected $request;
+    protected $validator;
 
-    /**
-     * @var Response
-     */
-    protected $response;
-
-    /**
-     * @var array
-     */
-    protected $args;
-
-    /**
-     * @param LoggerInterface $logger
-     */
-
-    /**
-     * @param Request  $request
-     * @param Response $response
-     * @param array    $args
-     * @return Response
-     * @throws HttpNotFoundException
-     * @throws HttpBadRequestException
-     */
-
-    public function __invoke(Request $request, Response $response, $args): Response
+    protected function getErrors(Assert\Collection $collection, $params)
     {
-        $this->request = $request;
-        $this->response = $response;
-        $this->args = $args;
+        $errorsValidator = $this->validator->validate($params, $collection);
 
-        try {
-            return $this->action();
-        } catch (DomainRecordNotFoundException $e) {
-            throw new HttpNotFoundException($this->request, $e->getMessage());
-        }
-    }
+        $errors = [];
 
-    /**
-     * @return Response
-     * @throws DomainRecordNotFoundException
-     * @throws HttpBadRequestException
-     */
-    abstract protected function action(): Response;
-
-    /**
-     * @return array|object
-     * @throws HttpBadRequestException
-     */
-    protected function getFormData()
-    {
-        $input = json_decode(file_get_contents('php://input'));
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new HttpBadRequestException($this->request, 'Malformed JSON input.');
+        foreach ($errorsValidator as $item) {
+            $errors[] = new ActionError(ActionError::VALIDATION_ERROR, $item->getMessage());
         }
 
-        return $input;
+        return $errors;
     }
 
-    /**
-     * @param  string $name
-     * @return mixed
-     * @throws HttpBadRequestException
-     */
-    protected function resolveArg(string $name)
+    protected function respond(int $status, array $data = null, Response $response):Response
     {
-        if (!isset($this->args[$name])) {
-            throw new HttpBadRequestException($this->request, "Could not resolve argument `{$name}`.");
+        if ($data){
+            $response->getBody()->write(json_encode($data));
         }
 
-        return $this->args[$name];
+        return $response->withStatus($status);
     }
 
-    /**
-     * @param  array|object|null $data
-     * @return Response
-     */
-    protected function respondWithData($data = null): Response
+    protected function __construct()
     {
-        $payload = new ActionPayload(200, $data);
-        return $this->respond($payload);
-    }
-
-    /**
-     * @param ActionPayload $payload
-     * @return Response
-     */
-    protected function respond(ActionPayload $payload): Response
-    {
-        $json = json_encode($payload, JSON_PRETTY_PRINT);
-        $this->response->getBody()->write($json);
-        return $this->response->withHeader('Content-Type', 'application/json');
+        $this->validator = Validation::createValidator();
     }
 }

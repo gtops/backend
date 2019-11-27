@@ -6,27 +6,6 @@
  * Time: 3:41
  */
 
-/**
- *
- * * @SWG\Post(
- *   path="/token/refresh",
- *   summary="возвращает новую пару аксесс и рефреш токенов",
- *   operationId="возвращает новую пару аксесс и рефреш токенов",
- *   tags={"User"},
- *   @SWG\Parameter(in="header", name="refreshToken", type="string"),
- *   @SWG\Response(response=200, description="OK", @SWG\Schema(
- *              @SWG\Property(property="accessToken", type="string"),
- *              @SWG\Property(property="refreshToken", type="string")
- *          )),
- *   @SWG\Response(response=400, description="Error", @SWG\Schema(
- *          @SWG\Property(property="errors", type="array", @SWG\Items(
- *              @SWG\Property(property="type", type="string"),
- *              @SWG\Property(property="description", type="string")
- *          ))
- *     ))
- * )
- *
- */
 
 namespace App\Application\Actions\User;
 

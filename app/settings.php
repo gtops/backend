@@ -16,6 +16,12 @@ return function (ContainerBuilder $containerBuilder) {
             ],
             'pathToProject' => __DIR__.'/../'
         ],
+        'framework' => [
+            'validation' => [
+                'enabled' => true,
+                'enable_annotations' => true,
+            ],
+        ],
         'privateSettings' => json_decode(file_get_contents(__DIR__.'/../config.json'), true)
     ]);
 };

@@ -28,7 +28,7 @@ class EmailSendler
     public function sendInvite($email, $token)
     {
         $message = (new \Swift_Message('Invite to registration on GTO service'))
-            ->setFrom(['gto_pgtu@mail.ru' => 'GTO'])
+            ->setFrom(['gto_service@gtoservice.ru' => 'GTO'])
             ->setTo([$email => ''])
             ->setBody('чтобы зарегистрироваться, пройдите по ссылке: <a href="http://gtoservice.ru/user/invite/'.$token.'">ссылка</a>', 'text/html');
 

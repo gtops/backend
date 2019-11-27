@@ -11,6 +11,7 @@ use App\Application\Actions\User\InviteValidationAction;
 use App\Application\Actions\User\RegistrationAction;
 use App\Application\Actions\User\LoginAction;
 use \App\Application\Actions\User\GetNewTokensAction;
+use \App\Application\Actions\User\Auth;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
@@ -27,5 +28,14 @@ return function (App $app) {
     $app->post('/invite/isValid', InviteValidationAction::class);
     $app->post('/registration', RegistrationAction::class);
     $app->post('/login', LoginAction::class);
+
+    $app->post('/api/v1/auth/registration', Auth::class.':registration');
+    $app->post('/api/v1/auth/login', Auth::class.':login');
+    $app->post('/api/v1/auth/refresh', Auth::class.':refresh');
+//    $app->get('api/v1/trial/{age}/{gender}', Trial::class.':getList');
+//    $app->get('api/v1/trial/{id}/{firstResult}', Trial::class.':getSecondResult');
+//    $app->get('api/v1/role', Role::class.':getList');
+//инвайт
+//валидация инвайта
 
 };

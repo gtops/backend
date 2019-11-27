@@ -6,29 +6,6 @@
  * Time: 19:49
  */
 
-/**
- *
- * * @SWG\Post(
- *   path="/registration",
- *   summary="регистрирует пользователя по приглашению",
- *   operationId="регистрирует пользователя по приглашению",
- *   tags={"User"},
- *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
- *      @SWG\Property(property="token", type="string"),
- *      @SWG\Property(property="name", type="string"),
- *      @SWG\Property(property="password", type="string", description="length min 6 symbols")
- *    )),
- *   @SWG\Response(response=200, description="OK"),
- *   @SWG\Response(response=400, description="Error", @SWG\Schema(
- *          @SWG\Property(property="errors", type="array", @SWG\Items(
- *              @SWG\Property(property="type", type="string"),
- *              @SWG\Property(property="description", type="string")
- *          ))
- *     ))
- * )
- *
- */
-
 namespace App\Application\Actions\User;
 
 
