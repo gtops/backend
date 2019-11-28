@@ -9,7 +9,7 @@
 namespace App\Persistance\Repositories\User;
 use App\Persistance\ModelsEloquant\RegistrationToken\RegistrationToken as Token;
 
-class RegistrationToken
+class RegistrationTokenRepository
 {
     public function addTokenToDB($token):void
     {

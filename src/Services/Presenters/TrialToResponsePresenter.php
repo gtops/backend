@@ -13,31 +13,14 @@ use App\Services\Presenters\PresenterInterface;
 
 class TrialToResponsePresenter implements PresenterInterface
 {
-    public $standard;
-
-    public function __construct(Trial $standard)
-    {
-        $this->standard = $standard;
-    }
-
-    public function __get($name):Trial
-    {
-        return $this->standard;
-    }
-
-    public function __set($name, Trial $value) : void
-    {
-        $this->standard = $value;
-    }
-
-    public function getView():array
+    public static function getView(Trial $standard):array
     {
         return [
-            'trialName' => $this->standard->getTrialName(),
-            'trialId' => $this->standard->getTrialId(),
-            'resultForBronze' => $this->standard->getResultForBronze(),
-            'resultForSilver' => $this->standard->getResultForSilver(),
-            'resultForGold' => $this->standard->getResultForGold()
+            'trialName' => $standard->getTrialName(),
+            'trialId' => $standard->getTrialId(),
+            'resultForBronze' => $standard->getResultForBronze(),
+            'resultForSilver' => $standard->getResultForSilver(),
+            'resultForGold' => $standard->getResultForGold()
         ];
     }
 }

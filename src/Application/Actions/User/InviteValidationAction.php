@@ -30,7 +30,7 @@ namespace App\Application\Actions\User;
 
 use App\Application\Actions\Action;
 use App\Domain\DomainException\DomainRecordNotFoundException;
-use App\Persistance\Repositories\User\RegistrationToken;
+use App\Persistance\Repositories\User\RegistrationTokenRepository;
 use App\Services\Token\Token;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -49,7 +49,7 @@ class InviteValidationAction extends Action
      */
     protected function action(): Response
     {
-        $tokRep = new RegistrationToken();
+        $tokRep = new RegistrationTokenRepository();
 
         try{
             $params = json_decode($this->request->getBody()->getContents(), true);

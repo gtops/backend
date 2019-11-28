@@ -11,29 +11,29 @@ use App\Application\Actions\User\InviteValidationAction;
 use App\Application\Actions\User\RegistrationAction;
 use App\Application\Actions\User\LoginAction;
 use \App\Application\Actions\User\GetNewTokensAction;
-use \App\Application\Actions\User\Auth;
+use \App\Application\Actions\User\AuthAction;
+use App\Application\Actions\Trial\TrialAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
         return $response;
     });
 
-    $app->get('/trial', GetListTrialByGenderAndAgeAction::class);
-    $app->post('/token/refresh', GetNewTokensAction::class);
-    $app->get('/docs', SwaggerWatcher::class);
-    $app->get('/trial/result', GetSecondResultOfTrialByFirstResultAction::class);
-
     $app->get('/role', GetRoleAction::class);
     $app->post('/organization/invite', SendInviteAction::class);
     $app->post('/invite/isValid', InviteValidationAction::class);
-    $app->post('/registration', RegistrationAction::class);
-    $app->post('/login', LoginAction::class);
 
-    $app->post('/api/v1/auth/registration', Auth::class.':registration');
-    $app->post('/api/v1/auth/login', Auth::class.':login');
-    $app->post('/api/v1/auth/refresh', Auth::class.':refresh');
-//    $app->get('api/v1/trial/{age}/{gender}', Trial::class.':getList');
-//    $app->get('api/v1/trial/{id}/{firstResult}', Trial::class.':getSecondResult');
+    $app->group('/api/v1/auth', function (){
+        $this->post('/registration', AuthAction::class.':registration');
+        $this->post('/login', AuthAction::class.':login');
+        $this->post('/refresh', AuthAction::class.':refresh');
+    });
+
+    $app->get('/api/v1/trial/{age:[0-9]+}/{gender:[0-9]+}', TrialAction::class.':getTrialsByGenderAndAge');
+    $app->get('/api/v1/trial/{id:[0-9]+}/firstResult/{firstResult:[0-9]+}', TrialAction::class.':getSecondResult');
+    $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
+
+
 //    $app->get('api/v1/role', Role::class.':getList');
 //инвайт
 //валидация инвайта

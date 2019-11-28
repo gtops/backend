@@ -17,7 +17,7 @@ use App\Services\Token\Token;
 use App\Services\Validators\ValidatorInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
-use App\Persistance\Repositories\User\RegistrationToken;
+use App\Persistance\Repositories\User\RegistrationTokenRepository;
 
 /**
  *
@@ -83,10 +83,14 @@ class SendInviteAction extends Action
         $token = Token::getEncodedToken([
             'email' => $email,
             'role' => $role,
-            'type' => 'access token'
+            'type' => 'access token',
+            'liveTime' => 24 * 7 * 3600,
+            'addedTime' => (new \DateTime)
+                ->setTimezone(new \DateTimeZone('europe/moscow'))
+                ->format('Y-m-d H:i:s')
         ]);
 
-        $regToken = new RegistrationToken();
+        $regToken = new RegistrationTokenRepository();
         $regToken->addTokenToDB($token);
 
         try {

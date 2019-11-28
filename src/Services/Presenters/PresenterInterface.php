@@ -9,7 +9,9 @@
 namespace App\Services\Presenters;
 
 
+use App\Domain\Models\Trial;
+
 Interface PresenterInterface
 {
-    public function getView():array ;
+    public static function getView(Trial $trial):array ;
 }

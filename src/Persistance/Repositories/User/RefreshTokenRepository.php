@@ -9,7 +9,7 @@
 namespace App\Persistance\Repositories\User;
 use App\Persistance\ModelsEloquant\LoginToken\RefreshToken as RToken;
 
-class RefreshToken
+class RefreshTokenRepository
 {
     public function refreshTokenIsSet(string $token):bool
     {

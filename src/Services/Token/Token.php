@@ -29,7 +29,8 @@ class Token
         return crypt($password, Token::$key);
     }
 
-    public static function isOldToken($tokenInArray):bool{
+    public static function isOldToken($tokenInArray):bool
+    {
         $leeway = $tokenInArray['liveTime'];
 
         $tokenDate = new \DateTime($tokenInArray['addedTime']);
@@ -40,6 +41,7 @@ class Token
         if ($newDate->format('Y-m-d H:i:s') > $tokenDate->format('Y-m-d H:i:s')){
             return true;
         }
+
 
         return false;
     }

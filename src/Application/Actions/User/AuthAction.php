@@ -15,7 +15,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use App\Application\Actions\Action;
 use \App\Services\Auth\Auth as AuthService;
 
-class Auth extends Action
+class AuthAction extends Action
 {
     private $auth;
 
@@ -28,12 +28,12 @@ class Auth extends Action
     /**
      *
      * * @SWG\Post(
-     *   path="/registration",
+     *   path="/api/v1/auth/registration",
      *   summary="регистрирует пользователя по приглашению",
      *   operationId="регистрирует пользователя по приглашению",
      *   tags={"User"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string"),
      *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
-     *      @SWG\Property(property="token", type="string"),
      *      @SWG\Property(property="name", type="string"),
      *      @SWG\Property(property="password", type="string", description="length min 6 symbols")
      *    )),
@@ -50,13 +50,37 @@ class Auth extends Action
 
     public function registration(Request $request, Response $response, $args): Response
     {
-        return $response;
+        $constraints = new Assert\Collection([
+            'password' => [
+                new Assert\Length([
+                    'min' => 6,
+                    'minMessage' => 'длина пароля должна состовлять минимум 6 символов'
+                ]),
+                new Assert\NotBlank(['message' => 'поле пароля не может быть пустым'])
+            ],
+            'name' => [
+                new Assert\NotBlank(['message' => 'поле имени не может быть пустым'])
+            ],
+            'token' => [
+                new Assert\NotBlank(['message' => 'не все параметры переданы'])
+            ],
+        ]);
+
+        $params = json_decode($request->getBody()->getContents(), true);
+        $params['token'] = $request->getHeader('Authorization')[0] ?? null;
+        $errors = $this->getErrors($constraints, $params);
+
+        if (count($errors) > 0){
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        return $this->auth->registration($params, $response);
     }
 
     /**
      *
      * * @SWG\Post(
-     *   path="/login",
+     *   path="/api/v1/auth/login",
      *   summary="авторизует пользователей, возвращая аксесс и рефреш токены",
      *   operationId="авторизует пользователей, возвращая аксесс и рефреш токены",
      *   tags={"User"},
@@ -82,8 +106,19 @@ class Auth extends Action
     public function login(Request $request, Response $response, $args): Response
     {
         $constraints = new Assert\Collection([
-            'password' => [new Assert\Length(['min' => 2]), new Assert\NotBlank],
-            'email' => [new Assert\Email(), new Assert\notBlank],
+            'password' => [
+                new Assert\Length([
+                    'min' => 6,
+                    'minMessage' => 'длина пароля должна состовлять минимум 6 символов'
+                ]),
+                new Assert\NotBlank(['message' => 'поле пароля не может быть пустым'])
+            ],
+            'email' => [
+                new Assert\Email([
+                'message' => 'введенный вами email некорректный'
+                ]),
+                new Assert\NotBlank(['message' => 'поле пароля не может быть пустым'])
+            ],
         ]);
 
         $params = json_decode($request->getBody()->getContents(), true);
@@ -99,11 +134,11 @@ class Auth extends Action
     /**
      *
      * * @SWG\Post(
-     *   path="/token/refresh",
+     *   path="/api/v1/auth/refresh",
      *   summary="возвращает новую пару аксесс и рефреш токенов",
      *   operationId="возвращает новую пару аксесс и рефреш токенов",
      *   tags={"User"},
-     *   @SWG\Parameter(in="header", name="refreshToken", type="string"),
+     *   @SWG\Parameter(in="header", name="Authorization", type="string"),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(
      *              @SWG\Property(property="accessToken", type="string"),
      *              @SWG\Property(property="refreshToken", type="string")
@@ -120,6 +155,18 @@ class Auth extends Action
 
     public function refresh(Request $request, Response $response, $args): Response
     {
-        return $response;
+        $params['refreshToken'] = $request->getHeader('Authorization')[0] ?? null;
+        $constraints = new Assert\Collection([
+            'refreshToken' => [
+                new Assert\NotBlank(['message' => 'не все параметры переданы'])
+            ],
+        ]);
+        $errors = $this->getErrors($constraints, $params);
+
+        if (count($errors) > 0){
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        return $this->auth->refresh($params, $response);
     }
 }

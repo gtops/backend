@@ -12,8 +12,9 @@ namespace App\Application\Actions\Swagger;
 use App\Application\Actions\Action;
 use App\Domain\DomainException\DomainRecordNotFoundException;
 use App\Swagger\SwaggerWatcher;
-use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Exception\HttpBadRequestException;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 
 class SwaggerAction extends Action
 {
@@ -21,6 +22,7 @@ class SwaggerAction extends Action
 
     public function __construct($pathToProject)
     {
+        parent::__construct();
         $this->pathToProject = $pathToProject;
     }
 
@@ -29,10 +31,10 @@ class SwaggerAction extends Action
      * @throws DomainRecordNotFoundException
      * @throws HttpBadRequestException
      */
-    protected function action(): Response
+    public function getNewDocs(Request $request, Response $response, $args): Response
     {
         $swaggerWatcher = new SwaggerWatcher($this->pathToProject);
-        $this->response->getBody()->write($swaggerWatcher->getDocumentation());
-        return $this->response;
+        $response->getBody()->write($swaggerWatcher->getDocumentation());
+        return $response;
     }
 }

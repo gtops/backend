@@ -22,18 +22,16 @@ class AuthorizeMiddleware implements Middleware
         $config = json_decode(file_get_contents(__DIR__.'/../../../config.json'), true);
         Token::$key = $config['Token']['key'];
         try{
-            $tokenInArray = Token::getDecodedToken($token);
+            $tokenInArray = (array)Token::getDecodedToken($token);
             if (Token::isOldToken($tokenInArray)){
                 $request = $request->withHeader('error', $tokenInArray['old token']);
             }
-
             $request = $request->withHeader('userEmail', $tokenInArray['email']);
             $request = $request->withHeader('userRole', $tokenInArray['role']);
 
         }catch (\Exception $err){
             $request = $request->withHeader('error', 'invalid token');
         }
-
 
         return $handler->handle($request);
     }

@@ -184,7 +184,124 @@
                 }
             }
         },
-        "/token/refresh": {
+        "/api/v1/auth/registration": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043f\u043e \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044e",
+                "operationId": "\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043f\u043e \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044e",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "type": "string"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "description": "length min 6 symbols",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "\u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u044f \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u044b",
+                "operationId": "\u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u044f \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u044b",
+                "parameters": [
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "description": "length min 6 symbols",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "accessToken": {
+                                    "type": "string"
+                                },
+                                "refreshToken": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/refresh": {
             "post": {
                 "tags": [
                     "User"
@@ -193,7 +310,7 @@
                 "operationId": "\u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u0435\u0442 \u043d\u043e\u0432\u0443\u044e \u043f\u0430\u0440\u0443 \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u043e\u0432",
                 "parameters": [
                     {
-                        "name": "refreshToken",
+                        "name": "Authorization",
                         "in": "header",
                         "type": "string"
                     }
@@ -268,121 +385,6 @@
                     },
                     "404": {
                         "description": "Not Found"
-                    }
-                }
-            }
-        },
-        "/login": {
-            "post": {
-                "tags": [
-                    "User"
-                ],
-                "summary": "\u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u044f \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u044b",
-                "operationId": "\u0430\u0432\u0442\u043e\u0440\u0438\u0437\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u0435\u0439, \u0432\u043e\u0437\u0432\u0440\u0430\u0449\u0430\u044f \u0430\u043a\u0441\u0435\u0441\u0441 \u0438 \u0440\u0435\u0444\u0440\u0435\u0448 \u0442\u043e\u043a\u0435\u043d\u044b",
-                "parameters": [
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "properties": {
-                                "email": {
-                                    "type": "string"
-                                },
-                                "password": {
-                                    "description": "length min 6 symbols",
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "properties": {
-                                "accessToken": {
-                                    "type": "string"
-                                },
-                                "refreshToken": {
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Error",
-                        "schema": {
-                            "properties": {
-                                "errors": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "type": {
-                                                "type": "string"
-                                            },
-                                            "description": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/registration": {
-            "post": {
-                "tags": [
-                    "User"
-                ],
-                "summary": "\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043f\u043e \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044e",
-                "operationId": "\u0440\u0435\u0433\u0438\u0441\u0442\u0440\u0438\u0440\u0443\u0435\u0442 \u043f\u043e\u043b\u044c\u0437\u043e\u0432\u0430\u0442\u0435\u043b\u044f \u043f\u043e \u043f\u0440\u0438\u0433\u043b\u0430\u0448\u0435\u043d\u0438\u044e",
-                "parameters": [
-                    {
-                        "name": "body",
-                        "in": "body",
-                        "schema": {
-                            "properties": {
-                                "token": {
-                                    "type": "string"
-                                },
-                                "name": {
-                                    "type": "string"
-                                },
-                                "password": {
-                                    "description": "length min 6 symbols",
-                                    "type": "string"
-                                }
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Error",
-                        "schema": {
-                            "properties": {
-                                "errors": {
-                                    "type": "array",
-                                    "items": {
-                                        "properties": {
-                                            "type": {
-                                                "type": "string"
-                                            },
-                                            "description": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }

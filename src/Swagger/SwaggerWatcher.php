@@ -40,6 +40,5 @@ class SwaggerWatcher
         file_put_contents($this->pathToProject . 'public/api.json', $swagger);
         $html = file_get_contents(__DIR__ . '/index.html');
         return $html;
-
     }
 }

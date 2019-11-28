@@ -10,49 +10,35 @@ use Psr\Log\LoggerInterface;
 use App\Swagger\SwaggerWatcher;
 use App\Application\Actions\Swagger;
 use App\Persistance\ModelsEloquant\DataBase;
-use App\Application\Actions\Trial\GetListTrialByGenderAndAgeAction;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use App\Application\Actions\Trial\GetSecondResultOfTrialByFirstResultAction;
-use App\Services\Validators\GetTrialsRouteValidator;
-use \App\Services\Validators\GetSecondResultRouteValidator;
 use App\Application\Actions\Role\GetRoleAction;
 use App\Services\EmailSendler\EmailSendler;
 use App\Application\Actions\User\SendInviteAction;
 use App\Services\Token\Token;
 use App\Application\Actions\User\InviteValidationAction;
-use App\Application\Actions\User\RegistrationAction;
-use App\Services\Validators\RegistrationRouteValidator;
-use App\Application\Actions\User\LoginAction;
-use App\Services\Validators\LoginValidator;
-use App\Application\Actions\User\GetNewTokensAction;
-use \App\Services\Validators\GetNewTokensValidator;
-use \App\Application\Actions\User\Auth;
+use \App\Application\Actions\User\AuthAction;
 use \App\Persistance\Repositories\User\UserRepository;
+use App\Persistance\Repositories\User\RefreshTokenRepository;
+use App\Persistance\Repositories\User\RegistrationTokenRepository;
+use App\Application\Actions\Trial\TrialAction;
+use App\Services\Trial\Trial;
+use App\Persistance\Repositories\TrialRepository\TrialRepository;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
-        Auth::class => function(ContainerInterface $c){
-            $authService = new \App\Services\Auth\Auth($c->get(UserRepository::class));
-            $auth = new Auth($authService);
+        AuthAction::class => function(ContainerInterface $c){
+            $c->get(Token::class);
+            $authService = new \App\Services\Auth\Auth($c->get(UserRepository::class), new RefreshTokenRepository(), new RegistrationTokenRepository());
+            $auth = new AuthAction($authService);
             return $auth;
+        },
+        TrialAction::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new TrialAction(new Trial(new TrialRepository()));
         },
         UserRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new UserRepository();
-        },
-        GetNewTokensAction::class => function(ContainerInterface $c) {
-            $c->get(DataBase::class);
-            $validator = new GetNewTokensValidator();
-            $c->get(Token::class);
-            $tokensAction = new GetNewTokensAction($validator);
-            return $tokensAction;
-        },
-        RegistrationAction::class => function(ContainerInterface $c){
-            $c->get(DataBase::class);
-            $validator = new RegistrationRouteValidator();
-            $c->get(Token::class);
-            $regAction = new RegistrationAction($validator);
-            return $regAction;
         },
         InviteValidationAction::class => function(ContainerInterface $c){
             $c->get(Token::class);
@@ -78,12 +64,6 @@ return function (ContainerBuilder $containerBuilder) {
             $roleAction = new \App\Application\Actions\Role\GetRoleAction();
             return $roleAction;
         },
-        GetTrialsRouteValidator::class => function(){
-            return new GetTrialsRouteValidator();
-        },
-        GetSecondResultRouteValidator::class => function(){
-            return new \App\Services\Validators\GetSecondResultRouteValidator();
-        },
         LoggerInterface::class => function (ContainerInterface $c) {
             $settings = $c->get('settings');
 
@@ -102,19 +82,10 @@ return function (ContainerBuilder $containerBuilder) {
             $db = new DataBase($c->get('privateSettings')['DB']);
             return $db->getCapsule();
         },
-        GetListTrialByGenderAndAgeAction::class => function(ContainerInterface $c)
-        {
-            $trialAction = new GetListTrialByGenderAndAgeAction($c->get(DataBase::class), $c->get(GetTrialsRouteValidator::class));
-            return $trialAction;
-        },
-        GetSecondResultOfTrialByFirstResultAction::class => function(ContainerInterface $c){
-            $capsule = $c->get(DataBase::class);
-
-            $trialAction = new GetSecondResultOfTrialByFirstResultAction($c->get(GetSecondResultRouteValidator::class));
-            return $trialAction;
-        },
         SwaggerWatcher::class => function(ContainerInterface $c){
+            $logger = new Logger('a');
             $swaggerAction = new Swagger\SwaggerAction($c->get('settings')['pathToProject']);
+            $logger->alert('refre');
             return $swaggerAction;
         }
     ]);

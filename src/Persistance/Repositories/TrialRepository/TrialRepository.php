@@ -27,7 +27,7 @@ class TrialRepository
         return $result[0]->name_age_category;
     }
 
-    public function getList(int $gender, int $age, Capsule $capsule):array
+    public function getList(int $gender, int $age):array
     {
         $ageCategories = AgeCategory::query()
             ->where('max_age', '<=', $age)
@@ -73,7 +73,7 @@ class TrialRepository
 
     private function getTranslatedResult(array $results, float $firstResult):int
     {
-        for($i = 0; $i < count($results); $i++){
+        for($i = 0; $i < count($results) - 1; $i++){
            $keyValue = explode('=', $results[$i]);
            if ($keyValue[1] <= $firstResult){
                return $keyValue[0];
