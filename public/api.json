@@ -41,7 +41,7 @@
                 }
             }
         },
-        "/trial": {
+        "/api/v1/trial": {
             "get": {
                 "tags": [
                     "Trial"
@@ -129,7 +129,7 @@
                 }
             }
         },
-        "/trial/result": {
+        "/api/v1/trial/result": {
             "get": {
                 "tags": [
                     "Trial"

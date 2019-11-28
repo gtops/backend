@@ -24,13 +24,13 @@ class AuthorizeMiddleware implements Middleware
         try{
             $tokenInArray = (array)Token::getDecodedToken($token);
             if (Token::isOldToken($tokenInArray)){
-                $request = $request->withHeader('error', $tokenInArray['old token']);
+                $request = $request->withHeader('error', 'ваш токен устарел');
             }
             $request = $request->withHeader('userEmail', $tokenInArray['email']);
             $request = $request->withHeader('userRole', $tokenInArray['role']);
 
         }catch (\Exception $err){
-            $request = $request->withHeader('error', 'invalid token');
+            $request = $request->withHeader('error', 'невалидный токен');
         }
 
         return $handler->handle($request);

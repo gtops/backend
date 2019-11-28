@@ -14,14 +14,15 @@ use \App\Application\Actions\User\GetNewTokensAction;
 use \App\Application\Actions\User\AuthAction;
 use App\Application\Actions\Trial\TrialAction;
 use App\Application\Actions\Role\RoleAction;
+use App\Application\Actions\Invite\InviteAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
         return $response;
     });
 
-    $app->post('/organization/invite', SendInviteAction::class);
-    $app->post('/invite/isValid', InviteValidationAction::class);
+    $app->post('/api/v1/invite', InviteAction::class.':sendInviteToOrganization');
+    $app->post('/api/v1/invite/isValid', InviteValidationAction::class.':validate');
 
     $app->post('/api/v1/auth/registration', AuthAction::class.':registration');
     $app->post('/api/v1/auth/login', AuthAction::class.':login');

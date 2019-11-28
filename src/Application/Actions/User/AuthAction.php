@@ -8,6 +8,7 @@
 
 namespace App\Application\Actions\User;
 
+use App\Application\Actions\ActionError;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Services\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -50,6 +51,10 @@ class AuthAction extends Action
 
     public function registration(Request $request, Response $response, $args): Response
     {
+        if (isset($request->getHeader('error')[0])){
+            return $this->respond(403, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
+        }
+
         $constraints = new Assert\Collection([
             'password' => [
                 new Assert\Length([
@@ -155,6 +160,10 @@ class AuthAction extends Action
 
     public function refresh(Request $request, Response $response, $args): Response
     {
+        if (isset($request->getHeader('error')[0])){
+            return $this->respond(400, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
+        }
+
         $params['refreshToken'] = $request->getHeader('Authorization')[0] ?? null;
         $constraints = new Assert\Collection([
             'refreshToken' => [

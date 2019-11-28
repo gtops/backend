@@ -24,20 +24,44 @@ use App\Services\Trial\Trial;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use App\Application\Actions\Role\RoleAction;
 use App\Persistance\Repositories\Role\RoleRepository;
+use App\Application\Actions\Invite\InviteAction;
+use App\Services\Invite\Invite;
+use App\Services\Role\Role;
+use App\Services\Auth\Auth;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        InviteAction::class => function(ContainerInterface $c){
+            return new InviteAction($c->get(Invite::class));
+        },
+        Invite::class => function(ContainerInterface $c){
+            $c->get(Token::class);
+            return new Invite($c->get(RegistrationTokenRepository::class), $c->get(EmailSendler::class));
+        },
         RoleAction::class => function(ContainerInterface $c){
-            $c->get(DataBase::class);
-            $logger = new Logger('a');
-            $logger->alert('rfer');
-            return new RoleAction(new \App\Services\Role\Role(new RoleRepository()));
+            return new RoleAction($c->get(Role::class));
         },
         AuthAction::class => function(ContainerInterface $c){
             $c->get(Token::class);
-            $authService = new \App\Services\Auth\Auth($c->get(UserRepository::class), new RefreshTokenRepository(), new RegistrationTokenRepository());
-            $auth = new AuthAction($authService);
-            return $auth;
+            return new AuthAction($c->get(Auth::class));
+        },
+        Auth::class => function(ContainerInterface $c){
+            return new Auth($c->get(UserRepository::class), $c->get(RefreshTokenRepository::class), $c->get(RegistrationTokenRepository::class));
+        },
+        RegistrationTokenRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new RegistrationTokenRepository();
+        },
+        RefreshTokenRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new RefreshTokenRepository();
+        },
+        Role::class => function(ContainerInterface $c){
+            return new Role($c->get(RoleRepository::class));
+        },
+        RoleRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new RoleRepository();
         },
         TrialAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
@@ -53,10 +77,13 @@ return function (ContainerBuilder $containerBuilder) {
             $inviteValidateAction = new InviteValidationAction();
             return $inviteValidateAction;
         },
+        RegistrationTokenRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new RegistrationTokenRepository();
+        },
         SendInviteAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             $validator = new \App\Services\Validators\SendInviteValidator();
-            $c->get(Token::class);
             $sendInviteAction = new SendInviteAction($c->get(EmailSendler::class), $validator);
             return $sendInviteAction;
         },
