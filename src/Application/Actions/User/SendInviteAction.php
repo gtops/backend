@@ -22,7 +22,7 @@ use App\Persistance\Repositories\User\RegistrationTokenRepository;
 /**
  *
  * * @SWG\Post(
- *   path="/organization/invite",
+ *   path="/api/v1/invite",
  *   summary="Отправка приглашения на регистрацию",
  *   operationId="Отправка приглашения на регистрацию",
  *   tags={"Invite"},

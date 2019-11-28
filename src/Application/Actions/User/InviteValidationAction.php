@@ -9,7 +9,7 @@
 /**
  *
  * * @SWG\Post(
- *   path="/invite/isValid",
+ *   path="/api/v1/invite/isValid",
  *   summary="проверка валиданости токена приглашеня на регистрацию",
  *   operationId="проверка валиданости токена приглашеня на регистрацию",
  *   tags={"Invite"},

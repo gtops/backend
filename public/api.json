@@ -10,7 +10,7 @@
         "http"
     ],
     "paths": {
-        "/role": {
+        "/api/v1/role": {
             "get": {
                 "tags": [
                     "Role"
@@ -352,7 +352,7 @@
                 }
             }
         },
-        "/invite/isValid": {
+        "/api/v1/invite/isValid": {
             "post": {
                 "tags": [
                     "Invite"
@@ -389,7 +389,7 @@
                 }
             }
         },
-        "/organization/invite": {
+        "/api/v1/invite": {
             "post": {
                 "tags": [
                     "Invite"

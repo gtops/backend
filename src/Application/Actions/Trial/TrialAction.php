@@ -28,7 +28,7 @@ class TrialAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/trial",
+     *   path="/api/v1/trial",
      *   summary="получение списка испытаний для определенного пола и возраста",
      *   operationId="получение списка испытаний для определенного пола и возраста",
      *   tags={"Trial"},
@@ -92,7 +92,7 @@ class TrialAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/trial/result",
+     *   path="/api/v1/trial/result",
      *   summary="Получение вторичного результата по испытанию исходя из первичного результата из таблицы по переводу",
      *   operationId="Получение вторичного результата по испытанию исходя из первичного результата из таблицы по переводу",
      *   tags={"Trial"},

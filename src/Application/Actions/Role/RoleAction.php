@@ -26,7 +26,7 @@ class RoleAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/role",
+     *   path="/api/v1/role",
      *   summary="получение всех ролей(кроме GLOBAL)",
      *   operationId="получение всех ролей(кроме GLOBAL)",
      *   tags={"Role"},
