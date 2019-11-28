@@ -25,6 +25,38 @@ class TrialAction extends Action
         parent::__construct();
     }
 
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/trial",
+     *   summary="получение списка испытаний для определенного пола и возраста",
+     *   operationId="получение списка испытаний для определенного пола и возраста",
+     *   tags={"Trial"},
+     *   @SWG\Parameter(in="query", name="gender", type="integer", required=true, description="gender: 0 - female, 1 - male", required=true),
+     *   @SWG\Parameter(in="query", name="age", type="integer", required=true),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(
+     *          @SWG\Property(property="statusCode", type="integer"),
+     *          @SWG\Property(property="data", type="array", @SWG\Items(
+     *              @SWG\Property(property="trials", type="array", @SWG\Items(
+     *                  @SWG\Property(property="trialName", type="string"),
+     *                  @SWG\Property(property="trialId", type="integer"),
+     *                  @SWG\Property(property="resultForBronze", type="number"),
+     *                  @SWG\Property(property="resultForSilver", type="number"),
+     *                  @SWG\Property(property="resultForGold", type="number")
+     *              )),
+     *              @SWG\Property(property="ageCategory", type="string")
+     *          )
+     *
+     *     ))),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     ))
+     * )
+     *
+     */
     public function getTrialsByGenderAndAge(Request $request, Response $response, $args): Response
     {
         $constraints = new Assert\Collection([
@@ -57,6 +89,27 @@ class TrialAction extends Action
         return $this->trialService->getTrialsByGenderAndAge($params, $response);
     }
 
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/trial/result",
+     *   summary="Получение вторичного результата по испытанию исходя из первичного результата из таблицы по переводу",
+     *   operationId="Получение вторичного результата по испытанию исходя из первичного результата из таблицы по переводу",
+     *   tags={"Trial"},
+     *   @SWG\Parameter(in="query", name="firstResult", type="integer", required=true),
+     *   @SWG\Parameter(in="query", name="trialId", type="integer", required=true),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(
+     *          @SWG\Property(property="secondResult", type="number")
+     *     )),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function getSecondResult(Request $request, Response $response, $args): Response
     {
         $constraints = new Assert\Collection([

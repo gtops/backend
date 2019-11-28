@@ -34,7 +34,7 @@ return function (App $app) {
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
 
 
-//    $app->get('api/v1/role', Role::class.':getList');
+//    $app->get('api/v1/role', RoleAction::class.':getList');
 //инвайт
 //валидация инвайта
 
