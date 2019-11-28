@@ -28,12 +28,10 @@ class TrialAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/api/v1/trial",
+     *   path="/api/v1/trial/{age}/{gender}",
      *   summary="получение списка испытаний для определенного пола и возраста",
      *   operationId="получение списка испытаний для определенного пола и возраста",
      *   tags={"Trial"},
-     *   @SWG\Parameter(in="query", name="gender", type="integer", required=true, description="gender: 0 - female, 1 - male", required=true),
-     *   @SWG\Parameter(in="query", name="age", type="integer", required=true),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(
      *          @SWG\Property(property="statusCode", type="integer"),
      *          @SWG\Property(property="data", type="array", @SWG\Items(
@@ -92,12 +90,10 @@ class TrialAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/api/v1/trial/result",
+     *   path="/api/v1/trial/{id}/firstResult/{firstResult}",
      *   summary="Получение вторичного результата по испытанию исходя из первичного результата из таблицы по переводу",
      *   operationId="Получение вторичного результата по испытанию исходя из первичного результата из таблицы по переводу",
      *   tags={"Trial"},
-     *   @SWG\Parameter(in="query", name="firstResult", type="integer", required=true),
-     *   @SWG\Parameter(in="query", name="trialId", type="integer", required=true),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(
      *          @SWG\Property(property="secondResult", type="number")
      *     )),
