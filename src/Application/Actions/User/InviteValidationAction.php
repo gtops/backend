@@ -6,25 +6,6 @@
  * Time: 18:17
  */
 
-/**
- *
- * * @SWG\Post(
- *   path="/api/v1/invite/isValid",
- *   summary="проверка валиданости токена приглашеня на регистрацию",
- *   operationId="проверка валиданости токена приглашеня на регистрацию",
- *   tags={"Invite"},
- *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
- *      @SWG\Property(property="token", type="string")
- *    )),
- *   @SWG\Response(response=200, description="OK", @SWG\Schema(
- *              @SWG\Property(property="email", type="string")
- *          )),
- *  @SWG\Response(response=404, description="Not Found")
- *     ))
- * )
- *
- */
-
 namespace App\Application\Actions\User;
 
 

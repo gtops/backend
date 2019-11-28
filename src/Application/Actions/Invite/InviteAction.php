@@ -26,6 +26,29 @@ class InviteAction extends Action
         parent::__construct();
     }
 
+    /**
+     *
+     * * @SWG\Post(
+     *   path="/api/v1/invite",
+     *   summary="Отправка приглашения на регистрацию",
+     *   operationId="Отправка приглашения на регистрацию",
+     *   tags={"Invite"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
+     *      @SWG\Property(property="email", type="string"),
+     *      @SWG\Property(property="role", type="string")
+     *    )),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     ))
+     * )
+     *
+     */
+
     public function sendInviteToOrganization(Request $request, Response $response):Response
     {
         if (isset($request->getHeader('error')[0])){
@@ -38,6 +61,10 @@ class InviteAction extends Action
 
         $constraints = new Assert\Collection([
             'userRole' => [
+                new Assert\Choice([
+                    'choices' => ['Глобальный администратор'],
+                    'message' => 'нет доступа'
+                ]),
                 new Assert\NotNull(['message' => 'невалидный токен'])
             ],
             'userEmail' => [
@@ -51,15 +78,9 @@ class InviteAction extends Action
             ],
             'role' => [
                 new Assert\NotNull(['message' => 'поле role не может быть пустым']),
-                new Assert\Choice([
-                    'choices' => ['Глобальный администратор'],
-                    'message' => 'нет доступа'
-                ])
             ],
         ]);
 
-        $logger = new Logger('a');
-        $logger->alert($params['role']);
         $errors = $this->getErrors($constraints, $params);
 
         if (count($errors) > 0){
@@ -69,8 +90,31 @@ class InviteAction extends Action
         return $this->inviteService->sendInviteToOrganization($params, $response);
     }
 
+    /**
+     *
+     * * @SWG\Post(
+     *   path="/api/v1/invite/isValid",
+     *   summary="проверка валиданости токена приглашеня на регистрацию",
+     *   operationId="проверка валиданости токена приглашеня на регистрацию",
+     *   tags={"Invite"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(
+     *              @SWG\Property(property="email", type="string")
+     *          )),
+     *  @SWG\Response(response=404, description="Not Found")
+     *     ))
+     * )
+     *
+     */
     public function validate(Request $request, Response $response):Response
     {
+        if (isset($request->getHeader('error')[0])){
+            return $this->respond(403, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
+        }
 
+        $params['token'] = $request->getHeader('Authorization')[0];
+        $params['email'] = $request->getHeader('userEmail')[0];
+
+        return $this->inviteService->valid($params, $response);
     }
 }

@@ -50,4 +50,17 @@ class Invite
 
         return $response;
     }
+
+    public function valid(array $params, Response $response):Response
+    {
+        $tokenDataFromDb = $this->regTokenRep->getTokenFromDB($params['token']);
+
+        if (!isset($tokenDataFromDb[0]->token)){
+            return $response->withStatus(404);
+        }
+
+        $response->getBody()->write(json_encode(['email' => $params['email']]));
+
+        return $response->withStatus(200);
+    }
 }

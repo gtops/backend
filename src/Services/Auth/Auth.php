@@ -37,7 +37,8 @@ class Auth
             return $response->withStatus(400);
         }
         $role = $this->userRepository->getRoleOfUser($params['email']);
-
+        $logger = new Logger('a');
+        $logger->alert($role);
         $refreshToken = Token::getEncodedToken([
             'email' => $params['email'],
             'role' => $role,

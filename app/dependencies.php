@@ -43,6 +43,7 @@ return function (ContainerBuilder $containerBuilder) {
         },
         AuthAction::class => function(ContainerInterface $c){
             $c->get(Token::class);
+            $logger = new Logger('a');
             return new AuthAction($c->get(Auth::class));
         },
         Auth::class => function(ContainerInterface $c){

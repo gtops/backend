@@ -22,7 +22,7 @@ return function (App $app) {
     });
 
     $app->post('/api/v1/invite', InviteAction::class.':sendInviteToOrganization');
-    $app->post('/api/v1/invite/isValid', InviteValidationAction::class.':validate');
+    $app->post('/api/v1/invite/isValid', InviteAction::class.':validate');
 
     $app->post('/api/v1/auth/registration', AuthAction::class.':registration');
     $app->post('/api/v1/auth/login', AuthAction::class.':login');
@@ -33,7 +33,5 @@ return function (App $app) {
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
 
     $app->get('/api/v1/role', RoleAction::class.':getList');
-//инвайт
-//валидация инвайта
 
 };
