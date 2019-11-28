@@ -23,17 +23,15 @@ return function (App $app) {
     $app->post('/organization/invite', SendInviteAction::class);
     $app->post('/invite/isValid', InviteValidationAction::class);
 
-    $app->group('/api/v1/auth', function (){
-        $this->post('/registration', AuthAction::class.':registration');
-        $this->post('/login', AuthAction::class.':login');
-        $this->post('/refresh', AuthAction::class.':refresh');
-    });
+    $app->post('/api/v1/auth/registration', AuthAction::class.':registration');
+    $app->post('/api/v1/auth/login', AuthAction::class.':login');
+    $app->post('/api/v1/auth/refresh', AuthAction::class.':refresh');
 
     $app->get('/api/v1/trial/{age:[0-9]+}/{gender:[0-9]+}', TrialAction::class.':getTrialsByGenderAndAge');
     $app->get('/api/v1/trial/{id:[0-9]+}/firstResult/{firstResult:[0-9]+}', TrialAction::class.':getSecondResult');
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
 
-    $app->get('api/v1/role', RoleAction::class.':getList');
+    $app->get('/api/v1/role', RoleAction::class.':getList');
 //инвайт
 //валидация инвайта
 

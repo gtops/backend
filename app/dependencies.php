@@ -29,6 +29,8 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         RoleAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
+            $logger = new Logger('a');
+            $logger->alert('rfer');
             return new RoleAction(new \App\Services\Role\Role(new RoleRepository()));
         },
         AuthAction::class => function(ContainerInterface $c){
