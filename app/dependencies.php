@@ -22,9 +22,15 @@ use App\Persistance\Repositories\User\RegistrationTokenRepository;
 use App\Application\Actions\Trial\TrialAction;
 use App\Services\Trial\Trial;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
+use App\Application\Actions\Role\RoleAction;
+use App\Persistance\Repositories\Role\RoleRepository;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        RoleAction::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new RoleAction(new \App\Services\Role\Role(new RoleRepository()));
+        },
         AuthAction::class => function(ContainerInterface $c){
             $c->get(Token::class);
             $authService = new \App\Services\Auth\Auth($c->get(UserRepository::class), new RefreshTokenRepository(), new RegistrationTokenRepository());

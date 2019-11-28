@@ -7,13 +7,22 @@
  */
 
 namespace App\Application\Actions\Role;
+use App\Services\Role\Role;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\RequestInterface as Request;
 
 use App\Application\Actions\Action;
 
 class RoleAction extends Action
 {
+    private $roleService;
+    public function __construct(Role $role)
+    {
+        $this->roleService = $role;
+        parent::__construct();
+    }
+
     /**
      *
      * * @SWG\Get(
@@ -30,8 +39,8 @@ class RoleAction extends Action
      * )
      *
      */
-    public function getList(array $params, Response $response):Response
+    public function getList(Request $request, Response $response, $args):Response
     {
-
+        return $this->roleService->getList([], $response);
     }
 }
