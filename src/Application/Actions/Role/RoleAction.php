@@ -2,23 +2,18 @@
 /**
  * Created by PhpStorm.
  * User: Admin
- * Date: 03.11.2019
- * Time: 22:28
+ * Date: 28.11.2019
+ * Time: 9:53
  */
 
 namespace App\Application\Actions\Role;
-
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\RequestInterface;
 
 use App\Application\Actions\Action;
-use App\Domain\DomainException\DomainRecordNotFoundException;
-use Monolog\Logger;
-use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Exception\HttpBadRequestException;
-use App\Persistance\Repositories\Role\RoleRepository;
 
-class GetRoleAction extends Action
+class RoleAction extends Action
 {
-
     /**
      *
      * * @SWG\Get(
@@ -35,20 +30,8 @@ class GetRoleAction extends Action
      * )
      *
      */
-
-    /**
-     * @return Response
-     * @throws DomainRecordNotFoundException
-     * @throws HttpBadRequestException
-     */
-    public function __construct()
+    public function getList(array $params, Response $response):Response
     {
-    }
 
-    protected function action(): Response
-    {
-        $roleRep = new RoleRepository();
-        $this->response->getBody()->write(json_encode(['roles' => $roleRep->getRoles()]));
-        return $this->response;
     }
 }

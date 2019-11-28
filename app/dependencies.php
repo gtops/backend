@@ -11,7 +11,6 @@ use App\Swagger\SwaggerWatcher;
 use App\Application\Actions\Swagger;
 use App\Persistance\ModelsEloquant\DataBase;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use App\Application\Actions\Role\GetRoleAction;
 use App\Services\EmailSendler\EmailSendler;
 use App\Application\Actions\User\SendInviteAction;
 use App\Services\Token\Token;
@@ -58,11 +57,6 @@ return function (ContainerBuilder $containerBuilder) {
         },
         EmailSendler::class => function(ContainerInterface $c){
             return new EmailSendler($c->get('privateSettings')['Mailer']);
-        },
-        GetRoleAction::class => function(ContainerInterface $c){
-            $db = new DataBase($c->get('privateSettings')['DB']);
-            $roleAction = new \App\Application\Actions\Role\GetRoleAction();
-            return $roleAction;
         },
         LoggerInterface::class => function (ContainerInterface $c) {
             $settings = $c->get('settings');

@@ -13,13 +13,13 @@ use App\Application\Actions\User\LoginAction;
 use \App\Application\Actions\User\GetNewTokensAction;
 use \App\Application\Actions\User\AuthAction;
 use App\Application\Actions\Trial\TrialAction;
+use App\Application\Actions\Role\RoleAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
         return $response;
     });
 
-    $app->get('/role', GetRoleAction::class);
     $app->post('/organization/invite', SendInviteAction::class);
     $app->post('/invite/isValid', InviteValidationAction::class);
 
@@ -33,8 +33,7 @@ return function (App $app) {
     $app->get('/api/v1/trial/{id:[0-9]+}/firstResult/{firstResult:[0-9]+}', TrialAction::class.':getSecondResult');
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
 
-
-//    $app->get('api/v1/role', RoleAction::class.':getList');
+    $app->get('api/v1/role', RoleAction::class.':getList');
 //инвайт
 //валидация инвайта
 
