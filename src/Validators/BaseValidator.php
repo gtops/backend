@@ -1,0 +1,166 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: Admin
+ * Date: 06.12.2019
+ * Time: 3:37
+ */
+
+namespace App\Validators;
+use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validation;
+
+abstract class BaseValidator implements ValidateStrategy
+{
+    protected $validator;
+    protected $collectionRules;
+    const INVALID_TYPING = 'INVALID_TYPING';
+    const EMPTY_TYPING = 'EMPTY_TYPING';
+    const GREATER_THEN = 'GREATER_THEN';
+    const INVALID_CHOICE = 'INVALID_CHOICE';
+    const INVALID_COUNT_IN_ARRAY = 'INVALID_COUNT_IN_ARRAY';
+    const NOT_EQUAL = 'NOT_EQUAL';
+    const IVALID_EMAIL = 'INVALID_EMAIL';
+    const INVALID_LENGTH = 'INVALID_LENGTH';
+
+    public function __construct()
+    {
+        $this->validator = Validation::createValidator();
+        $this->collectionRules = new Assert\Collection([]);
+    }
+
+    public function validate(array $params, array $options = null): array
+    {
+        $this->addBaseRules($params, $options);
+        $this->addSpecificRules($params, $options);
+
+        $errors = $this->validator->validate($params, $this->collectionRules);
+        return $this->showErrorsInFormatToResponse($errors);
+    }
+
+    protected function addBaseRules(array $params, array $options = null)
+    {
+
+    }
+
+    protected function addSpecificRules(array $params, array $options = null)
+    {
+
+    }
+
+    protected function addRuleToParam(string $paramName, Constraint $rule)
+    {
+        if (count($this->collectionRules->fields) == 0){
+            $this->collectionRules = new Assert\Collection([$paramName => [$rule]]);
+            return;
+        }
+
+        if (!isset($this->collectionRules->fields[$paramName])){
+            $fields = $this->collectionRules->fields;
+            $constraintsObject = new Assert\Required();
+            $constraintsObject->constraints[] = $rule;
+            $constraintsObject->addImplicitGroupName('Default');
+
+            $fields[$paramName] = $constraintsObject;
+            $this->collectionRules = new Assert\Collection($fields);
+            return;
+        }
+
+        $this->collectionRules->fields[$paramName]->constraints[] = $rule;
+    }
+
+    protected function showErrorsInFormatToResponse(ConstraintViolationListInterface $errors):array
+    {
+        $errorObjects = [];
+        foreach ($errors as $error){
+            /** @var $error ConstraintViolation*/
+            if($error->getMessage() != 'This field was not expected.' && $error->getMessage() != 'This field is missing.'){
+                $errorObject = [
+                    'value' => explode(':', $error->getMessage())[0],
+                    'message' => explode(':', $error->getMessage())[1]
+                ];
+                $errorObjects[] = $errorObject;
+            }
+        }
+
+        return $errorObjects;
+    }
+
+    protected function addEmailRule(string $paramName)
+    {
+        $this->addRuleToParam($paramName, new Assert\Email([
+            'message' => '{{'.$paramName.'}} неавалидный email :'.BaseValidator::IVALID_EMAIL
+        ]));
+    }
+
+    protected function addEqualRule(string $paramName, $equal)
+    {
+        $this->addRuleToParam($paramName, new Assert\EqualTo([
+            'value' => $equal,
+            'message' => '{{'.$paramName.'}} должен быть равен '.$equal.':'.BaseValidator::NOT_EQUAL
+        ]));
+    }
+
+    protected function addIntTypeRule(string $paramName)
+    {
+        $this->addRuleToParam($paramName, new Assert\Type([
+            'type' => 'integer',
+            'message' => '{{'.$paramName.'}} должен быть числом:'.BaseValidator::INVALID_TYPING
+        ]));
+    }
+
+    protected function addNotNullNotBlankRules(string $paramName)
+    {
+        $this->addRuleToParam($paramName, new Assert\NotNull([
+            'message' => '{{'.$paramName.'}} не должен быть null:'.BaseValidator::EMPTY_TYPING
+        ]));
+
+        $this->addRuleToParam($paramName, new Assert\NotBlank([
+            'message' => '{{'.$paramName.'}} не должен быть пустым:'.BaseValidator::EMPTY_TYPING
+        ]));
+    }
+
+    protected function addGreaterThenRule(string $paramName, $value)
+    {
+        $this->addRuleToParam($paramName, new Assert\GreaterThan
+        ([
+            'value' => $value,
+            'message' => '{{'.$paramName.'}} меньше '.$value.':'.BaseValidator::GREATER_THEN
+        ]));
+    }
+
+    protected function addInChoiceRule(string $paramName, $choices)
+    {
+        $this->addRuleToParam($paramName, new Assert\Choice([
+            'choices' => $choices,
+            'message' => '{{'.$paramName.'}} не находится в выборке.:'.self::INVALID_CHOICE,
+        ]));
+    }
+
+    protected function addMinCountArrayRule(string $paramName, int $minCount)
+    {
+        $this->addRuleToParam($paramName, new Assert\Count([
+            'min' => $minCount,
+            'minMessage' => 'количество элементов в массиве {{'.$paramName.'}}'.' не должно быть меньше '.$minCount.':'.self::INVALID_COUNT_IN_ARRAY
+        ]));
+    }
+
+    protected function addLengthRule(string $paramName, int $length)
+    {
+        $this->addRuleToParam($paramName,new Assert\Length([
+            'min' => $length,
+            'minMessage' => '{{'.$paramName.'}} должен быть длиной не менее '.$length.' символов:'.self::INVALID_LENGTH
+        ]));
+    }
+
+    protected function addStringRule(string $paramName)
+    {
+        $this->addRuleToParam($paramName, new Assert\Type([
+            'type' => 'string',
+            'message' => '{{'.$paramName.'}} должен быть строкой:'.BaseValidator::EMPTY_TYPING
+        ]));
+    }
+}

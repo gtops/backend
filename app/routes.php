@@ -29,7 +29,7 @@ return function (App $app) {
     $app->post('/api/v1/auth/refresh', AuthAction::class.':refresh');
 
     $app->get('/api/v1/trial/{age:[0-9]+}/{gender:[0-9]+}', TrialAction::class.':getTrialsByGenderAndAge');
-    $app->get('/api/v1/trial/{id:[0-9]+}/firstResult/{firstResult:[0-9]+}', TrialAction::class.':getSecondResult');
+    $app->get('/api/v1/trial/{id:[0-9]+}/firstResult', TrialAction::class.':getSecondResult');
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
 
     $app->get('/api/v1/role', RoleAction::class.':getList');

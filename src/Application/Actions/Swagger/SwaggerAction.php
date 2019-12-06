@@ -22,7 +22,6 @@ class SwaggerAction extends Action
 
     public function __construct($pathToProject)
     {
-        parent::__construct();
         $this->pathToProject = $pathToProject;
     }
 

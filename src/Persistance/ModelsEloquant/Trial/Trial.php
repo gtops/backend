@@ -18,6 +18,7 @@ class Trial extends Model
     protected $primaryKey = "id_trial";
 
     protected $fillable = array(
-        "trial"
+        "trial",
+        "type_time"
     );
 }

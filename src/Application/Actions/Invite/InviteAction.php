@@ -12,6 +12,8 @@ namespace App\Application\Actions\Invite;
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
 use App\Services\Invite\Invite;
+use App\Validators\Invite\InviteValidator;
+use App\Validators\ValidateStrategy;
 use Monolog\Logger;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -20,10 +22,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 class InviteAction extends Action
 {
     private $inviteService;
+    private $validator;
+
     public function __construct(Invite $invite)
     {
         $this->inviteService = $invite;
-        parent::__construct();
     }
 
     /**
@@ -59,34 +62,14 @@ class InviteAction extends Action
         $params['userEmail'] = $request->getHeader('userEmail')[0];
         $params['userRole'] = $request->getHeader('userRole')[0];
 
-        $constraints = new Assert\Collection([
-            'userRole' => [
-                new Assert\Choice([
-                    'choices' => ['Глобальный администратор'],
-                    'message' => 'нет доступа'
-                ]),
-                new Assert\NotNull(['message' => 'невалидный токен'])
-            ],
-            'userEmail' => [
-                new Assert\NotNull(['message' => 'невалидный токен']),
-            ],
-            'email' => [
-                new Assert\Email([
-                   'message' => 'введенный вами email невалиден'
-                ]),
-                new Assert\NotNull(['message' => 'поле email не может быть пустым не может быть пустым']),
-            ],
-            'role' => [
-                new Assert\NotNull(['message' => 'поле role не может быть пустым']),
-            ],
-        ]);
-
-        $errors = $this->getErrors($constraints, $params);
+        $validator = new InviteValidator();
+        $errors = $validator->validate($params);
 
         if (count($errors) > 0){
             return $this->respond(400, ['errros' => $errors], $response);
         }
 
+        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
         return $this->inviteService->sendInviteToOrganization($params, $response);
     }
 
@@ -115,6 +98,7 @@ class InviteAction extends Action
         $params['token'] = $request->getHeader('Authorization')[0];
         $params['email'] = $request->getHeader('userEmail')[0];
 
+        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
         return $this->inviteService->valid($params, $response);
     }
 }

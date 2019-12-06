@@ -39,20 +39,24 @@ class TrialRepository
 
         $results =  ResultGuide::query()
             ->leftJoin('trial', 'trial.id_trial', '=', 'result_guide.id_trial')
-            ->where('id_age_category', '=', $idAgeCategory)
+            ->leftJoin('group_result_guide', 'result_guide.id_group_result_guide', '=', 'group_result_guide.id_group_result_guide')
+            ->where('result_guide.id_age_category', '=', $idAgeCategory)
             ->where('gender', '=', $gender)
+            ->orderBy('result_guide.id_group_result_guide')
             ->get();
 
-        $response = [];
 
+        $response = [];
+        $logger = new Logger('a');
         foreach ($results as $result)
         {
-            $silver = str_replace(',', '.', $result->result_for_silver);
-            $bronze = str_replace(',', '.', $result->result_for_bronze);
-            $gold = str_replace(',', '.', $result->result_for_gold);
+            $silver = str_replace(',', ':', $result->result_for_silver);
+            $logger->alert($result->result_for_silver);
+            $bronze = str_replace(',', ':', $result->result_for_bronze);
+            $gold = str_replace(',', ':', $result->result_for_gold);
             //добавить фильтрацию для времени в минутах и секундах
-            $response[] = new Trial($result->trial, $result->id_result_guide, (float)$silver, (float)$bronze,
-               (float) $gold, 0);
+            $response[] = new Trial($result->trial, $result->id_result_guide, $silver, $bronze,
+                $gold, 0, $result->necessarily, $result->id_group_result_guide, $result->type_time);
         }
 
         return $response;
@@ -71,7 +75,7 @@ class TrialRepository
         return $this->getTranslatedResult($values, $firstResult);
     }
 
-    private function getTranslatedResult(array $results, float $firstResult):int
+    private function getTranslatedResult(array $results, string $firstResult):int
     {
         for($i = 0; $i < count($results) - 1; $i++){
            $keyValue = explode('=', $results[$i]);

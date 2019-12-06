@@ -28,6 +28,9 @@ use App\Application\Actions\Invite\InviteAction;
 use App\Services\Invite\Invite;
 use App\Services\Role\Role;
 use App\Services\Auth\Auth;
+use App\Validators;
+use App\Validators\Invite\InviteValidator;
+use App\Validators\Auth\RegistrationValidator;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -43,7 +46,6 @@ return function (ContainerBuilder $containerBuilder) {
         },
         AuthAction::class => function(ContainerInterface $c){
             $c->get(Token::class);
-            $logger = new Logger('a');
             return new AuthAction($c->get(Auth::class));
         },
         Auth::class => function(ContainerInterface $c){
@@ -81,12 +83,6 @@ return function (ContainerBuilder $containerBuilder) {
         RegistrationTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new RegistrationTokenRepository();
-        },
-        SendInviteAction::class => function(ContainerInterface $c){
-            $c->get(DataBase::class);
-            $validator = new \App\Services\Validators\SendInviteValidator();
-            $sendInviteAction = new SendInviteAction($c->get(EmailSendler::class), $validator);
-            return $sendInviteAction;
         },
         Token::class => function(ContainerInterface $c){
             Token::$key = $c->get('privateSettings')['Token']['key'];

@@ -20,7 +20,6 @@ class RoleAction extends Action
     public function __construct(Role $role)
     {
         $this->roleService = $role;
-        parent::__construct();
     }
 
     /**

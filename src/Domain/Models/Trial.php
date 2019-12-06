@@ -17,8 +17,11 @@ class Trial
     private $resultForBronze;
     private $resultForGold;
     private $secondResult;
+    private $necessarily;
+    private $idGroupInAgeCategory;
+    private $typeTime;
 
-    public function __construct(string $trialName, int $trialId, float $resultForSilver, float $resultForBronze, float $resultForGold, float $seccndResult)
+    public function __construct(string $trialName, int $trialId, string $resultForSilver, string $resultForBronze, string $resultForGold, string $seccndResult, bool $necessarily, int $idGroupInAgeCategory, bool $typeTime)
     {
         $this->trialName = $trialName;
         $this->trialId = $trialId;
@@ -26,6 +29,24 @@ class Trial
         $this->resultForBronze = $resultForBronze;
         $this->secondResult = $seccndResult;
         $this->resultForGold = $resultForGold;
+        $this->necessarily = $necessarily;
+        $this->idGroupInAgeCategory = $idGroupInAgeCategory;
+        $this->typeTime = $typeTime;
+    }
+
+    public function getTypeTime():bool
+    {
+        return $this->typeTime;
+    }
+
+    public function getNecessarily():bool
+    {
+        return $this->necessarily;
+    }
+
+    public function getIdGroup():int
+    {
+        return $this->idGroupInAgeCategory;
     }
 
     public function getTrialName():string
@@ -38,17 +59,17 @@ class Trial
         return $this->trialId;
     }
 
-    public function getResultForSilver():float
+    public function getResultForSilver():string
     {
         return $this->resultForSilver;
     }
 
-    public function getResultForBronze():float
+    public function getResultForBronze():string
     {
         return $this->resultForBronze;
     }
 
-    public function getResultForGold():float
+    public function getResultForGold():string
     {
         return $this->resultForGold;
     }

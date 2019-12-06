@@ -10,7 +10,7 @@ namespace App\Services\Trial;
 use App\Domain\Models\Trial as TrialModel;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use Psr\Http\Message\ResponseInterface as Response;
-use App\Services\Presenters\TrialToResponsePresenter;
+use App\Services\Presenters\TrialsToResponsePresenter;
 
 class Trial
 {
@@ -24,15 +24,8 @@ class Trial
     {
         $trials = $this->trialRep->getList($params['gender'], $params['age']);
 
-        $trialsToRespond = [];
-
-        foreach ($trials as $trial)
-        {
-            $trialsToRespond[] = TrialToResponsePresenter::getView($trial);
-        }
-
         $nameAgeCategory = $this->trialRep->getNameOfAgeCategory($params['age']);
-        $response->getBody()->write(json_encode(['trials' => $trialsToRespond, 'ageCategory' => $nameAgeCategory]));
+        $response->getBody()->write(json_encode(['groups' => TrialsToResponsePresenter::getView($trials), 'ageCategory' => $nameAgeCategory]));
         return $response->withStatus(200);
     }
 

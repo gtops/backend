@@ -17,6 +17,14 @@ class AgeCategory extends Model
     protected $fillable = array(
         "name_age_category",
         "min_age",
-        "max_age"
+        "max_age",
+        "m_count_tests",
+        "m_count_tests_for_gold",
+        "m_count_tests_for_silver",
+        "m_count_tests_for_bronze",
+        "f_count_tests",
+        "f_count_tests_for_gold",
+        "f_count_tests_for_silver",
+        "f_count_tests_for_bronze"
     );
 }

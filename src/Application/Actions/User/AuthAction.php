@@ -9,6 +9,9 @@
 namespace App\Application\Actions\User;
 
 use App\Application\Actions\ActionError;
+use App\Validators\Auth\LoginValidator;
+use App\Validators\Auth\RegistrationValidator;
+use App\Validators\ValidateStrategy;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Services\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,7 +25,6 @@ class AuthAction extends Action
 
     public function __construct(AuthService $auth)
     {
-        parent::__construct();
         $this->auth = $auth;
     }
 
@@ -55,30 +57,17 @@ class AuthAction extends Action
             return $this->respond(403, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
         }
 
-        $constraints = new Assert\Collection([
-            'password' => [
-                new Assert\Length([
-                    'min' => 6,
-                    'minMessage' => 'длина пароля должна состовлять минимум 6 символов'
-                ]),
-                new Assert\NotBlank(['message' => 'поле пароля не может быть пустым'])
-            ],
-            'name' => [
-                new Assert\NotBlank(['message' => 'поле имени не может быть пустым'])
-            ],
-            'token' => [
-                new Assert\NotBlank(['message' => 'не все параметры переданы'])
-            ],
-        ]);
-
         $params = json_decode($request->getBody()->getContents(), true);
         $params['token'] = $request->getHeader('Authorization')[0] ?? null;
-        $errors = $this->getErrors($constraints, $params);
+
+        $validator = new RegistrationValidator();
+        $errors = $validator->validate($params);
 
         if (count($errors) > 0){
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
+        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
         return $this->auth->registration($params, $response);
     }
 
@@ -110,24 +99,10 @@ class AuthAction extends Action
 
     public function login(Request $request, Response $response, $args): Response
     {
-        $constraints = new Assert\Collection([
-            'password' => [
-                new Assert\Length([
-                    'min' => 6,
-                    'minMessage' => 'длина пароля должна состовлять минимум 6 символов'
-                ]),
-                new Assert\NotBlank(['message' => 'поле пароля не может быть пустым'])
-            ],
-            'email' => [
-                new Assert\Email([
-                'message' => 'введенный вами email некорректный'
-                ]),
-                new Assert\NotBlank(['message' => 'поле пароля не может быть пустым'])
-            ],
-        ]);
-
         $params = json_decode($request->getBody()->getContents(), true);
-        $errors = $this->getErrors($constraints, $params);
+
+        $validator = new LoginValidator();
+        $errors = $validator->validate($params);
 
         if (count($errors) > 0){
             return $this->respond(400, ['errors' => $errors], $response);
@@ -165,17 +140,8 @@ class AuthAction extends Action
         }
 
         $params['refreshToken'] = $request->getHeader('Authorization')[0] ?? null;
-        $constraints = new Assert\Collection([
-            'refreshToken' => [
-                new Assert\NotBlank(['message' => 'не все параметры переданы'])
-            ],
-        ]);
-        $errors = $this->getErrors($constraints, $params);
 
-        if (count($errors) > 0){
-            return $this->respond(400, ['errors' => $errors], $response);
-        }
-
+        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
         return $this->auth->refresh($params, $response);
     }
 }
