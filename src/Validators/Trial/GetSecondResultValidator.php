@@ -15,10 +15,8 @@ class GetSecondResultValidator extends BaseValidator
 {
     protected function addSpecificRules(array $params, array $options = null)
     {
-        $this->addNotNullNotBlankRules('firstResult');
-        $this->addNotNullNotBlankRules('id');
-
-        $this->addIntTypeRule('id');
-        $this->addGreaterThenRule('id', 0);
+        $this->addNotNullNotBlankRules(['firstResult', 'id']);
+        $this->addIntTypeRule(['id']);
+        $this->addGreaterThenRule(['id'], 0);
     }
 }

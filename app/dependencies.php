@@ -80,10 +80,6 @@ return function (ContainerBuilder $containerBuilder) {
             $inviteValidateAction = new InviteValidationAction();
             return $inviteValidateAction;
         },
-        RegistrationTokenRepository::class => function(ContainerInterface $c){
-            $c->get(DataBase::class);
-            return new RegistrationTokenRepository();
-        },
         Token::class => function(ContainerInterface $c){
             Token::$key = $c->get('privateSettings')['Token']['key'];
         },

@@ -89,78 +89,98 @@ abstract class BaseValidator implements ValidateStrategy
         return $errorObjects;
     }
 
-    protected function addEmailRule(string $paramName)
+    protected function addEmailRule(array $paramNames)
     {
-        $this->addRuleToParam($paramName, new Assert\Email([
-            'message' => '{{'.$paramName.'}} неавалидный email :'.BaseValidator::IVALID_EMAIL
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Email([
+                'message' => '{{' . $paramName . '}} неавалидный email :' . BaseValidator::IVALID_EMAIL
+            ]));
+        }
     }
 
-    protected function addEqualRule(string $paramName, $equal)
+    protected function addEqualRule(array $paramNames, $equal)
     {
-        $this->addRuleToParam($paramName, new Assert\EqualTo([
-            'value' => $equal,
-            'message' => '{{'.$paramName.'}} должен быть равен '.$equal.':'.BaseValidator::NOT_EQUAL
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\EqualTo([
+                'value' => $equal,
+                'message' => '{{' . $paramName . '}} должен быть равен ' . $equal . ':' . BaseValidator::NOT_EQUAL
+            ]));
+        }
     }
 
-    protected function addIntTypeRule(string $paramName)
+    protected function addIntTypeRule(array $paramNames)
     {
-        $this->addRuleToParam($paramName, new Assert\Type([
-            'type' => 'integer',
-            'message' => '{{'.$paramName.'}} должен быть числом:'.BaseValidator::INVALID_TYPING
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Type([
+                'type' => 'integer',
+                'message' => '{{' . $paramName . '}} должен быть числом:' . BaseValidator::INVALID_TYPING
+            ]));
+        }
     }
 
-    protected function addNotNullNotBlankRules(string $paramName)
+    protected function addNotNullNotBlankRules(array $paramNames)
     {
-        $this->addRuleToParam($paramName, new Assert\NotNull([
-            'message' => '{{'.$paramName.'}} не должен быть null:'.BaseValidator::EMPTY_TYPING
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\NotNull([
+                'message' => '{{' . $paramName . '}} не должен быть null:' . BaseValidator::EMPTY_TYPING
+            ]));
+        }
 
-        $this->addRuleToParam($paramName, new Assert\NotBlank([
-            'message' => '{{'.$paramName.'}} не должен быть пустым:'.BaseValidator::EMPTY_TYPING
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\NotBlank([
+                'message' => '{{' . $paramName . '}} не должен быть пустым:' . BaseValidator::EMPTY_TYPING
+            ]));
+        }
     }
 
-    protected function addGreaterThenRule(string $paramName, $value)
+    protected function addGreaterThenRule(array $paramNames, $value)
     {
-        $this->addRuleToParam($paramName, new Assert\GreaterThan
-        ([
-            'value' => $value,
-            'message' => '{{'.$paramName.'}} меньше '.$value.':'.BaseValidator::GREATER_THEN
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\GreaterThan
+            ([
+                'value' => $value,
+                'message' => '{{' . $paramName . '}} меньше ' . $value . ':' . BaseValidator::GREATER_THEN
+            ]));
+        }
     }
 
-    protected function addInChoiceRule(string $paramName, $choices)
+    protected function addInChoiceRule(array $paramNames, $choices)
     {
-        $this->addRuleToParam($paramName, new Assert\Choice([
-            'choices' => $choices,
-            'message' => '{{'.$paramName.'}} не находится в выборке.:'.self::INVALID_CHOICE,
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Choice([
+                'choices' => $choices,
+                'message' => '{{' . $paramName . '}} не находится в выборке.:' . self::INVALID_CHOICE,
+            ]));
+        }
     }
 
-    protected function addMinCountArrayRule(string $paramName, int $minCount)
+    protected function addMinCountArrayRule(array $paramNames, int $minCount)
     {
-        $this->addRuleToParam($paramName, new Assert\Count([
-            'min' => $minCount,
-            'minMessage' => 'количество элементов в массиве {{'.$paramName.'}}'.' не должно быть меньше '.$minCount.':'.self::INVALID_COUNT_IN_ARRAY
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Count([
+                'min' => $minCount,
+                'minMessage' => 'количество элементов в массиве {{' . $paramName . '}}' . ' не должно быть меньше ' . $minCount . ':' . self::INVALID_COUNT_IN_ARRAY
+            ]));
+        }
     }
 
-    protected function addLengthRule(string $paramName, int $length)
+    protected function addLengthRule(array $paramNames, int $length)
     {
-        $this->addRuleToParam($paramName,new Assert\Length([
-            'min' => $length,
-            'minMessage' => '{{'.$paramName.'}} должен быть длиной не менее '.$length.' символов:'.self::INVALID_LENGTH
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Length([
+                'min' => $length,
+                'minMessage' => '{{' . $paramName . '}} должен быть длиной не менее ' . $length . ' символов:' . self::INVALID_LENGTH
+            ]));
+        }
     }
 
-    protected function addStringRule(string $paramName)
+    protected function addStringRule(array $paramNames)
     {
-        $this->addRuleToParam($paramName, new Assert\Type([
-            'type' => 'string',
-            'message' => '{{'.$paramName.'}} должен быть строкой:'.BaseValidator::EMPTY_TYPING
-        ]));
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Type([
+                'type' => 'string',
+                'message' => '{{' . $paramName . '}} должен быть строкой:' . BaseValidator::EMPTY_TYPING
+            ]));
+        }
     }
 }

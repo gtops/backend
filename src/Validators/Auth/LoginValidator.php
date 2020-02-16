@@ -15,12 +15,9 @@ class LoginValidator extends BaseValidator
 {
     protected function addSpecificRules(array $params, array $options = null)
     {
-        $this->addNotNullNotBlankRules('password');
-        $this->addNotNullNotBlankRules('email');
-
-        $this->addEmailRule('email');
-        $this->addLengthRule('password', 6);
-
-        $this->addStringRule('password');
+        $this->addNotNullNotBlankRules(['password', 'email']);
+        $this->addEmailRule(['email']);
+        $this->addLengthRule(['password'], 6);
+        $this->addStringRule(['password']);
     }
 }

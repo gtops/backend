@@ -15,14 +15,8 @@ class RegistrationValidator extends BaseValidator
 {
     protected function addSpecificRules(array $params, array $options = null)
     {
-        $this->addNotNullNotBlankRules('password');
-        $this->addNotNullNotBlankRules('name');
-        $this->addNotNullNotBlankRules('token');
-
-        $this->addStringRule('name');
-        $this->addStringRule('password');
-        $this->addStringRule('token');
-
-        $this->addLengthRule('password', 6);
+        $this->addNotNullNotBlankRules(['password', 'name', 'token']);
+        $this->addStringRule(['name', 'password', 'token']);
+        $this->addLengthRule(['password'], 6);
     }
 }

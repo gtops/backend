@@ -15,14 +15,9 @@ class InviteValidator extends BaseValidator
 {
     protected function addSpecificRules(array $params, array $options = null)
     {
-        $this->addNotNullNotBlankRules('userRole');
-        $this->addNotNullNotBlankRules('userEmail');
-        $this->addNotNullNotBlankRules('email');
-        $this->addNotNullNotBlankRules('role');
-
-        $this->addStringRule('role');
-
-        $this->addEqualRule('userRole', 'Глобальный администратор');
-        $this->addEmailRule('email');
+        $this->addNotNullNotBlankRules(['userRole', 'userEmail', 'email', 'role']);
+        $this->addStringRule(['role']);
+        $this->addEqualRule(['userRole'], 'Глобальный администратор');
+        $this->addEmailRule(['email']);
     }
 }
