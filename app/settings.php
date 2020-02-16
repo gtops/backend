@@ -14,6 +14,14 @@ return function (ContainerBuilder $containerBuilder) {
                 'path' => isset($_ENV['docker']) ? 'php://stdout' : __DIR__ . '/../logs/app.log',
                 'level' => Logger::DEBUG,
             ],
+            'pathToProject' => __DIR__.'/../'
         ],
+        'framework' => [
+            'validation' => [
+                'enabled' => true,
+                'enable_annotations' => true,
+            ],
+        ],
+        'privateSettings' => json_decode(file_get_contents(__DIR__.'/../config.json'), true)
     ]);
 };
