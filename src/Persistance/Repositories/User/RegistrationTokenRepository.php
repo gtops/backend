@@ -7,9 +7,11 @@
  */
 
 namespace App\Persistance\Repositories\User;
+use App\Domain\Models\IModel;
+use App\Domain\Models\IRepository;
 use App\Persistance\ModelsEloquant\RegistrationToken\RegistrationToken as Token;
 
-class RegistrationTokenRepository
+class RegistrationTokenRepository implements IRepository
 {
     public function addTokenToDB($token):void
     {
@@ -35,5 +37,28 @@ class RegistrationTokenRepository
     public function deleteTokenFromDB(string $token):void
     {
         Token::query()->where('token', '=', $token)->delete();
+    }
+
+    public function get(int $id): IModel
+    {
+        // TODO: Implement get() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(): array
+    {
+        // TODO: Implement getAll() method.
+    }
+
+    public function add(IModel $model)
+    {
+        // TODO: Implement add() method.
+    }
+
+    public function delete(int $id)
+    {
+        // TODO: Implement delete() method.
     }
 }

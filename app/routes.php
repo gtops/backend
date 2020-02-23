@@ -15,6 +15,7 @@ use \App\Application\Actions\User\AuthAction;
 use App\Application\Actions\Trial\TrialAction;
 use App\Application\Actions\Role\RoleAction;
 use App\Application\Actions\Invite\InviteAction;
+use App\Application\Actions\Organization\OrganizationAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
@@ -31,6 +32,12 @@ return function (App $app) {
     $app->get('/api/v1/trial/{age:[0-9]+}/{gender:[0-9]+}', TrialAction::class.':getTrialsByGenderAndAge');
     $app->get('/api/v1/trial/{id:[0-9]+}/firstResult', TrialAction::class.':getSecondResult');
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
+    //organization
+    $app->post('/api/v1/organization', OrganizationAction::class.':add');
+    $app->get('/api/v1/organization/{id:[0-9]+}', OrganizationAction::class.':get');
+    $app->delete('/api/v1/organization/{id:[0-9]+}', OrganizationAction::class.':delete');
+    $app->get('/api/v1/organization', OrganizationAction::class.':getAll');
+    $app->put('/api/v1/organization/{id:[0-9]+}', OrganizationAction::class.':update');
 
     $app->get('/api/v1/role', RoleAction::class.':getList');
 

@@ -31,9 +31,25 @@ use App\Services\Auth\Auth;
 use App\Validators;
 use App\Validators\Invite\InviteValidator;
 use App\Validators\Auth\RegistrationValidator;
+use App\Services\Organization\OrganiztionService;
+use App\Application\Actions\Organization\OrganizationAction;
+use App\Persistance\Repositories\Organization\OrganizationRepository;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        OrganizationRepository::class => function(ContainerInterface $c)
+        {
+            $c->get(DataBase::class);
+            return new OrganizationRepository();
+        },
+        OrganiztionService::class => function(ContainerInterface $c)
+        {
+            return new OrganiztionService($c->get(OrganizationRepository::class));
+        },
+        OrganizationAction::class => function(ContainerInterface $c)
+        {
+            return new OrganizationAction($c->get(OrganiztionService::class));
+        },
         InviteAction::class => function(ContainerInterface $c){
             return new InviteAction($c->get(Invite::class));
         },

@@ -7,9 +7,11 @@
  */
 
 namespace App\Persistance\Repositories\User;
+use App\Domain\Models\IModel;
+use App\Domain\Models\IRepository;
 use App\Persistance\ModelsEloquant\LoginToken\RefreshToken as RToken;
 
-class RefreshTokenRepository
+class RefreshTokenRepository implements IRepository
 {
     public function refreshTokenIsSet(string $token):bool
     {
@@ -44,5 +46,28 @@ class RefreshTokenRepository
         RToken::query()->where('email', '=', $email)->update([
             'token' => $token
         ]);
+    }
+
+    public function get(int $id): IModel
+    {
+        // TODO: Implement get() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(): array
+    {
+        // TODO: Implement getAll() method.
+    }
+
+    public function add(IModel $model)
+    {
+        // TODO: Implement add() method.
+    }
+
+    public function delete(int $id)
+    {
+        // TODO: Implement delete() method.
     }
 }

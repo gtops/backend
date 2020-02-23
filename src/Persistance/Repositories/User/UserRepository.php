@@ -7,10 +7,12 @@
  */
 
 namespace App\Persistance\Repositories\User;
+use App\Domain\Models\IModel;
+use App\Domain\Models\IRepository;
 use App\Persistance\ModelsEloquant\User\User as UserElaquent;
 use App\Persistance\Repositories\Role;
 
-class UserRepository
+class UserRepository implements IRepository
 {
     public function userIsSetOnDBWithEmail($email)
     {
@@ -63,5 +65,28 @@ class UserRepository
             'is_activity' => 1,
             'registration_date' => (new \DateTime())->format('Y-m-d H:i:s')
         ]);
+    }
+
+    public function get(int $id): IModel
+    {
+        // TODO: Implement get() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(): array
+    {
+        // TODO: Implement getAll() method.
+    }
+
+    public function add(IModel $model)
+    {
+        // TODO: Implement add() method.
+    }
+
+    public function delete(int $id)
+    {
+        // TODO: Implement delete() method.
     }
 }

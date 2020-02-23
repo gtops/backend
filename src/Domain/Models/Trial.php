@@ -9,7 +9,7 @@
 namespace App\Domain\Models;
 
 
-class Trial
+class Trial implements IModel
 {
     private $trialName;
     private $trialId;
@@ -77,5 +77,20 @@ class Trial
     public function getSecondResult():int
     {
         return $this->secondResult;
+    }
+
+    public function toArray(): array
+    {
+        return [
+                'trialName' => $this->getTrialName(),
+                'trialId' => $this->getTrialId(),
+                'resultForSilver' => $this->getResultForSilver(),
+                'resultForBronze' => $this->getResultForBronze(),
+                'resultForGold' => $this->getResultForGold(),
+                'secondResult' => $this->getSecondResult(),
+                'necessarily' => $this->getNecessarily(),
+                'idGroupInAgeCategory' => $this->getIdGroup(),
+                'typeTime' => $this->getTypeTime()
+        ];
     }
 }

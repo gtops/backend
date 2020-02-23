@@ -9,13 +9,15 @@
 namespace App\Persistance\Repositories\TrialRepository;
 
 
+use App\Domain\Models\IModel;
+use App\Domain\Models\IRepository;
 use App\Domain\Models\Trial;
 use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
 use App\Persistance\ModelsEloquant\ResultGuide\ResultGuide;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Monolog\Logger;
 
-class TrialRepository
+class TrialRepository implements IRepository
 {
     public function getNameOfAgeCategory(int $age)
     {
@@ -85,5 +87,28 @@ class TrialRepository
         }
 
         return 0;
+    }
+
+    public function get(int $id): IModel
+    {
+        // TODO: Implement get() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(): array
+    {
+        // TODO: Implement getAll() method.
+    }
+
+    public function add(IModel $model)
+    {
+        // TODO: Implement add() method.
+    }
+
+    public function delete(int $id)
+    {
+        // TODO: Implement delete() method.
     }
 }
