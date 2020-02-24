@@ -112,7 +112,7 @@ class UserRepository implements IRepository
 
     public function delete(int $id)
     {
-        // TODO: Implement delete() method.
+
     }
 
     public function update(Organization $organization)

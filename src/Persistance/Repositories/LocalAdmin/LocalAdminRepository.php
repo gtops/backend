@@ -6,6 +6,7 @@ use App\Domain\Models\IRepository;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\LocalAdmin\LocalAdminNotFoundException;
 use App\Domain\Models\Organization;
+use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Persistance\ModelsEloquant\LocalAdmin\LocalAdmin as LocalAdminEloquant;
 use function MongoDB\BSON\toRelaxedExtendedJSON;
@@ -20,6 +21,32 @@ class LocalAdminRepository implements IRepository
 
     public function get(int $id): ?IModel
     {
+        $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->get([
+            'user.user_id',
+            'user.name',
+            'user.email',
+            'user.role_id',
+            'user.is_activity',
+            'user.registration_date',
+            'local_admin.organization_id',
+            'local_admin.local_admin_id'
+        ]);
+
+        if (count($result) == 0){
+            return null;
+        }
+
+        $user = UserCreater::createModel([
+            'id' => $result[0]['user_id'],
+            'name' => $result[0]['name'],
+            'password' => '',
+            'email' => $result[0]['email'],
+            'roleId' => $result[0]['role_id'],
+            'dateTime' => new \DateTime($result[0]['registration_date']),
+            'isActivity' => $result[0]['is_activity']
+        ]);
+
+        return new LocalAdmin($user, $result[0]['organization_id'], $result[0]['local_admin_id']);
     }
 
     /**
@@ -27,7 +54,26 @@ class LocalAdminRepository implements IRepository
      */
     public function getAll(): ?array
     {
-        // TODO: Implement getAll() method.
+        $results = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->get([
+            'user.user_id',
+            'user.name',
+            'user.email',
+            'user.role_id',
+            'user.is_activity',
+            'user.registration_date',
+            'local_admin.organization.id'
+        ]);
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        $localAdmins = [];
+        foreach ($results as $result){
+            $localAdmins[] = $result;
+        }
+
+        return $localAdmins;
     }
 
     /**@var $model LocalAdmin*/
@@ -58,7 +104,7 @@ class LocalAdminRepository implements IRepository
 
     public function delete(int $id)
     {
-        // TODO: Implement delete() method.
+        LocalAdminEloquant::query()->where('local_admin_id', '=', $id)->delete();
     }
 
     public function update(Organization $organization)

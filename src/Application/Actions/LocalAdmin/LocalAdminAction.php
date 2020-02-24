@@ -28,4 +28,12 @@ class LocalAdminAction extends Action
         }
         return $this->respond(200, ['id' => $localAdminId], $response);
     }
+
+    public function delete(Request $request, Response $response, $args)
+    {
+        $idOrganization = (int)$args['id'];
+        $idLocalAdmin = (int)$args['idLocalAdmin'];
+        $this->localAdminService->delete($idLocalAdmin, $idOrganization, $response);
+        return $response;
+    }
 }

@@ -81,7 +81,7 @@ class User implements IModel
     public function toArray(): array
     {
         return [
-            'id' => $this->getName(),
+            'userId' => $this->getName(),
             'name' => $this->getName(),
             'password' => $this->getPassword(),
             'email' => $this->getEmail(),

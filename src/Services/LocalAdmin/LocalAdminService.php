@@ -72,8 +72,21 @@ class LocalAdminService
 
     }
 
-    public function delete(int $id)
+    public function delete(int $localAdminId, int $organizationId, ResponseInterface $response)
     {
+        /**@var $localAdmin LocalAdmin*/
+        $localAdmin = $this->localAdminRepository->get($localAdminId);
+
+        if ($localAdmin == null){
+            return $response->withStatus(200);
+        }
+
+        if ($localAdmin->getOrganizationId() != $organizationId){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данный локальный администратор не относится к переданной организации'))]));
+            return $response->withStatus(400);
+        }
+
+        $this->localAdminRepository->delete($localAdminId);
     }
 
     public function get(int $id): ?LocalAdmin

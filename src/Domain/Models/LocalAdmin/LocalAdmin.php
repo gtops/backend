@@ -35,7 +35,7 @@ class LocalAdmin implements \App\Domain\Models\IModel
     {
         $localAdmin = $this->user->toArray();
         $localAdmin['organizationId'] = $this->organizationId;
-        $localAdmin['id'] = $this->getId();
+        $localAdmin['localAdminId'] = $this->getId();
         return $localAdmin;
     }
 }
