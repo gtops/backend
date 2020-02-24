@@ -61,7 +61,7 @@ class LocalAdminRepository implements IRepository
             'user.role_id',
             'user.is_activity',
             'user.registration_date',
-            'local_admin.organization.id'
+            'local_admin.organization_id'
         ]);
 
         if (count($results) == 0){

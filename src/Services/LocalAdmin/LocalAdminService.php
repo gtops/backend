@@ -4,6 +4,7 @@ namespace App\Services\LocalAdmin;
 
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
+use App\Domain\Models\IModel;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\Role\Role;
 use App\Domain\Models\User\UserCreater;
@@ -89,13 +90,36 @@ class LocalAdminService
         $this->localAdminRepository->delete($localAdminId);
     }
 
-    public function get(int $id): ?LocalAdmin
+    public function get(int $id, int $organizationId): ?IModel
     {
+        /**@var $localAdmin LocalAdmin*/
+        $localAdmin = $this->localAdminRepository->get($id);
+        if ($localAdmin == null){
+            return null;
+        }
 
+        if ($localAdmin->getOrganizationId() != $organizationId){
+            return null;
+        }
+
+        return $localAdmin;
     }
 
-    public function getAll():array
+    public function getAll(int $organizationId):array
     {
+        $response = [];
+        $localAdmins = $this->localAdminRepository->getAll();
+        foreach ($localAdmins as $localAdmin) {
+            if ($localAdmin['organization_id'] == $organizationId){
+                $response[] = $localAdmin;
+            }
+        }
+
+        if (count($response) == 0){
+            return null;
+        }
+
+        return $response;
 
     }
 

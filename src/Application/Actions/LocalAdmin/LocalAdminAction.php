@@ -31,9 +31,37 @@ class LocalAdminAction extends Action
 
     public function delete(Request $request, Response $response, $args)
     {
+        //TODO валидация на то, что эту операцию пытается делать глобальный администратор
         $idOrganization = (int)$args['id'];
         $idLocalAdmin = (int)$args['idLocalAdmin'];
         $this->localAdminService->delete($idLocalAdmin, $idOrganization, $response);
         return $response;
+    }
+
+    public function get(Request $request, Response $response, $args)
+    {
+        $idOrganization = (int)$args['id'];
+        $idLocalAdmin = (int)$args['idLocalAdmin'];
+
+        $localAdmin = $this->localAdminService->get($idLocalAdmin, $idOrganization);
+
+        if ($localAdmin == null){
+            return $response->withStatus(404);
+        }
+        $localAdminInArray = $localAdmin->toArray();
+        unset($localAdminInArray['password']);
+        return $this->respond(200, $localAdminInArray, $response);
+    }
+
+    public function getAll(Request $request, Response $response, $args)
+    {
+        $idOrganization = (int)$args['id'];
+        $localAdmins = $this->localAdminService->getAll($idOrganization);
+
+        if ($localAdmins == null){
+            return $response->withStatus(404);
+        }
+
+        return $this->respond(200, $localAdmins, $response);
     }
 }
