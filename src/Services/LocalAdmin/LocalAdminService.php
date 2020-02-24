@@ -105,7 +105,7 @@ class LocalAdminService
         return $localAdmin;
     }
 
-    public function getAll(int $organizationId):array
+    public function getAll(int $organizationId):?array
     {
         $response = [];
         $localAdmins = $this->localAdminRepository->getAll();

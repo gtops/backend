@@ -118,6 +118,15 @@ abstract class BaseValidator implements ValidateStrategy
         }
     }
 
+    protected function addNotNullRules(array $paramNames)
+    {
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\NotNull([
+                'message' => '{{' . $paramName . '}} не должен быть null:' . BaseValidator::EMPTY_TYPING
+            ]));
+        }
+    }
+
     protected function addNotNullNotBlankRules(array $paramNames)
     {
         foreach ($paramNames as $paramName) {

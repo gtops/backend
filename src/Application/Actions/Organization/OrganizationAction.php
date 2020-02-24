@@ -39,12 +39,15 @@ class OrganizationAction extends \App\Application\Actions\Action
      */
     public function add(Request $request, Response $response, $args): Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
         $rowParams = json_decode($request->getBody()->getContents(), true);
         $rowParams['id'] = -1;
         $userRole = $request->getHeader('userRole')[0];
-        if ($userRole == AuthorizeMiddleware::UNAUTHORIZED_USER){
-            return $response->withStatus(401);
-        }elseif ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
+
+        if ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
             return $response->withStatus(403);
         }
 
@@ -137,9 +140,11 @@ class OrganizationAction extends \App\Application\Actions\Action
      */
     public function delete(Request $request, Response $response, $args): Response
     {
-        if ($request->getHeader('userRole') == AuthorizeMiddleware::UNAUTHORIZED_USER){
+        if ($this->tokenWithError($response, $request)){
             return $response->withStatus(401);
-        }elseif ($request->getHeader('userRole') != AuthorizeMiddleware::GLOBAL_ADMIN){
+        }
+
+        if ($request->getHeader('userRole') != AuthorizeMiddleware::GLOBAL_ADMIN){
             return $response->withStatus(403);
         }
 
@@ -169,10 +174,12 @@ class OrganizationAction extends \App\Application\Actions\Action
      */
     public function update(Request $request, Response $response, $args): Response
     {
-        $userRole = $request->getHeader('userRole')[0];
-        if ($userRole == AuthorizeMiddleware::UNAUTHORIZED_USER){
+        if ($this->tokenWithError($response, $request)){
             return $response->withStatus(401);
-        }elseif ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        if ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
             return $response->withStatus(403);
         }
 
