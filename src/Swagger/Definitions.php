@@ -31,3 +31,28 @@
  *    @SWG\Property(property="correspondentAccount", type="string"),
  * )
  */
+
+/**
+ * @SWG\Definition(
+ *    definition="LocalAdminRequest",
+ *    type="object",
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="password", type="string"),
+ *    @SWG\Property(property="email", type="string"),
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="LocalAdminResponse",
+ *    type="object",
+ *    @SWG\Property(property="userId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="email", type="string"),
+ *    @SWG\Property(property="roleId", type="integer"),
+ *    @SWG\Property(property="isActivity", type="string"),
+ *    @SWG\Property(property="registrationDate", type="string"),
+ *    @SWG\Property(property="organizationId", type="string"),
+ *    @SWG\Property(property="localAdminId", type="integer")
+ * )
+ */

@@ -1,4 +1,26 @@
-<?php
+/*
+*
+* * @SWG\Post(
+*   path="/api/v1/auth/registration",
+*   summary="регистрирует пользователя по приглашению",
+*   operationId="регистрирует пользователя по приглашению",
+*   tags={"User"},
+*   @SWG\Parameter(in="header", name="Authorization", type="string"),
+*   @SWG\Parameter(in="body", name="body", @SWG\Schema(
+*      @SWG\Property(property="name", type="string"),
+*      @SWG\Property(property="password", type="string", description="length min 6 symbols")
+*    )),
+*   @SWG\Response(response=200, description="OK"),
+*   @SWG\Response(response=400, description="Error", @SWG\Schema(
+*          @SWG\Property(property="errors", type="array", @SWG\Items(
+*              @SWG\Property(property="type", type="string"),
+*              @SWG\Property(property="description", type="string")
+*          ))
+*     ))
+* )
+*
+*/
+
 /**
  * Created by PhpStorm.
  * User: Admin

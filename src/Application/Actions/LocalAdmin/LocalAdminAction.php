@@ -19,6 +19,25 @@ class LocalAdminAction extends Action
         $this->localAdminService = $localAdminService;
     }
 
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/organization/{id}/localAdmin/withoutMessageToEmail",
+     *   summary="добавляет локального администратора без отправки ему на почту ссылки, по которой он может перейти, чтобы задать свое имя и новый пароль",
+     *   tags={"LocalAdmin"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять локального админа"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/LocalAdminRequest")),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function addWithoutMessageToEmail(Request $request, Response $response, $args):Response
     {
         if ($this->tokenWithError($response, $request)){
@@ -48,6 +67,25 @@ class LocalAdminAction extends Action
         return $this->respond(200, ['id' => $localAdminId], $response);
     }
 
+    /**
+     *
+     * * @SWG\Delete(
+     *   path="/api/v1/organization/{id}/localAdmin/{idLocalAdmin}",
+     *   summary="удаляет локального админа, относящего к определенной организации, по id",
+     *   tags={"LocalAdmin"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Parameter(in="query", name="idLocalAdmin", type="integer", description="id локального админа"),
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function delete(Request $request, Response $response, $args)
     {
         if ($this->tokenWithError($response, $request)){
@@ -65,6 +103,27 @@ class LocalAdminAction extends Action
         return $response;
     }
 
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/api/v1/organization/{id}/localAdmin/{idLocalAdmin}",
+     *   summary="получение локального админа по id, относящийся к конекртной организации",
+     *   tags={"LocalAdmin"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Parameter(in="query", name="idLocalAdmin", type="integer", description="id локального админа"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Schema(ref="#/definitions/LocalAdminResponse")
+     *   ),
+     *  @SWG\Response(response=404, description="Not found"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function get(Request $request, Response $response, $args)
     {
         if ($this->tokenWithError($response, $request)){
@@ -89,6 +148,26 @@ class LocalAdminAction extends Action
         return $this->respond(200, $localAdminInArray, $response);
     }
 
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/api/v1/organization/{id}/localAdmin",
+     *   summary="получение всех существующиъх локальных администраторов, относящихся к определенной организации",
+     *   tags={"LocalAdmin"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Property(type="array", @SWG\Items(ref="#/definitions/LocalAdminResponse"))
+     *   ),
+     *  @SWG\Response(response=404, description="Not found"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function getAll(Request $request, Response $response, $args)
     {
         if ($this->tokenWithError($response, $request)){
