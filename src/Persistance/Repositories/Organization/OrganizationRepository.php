@@ -60,15 +60,31 @@ class OrganizationRepository implements \App\Domain\Models\IRepository
     }
 
     /**@var $model Organization*/
-    public function add(\App\Domain\Models\IModel $model)
+    public function add(\App\Domain\Models\IModel $model):int
     {
         $modelInArray = $model->toArray();
         unset($modelInArray['id']);
-        OrgPDO::query()->create($modelInArray);
+        $id = OrgPDO::query()->create($modelInArray);
+        return $id->getAttribute('organization_id');
     }
 
     public function delete(int $id)
     {
         OrgPDO::query()->where('organization_id', '=', $id)->delete();
+    }
+
+    public function update(Organization $organization)
+    {
+        OrgPDO::query()->where('organization_id', '=', $organization->getId())->update([
+            'name' => $organization->getName(),
+            'address' => $organization->getAddress(),
+            'leader' => $organization->getLeader(),
+            'phone_number' => $organization->getPhoneNumber(),
+            'OQRN' => $organization->getOqrn(),
+            'payment_account' => $organization->getPaymentAccount(),
+            'branch' => $organization->getBranch(),
+            'bik' => $organization->getBik(),
+            'correspondent_account' => $organization->getCorrespondentAccount()
+        ]);
     }
 }

@@ -22,7 +22,7 @@ class Role
 
     public function getList(array $params, Response $response):Response
     {
-        $response->getBody()->write(json_encode(['roles' => $this->roleRepos->getRoles()]));
+        $response->getBody()->write(json_encode(['roles' => $this->roleRepos->getAll()]));
         return $response;
     }
 }

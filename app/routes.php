@@ -16,6 +16,7 @@ use App\Application\Actions\Trial\TrialAction;
 use App\Application\Actions\Role\RoleAction;
 use App\Application\Actions\Invite\InviteAction;
 use App\Application\Actions\Organization\OrganizationAction;
+use App\Application\Actions\LocalAdmin\LocalAdminAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
@@ -38,6 +39,14 @@ return function (App $app) {
     $app->delete('/api/v1/organization/{id:[0-9]+}', OrganizationAction::class.':delete');
     $app->get('/api/v1/organization', OrganizationAction::class.':getAll');
     $app->put('/api/v1/organization/{id:[0-9]+}', OrganizationAction::class.':update');
+
+    //localAdmin
+    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':add');
+    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin/withoutMessageToEmail', LocalAdminAction::class.':addWithoutMessageToEmail');
+    $app->get('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':getAll');
+    $app->get('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', LocalAdminAction::class.':get');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', LocalAdminAction::class.':delete');
+    $app->put('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', OrganizationAction::class.':update');
 
     $app->get('/api/v1/role', RoleAction::class.':getList');
 

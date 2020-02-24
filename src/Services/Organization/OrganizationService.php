@@ -5,7 +5,7 @@ use App\Domain\Models\IRepository;
 use App\Domain\Models\Organization;
 use App\Domain\Models\IModel;
 
-class OrganiztionService
+class OrganizationService
 {
     private $organizationRepository;
     public function __construct(IRepository $orgRep)
@@ -15,7 +15,7 @@ class OrganiztionService
 
     public function addOrganization(Organization $organization)
     {
-        $this->organizationRepository->add($organization);
+        return $this->organizationRepository->add($organization);
     }
 
     public function deleteOrganization(int $id)
@@ -34,5 +34,10 @@ class OrganiztionService
     public function getOrganizations():?array
     {
         return $this->organizationRepository->getAll();
+    }
+
+    public function update(Organization $organization)
+    {
+        $this->organizationRepository->update($organization);
     }
 }

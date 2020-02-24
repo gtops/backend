@@ -2,30 +2,80 @@
 
 namespace App\Application\Actions\Organization;
 
+use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\Presenters\OrganizationsToResponsePresenter;
+use App\Validators\Organization\OrganizationObjectValidator;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Domain\Models\OrganizationCreater;
-use App\Services\Organization\OrganiztionService;
+use App\Services\Organization\OrganizationService;
 
 class OrganizationAction extends \App\Application\Actions\Action
 {
     private $organizationService;
 
-    public function __construct(OrganiztionService $organizationService)
+    public function __construct(OrganizationService $organizationService)
     {
         $this->organizationService = $organizationService;
     }
 
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/organization",
+     *   summary="добавляет организацию",
+     *   tags={"Organization"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/OrganizationRequest")),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function add(Request $request, Response $response, $args): Response
     {
-        $rawParams = json_decode($request->getBody()->getContents(), true);
-        $rawParams['id'] = -1;
-        /**TODO сделать валидацию объекта организация*/
-        $this->organizationService->addOrganization(OrganizationCreater::createModel($rawParams));
-        return $response;
-    }
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $rowParams['id'] = -1;
+        $userRole = $request->getHeader('userRole')[0];
+        if ($userRole == AuthorizeMiddleware::UNAUTHORIZED_USER){
+            return $response->withStatus(401);
+        }elseif ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
+            return $response->withStatus(403);
+        }
 
+        $errors = (new OrganizationObjectValidator())->validate($rowParams);
+        if (count($errors) > 0){
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $id = $this->organizationService->addOrganization(OrganizationCreater::createModel($rowParams));
+        return $this->respond(200, ['id' => $id], $response);
+    }
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/api/v1/organization/{id}",
+     *   summary="получение организации по id",
+     *   tags={"Organization"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Schema(ref="#/definitions/OrganizationResponse")
+     *   ),
+     *  @SWG\Response(response=404, description="Not found"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function get(Request $request, Response $response, $args): Response
     {
         $id = $args['id'];
@@ -37,6 +87,25 @@ class OrganizationAction extends \App\Application\Actions\Action
         return $this->respond(200, $organization->toArray(), $response);
     }
 
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/api/v1/organization",
+     *   summary="получение все существующие организации",
+     *   tags={"Organization"},
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Property(type="array", @SWG\Items(ref="#/definitions/OrganizationResponse"))
+     *   ),
+     *  @SWG\Response(response=404, description="Not found"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function getAll(Request $request, Response $response, $args): Response
     {
         $organizations = $this->organizationService->getOrganizations();
@@ -47,15 +116,77 @@ class OrganizationAction extends \App\Application\Actions\Action
         return $this->respond(200, OrganizationsToResponsePresenter::getView($organizations), $response);
     }
 
+    /**
+     *
+     * * @SWG\Delete(
+     *   path="/api/v1/organization/{id}",
+     *   summary="удаляет организацию по id",
+     *   tags={"Organization"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Response(response=200, description="OK")
+     *   ),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function delete(Request $request, Response $response, $args): Response
     {
+        if ($request->getHeader('userRole') == AuthorizeMiddleware::UNAUTHORIZED_USER){
+            return $response->withStatus(401);
+        }elseif ($request->getHeader('userRole') != AuthorizeMiddleware::GLOBAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
         $id = $args['id'];
         $this->organizationService->deleteOrganization($id);
         return $response;
     }
 
+    /**
+     *
+     * @SWG\Put(
+     *   path="/api/v1/organization/{id}",
+     *   summary="обновляет данные об организации, id которого передан",
+     *   tags={"Organization"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/OrganizationRequest")),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
     public function update(Request $request, Response $response, $args): Response
     {
+        $userRole = $request->getHeader('userRole')[0];
+        if ($userRole == AuthorizeMiddleware::UNAUTHORIZED_USER){
+            return $response->withStatus(401);
+        }elseif ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
+            return $response->withStatus(403);
+        }
 
+        $id = (int)$args['id'];
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $rowParams['id'] = $id;
+
+        $errors = (new OrganizationObjectValidator())->validate($rowParams);
+        if (count($errors) > 0){
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $organization = OrganizationCreater::createModel($rowParams);
+        $this->organizationService->update($organization);
+        return $response;
     }
 }

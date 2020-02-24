@@ -46,7 +46,7 @@ abstract class BaseValidator implements ValidateStrategy
 
     }
 
-    protected function addSpecificRules(array $params, array $options = null)
+    protected function addSpecificRules(array &$params, array $options = null)
     {
 
     }

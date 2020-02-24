@@ -15,6 +15,10 @@ class AuthorizeMiddleware implements Middleware
     /**
      * {@inheritdoc}
      */
+    const UNAUTHORIZED_USER = 'UnauthorizedUser';
+    const GLOBAL_ADMIN = 'Глобальный администратор';
+    const LOCAL_ADMIN = 'Локальный администратор';
+
     public function process(Request $request, RequestHandler $handler): Response
     {
         $token = $request->getHeader('Authorization')[0] ?? '';
@@ -31,6 +35,7 @@ class AuthorizeMiddleware implements Middleware
 
         }catch (\Exception $err){
             $request = $request->withHeader('error', 'невалидный токен');
+            $request = $request->withHeader('userRole', self::UNAUTHORIZED_USER);
         }
 
         return $handler->handle($request);

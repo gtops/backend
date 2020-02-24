@@ -9,8 +9,16 @@
 namespace App\Persistance\Repositories\User;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
+use App\Domain\Models\Organization;
+use App\Domain\Models\Role\RoleNotFoundException;
+use App\Domain\Models\User\User;
+use App\Domain\Models\User\UserCreater;
 use App\Persistance\ModelsEloquant\User\User as UserElaquent;
 use App\Persistance\Repositories\Role;
+use App\Services\Token\Token;
+use Illuminate\Support\Facades\Date;
+use Symfony\Component\Validator\Constraints\DateTime;
+use App\Persistance\Repositories\Role\RoleRepository;
 
 class UserRepository implements IRepository
 {
@@ -45,31 +53,53 @@ class UserRepository implements IRepository
         return $roles[0]->name_of_role;
     }
 
-    public function createUser($data)
+    /**@var $user User*/
+    public function add(IModel $user):int
     {
-        $roleRep = new Role\RoleRepository();
-        $roles = $roleRep->getRoles();
-
-        $roleId = 0;
-        foreach ($roles as $role){
-            if ($role['name_of_role'] == $data['role']){
-                $roleId = (int)$role['role_id'];
-            }
+        if (!($user instanceof User)){
+            throw new \TypeError();
         }
 
-        UserElaquent::query()->create([
-            'name' => $data['name'],
-            'password' => $data['password'],
-            'email' => $data['email'],
-            'role_id' => $roleId,
+        $roleRep = new RoleRepository();
+        $roles = $roleRep->get($user->getRoleId());
+
+        if ($roles == null){
+            throw new RoleNotFoundException('role not found');
+        }
+
+        $userId = UserElaquent::query()->create([
+            'name' => $user->getName(),
+            'password' => $user->getPassword(),
+            'email' => $user->getEmail(),
+            'role_id' => $user->getRoleId(),
             'is_activity' => 1,
-            'registration_date' => (new \DateTime())->format('Y-m-d H:i:s')
-        ]);
+            'registration_date' => $user->getRegistrationDate()
+        ])->getAttribute('user_id');
+
+        return $userId;
     }
 
     public function get(int $id): IModel
     {
         // TODO: Implement get() method.
+    }
+
+    public function getByEmail(string $email):?User
+    {
+        $userElaquent = UserElaquent::query()->where('email', '=', $email)->get();
+        if (count($userElaquent) == 0){
+            return null;
+        }
+
+        return UserCreater::createModel([
+            'id' => $userElaquent[0]['user_id'],
+            'name' => $userElaquent[0]['name'],
+            'password' => $userElaquent[0]['password'],
+            'email' => $userElaquent[0],
+            'roleId' => $userElaquent[0]['role_id'],
+            'isActivity' => $userElaquent[0]['is_activity'],
+            'dateTime' => new \DateTime($userElaquent[0]['registration_date'])
+        ]);
     }
 
     /**
@@ -80,13 +110,13 @@ class UserRepository implements IRepository
         // TODO: Implement getAll() method.
     }
 
-    public function add(IModel $model)
-    {
-        // TODO: Implement add() method.
-    }
-
     public function delete(int $id)
     {
         // TODO: Implement delete() method.
+    }
+
+    public function update(Organization $organization)
+    {
+        // TODO: Implement update() method.
     }
 }

@@ -129,7 +129,7 @@ class Auth
             return $response->withStatus(400);
         }
 
-        $this->userRepository->createUser([
+        $this->userRepository->addd([
             'email' => $jwtData['email'],
             'role' => $jwtData['role'],
             'password' => $params['password'],

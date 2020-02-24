@@ -13,7 +13,7 @@ use App\Validators\BaseValidator;
 
 class InviteValidator extends BaseValidator
 {
-    protected function addSpecificRules(array $params, array $options = null)
+    protected function addSpecificRules(array &$params, array $options = null)
     {
         $this->addNotNullNotBlankRules(['userRole', 'userEmail', 'email', 'role']);
         $this->addStringRule(['role']);

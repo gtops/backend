@@ -31,24 +31,40 @@ use App\Services\Auth\Auth;
 use App\Validators;
 use App\Validators\Invite\InviteValidator;
 use App\Validators\Auth\RegistrationValidator;
-use App\Services\Organization\OrganiztionService;
+use App\Services\Organization\OrganizationService;
 use App\Application\Actions\Organization\OrganizationAction;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
+use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
+use App\Services\LocalAdmin\LocalAdminService;
+use App\Application\Actions\LocalAdmin\LocalAdminAction;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        LocalAdminAction::class => function(ContainerInterface $c)
+        {
+            return new LocalAdminAction($c->get(LocalAdminService::class));
+        },
+        LocalAdminService::class => function(ContainerInterface $c)
+        {
+            return new LocalAdminService($c->get(LocalAdminRepository::class), $c->get(RoleRepository::class), $c->get(UserRepository::class), $c->get(OrganizationRepository::class));
+        },
+        LocalAdminRepository::class => function(ContainerInterface $c)
+        {
+            $c->get(DataBase::class);
+            return new LocalAdminRepository();
+        },
         OrganizationRepository::class => function(ContainerInterface $c)
         {
             $c->get(DataBase::class);
             return new OrganizationRepository();
         },
-        OrganiztionService::class => function(ContainerInterface $c)
+        OrganizationService::class => function(ContainerInterface $c)
         {
-            return new OrganiztionService($c->get(OrganizationRepository::class));
+            return new OrganizationService($c->get(OrganizationRepository::class));
         },
         OrganizationAction::class => function(ContainerInterface $c)
         {
-            return new OrganizationAction($c->get(OrganiztionService::class));
+            return new OrganizationAction($c->get(OrganizationService::class));
         },
         InviteAction::class => function(ContainerInterface $c){
             return new InviteAction($c->get(Invite::class));

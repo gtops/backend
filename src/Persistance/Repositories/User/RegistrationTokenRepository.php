@@ -9,6 +9,7 @@
 namespace App\Persistance\Repositories\User;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
+use App\Domain\Models\Organization;
 use App\Persistance\ModelsEloquant\RegistrationToken\RegistrationToken as Token;
 
 class RegistrationTokenRepository implements IRepository
@@ -52,7 +53,7 @@ class RegistrationTokenRepository implements IRepository
         // TODO: Implement getAll() method.
     }
 
-    public function add(IModel $model)
+    public function add(IModel $model):int
     {
         // TODO: Implement add() method.
     }
@@ -60,5 +61,10 @@ class RegistrationTokenRepository implements IRepository
     public function delete(int $id)
     {
         // TODO: Implement delete() method.
+    }
+
+    public function update(Organization $organization)
+    {
+        // TODO: Implement update() method.
     }
 }

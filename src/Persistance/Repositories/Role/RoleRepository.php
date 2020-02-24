@@ -9,12 +9,14 @@
 namespace App\Persistance\Repositories\Role;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
+use App\Domain\Models\Organization;
 use App\Persistance\ModelsEloquant\Role\Role;
 use Monolog\Logger;
+use App\Domain\Models\Role\Role as ModelRole;
 
 class RoleRepository implements IRepository
 {
-    public function getRoles():array
+    public function getAll():array
     {
         $roles = [];
         $roleSql = Role::query()->where('name_of_role', '!=', 'Глобальный администратор')->get();
@@ -25,20 +27,23 @@ class RoleRepository implements IRepository
         return $roles;
     }
 
-    public function get(int $id): IModel
+    public function get(int $id): ?IModel
     {
-        // TODO: Implement get() method.
+        $roleSql = Role::query()->where('role_id', '=', $id)->get();
+
+        if (count($roleSql) == 0){
+            return null;
+        }
+
+        return new ModelRole($id, $roleSql[0]['name_of_role']);
     }
 
     /**
      * @inheritDoc
      */
-    public function getAll(): array
-    {
-        // TODO: Implement getAll() method.
-    }
 
-    public function add(IModel $model)
+
+    public function add(IModel $model):int
     {
         // TODO: Implement add() method.
     }
@@ -46,5 +51,10 @@ class RoleRepository implements IRepository
     public function delete(int $id)
     {
         // TODO: Implement delete() method.
+    }
+
+    public function update(Organization $organization)
+    {
+        // TODO: Implement update() method.
     }
 }
