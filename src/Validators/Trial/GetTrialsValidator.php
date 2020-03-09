@@ -13,7 +13,7 @@ use App\Validators\BaseValidator;
 
 class GetTrialsValidator extends BaseValidator
 {
-    protected function addSpecificRules(array $params, array $options = null)
+    protected function addSpecificRules(array &$params, array $options = null)
     {
         $this->addNotNullNotBlankRules(['gender', 'age']);
         $this->addGreaterThenRule(['age'], 7);

@@ -13,7 +13,7 @@ use App\Validators\BaseValidator;
 
 class GetSecondResultValidator extends BaseValidator
 {
-    protected function addSpecificRules(array $params, array $options = null)
+    protected function addSpecificRules(array &$params, array $options = null)
     {
         $this->addNotNullNotBlankRules(['firstResult', 'id']);
         $this->addIntTypeRule(['id']);
