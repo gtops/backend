@@ -55,6 +55,19 @@
 
 /**
  * @SWG\Definition(
+ *    definition="eventResponse",
+ *    type="object",
+ *    @SWG\Property(property="id", type="string"),
+ *    @SWG\Property(property="organizationId", type="string"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="startDate", type="string"),
+ *    @SWG\Property(property="expirationDate", type="string"),
+ *    @SWG\Property(property="description", type="string"),
+ * )
+ */
+
+/**
+ * @SWG\Definition(
  *    definition="LocalAdminResponse",
  *    type="object",
  *    @SWG\Property(property="userId", type="integer"),

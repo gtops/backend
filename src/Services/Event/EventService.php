@@ -42,7 +42,7 @@ class EventService
         /**@var $event Event*/
         $event = $this->eventRepository->get($eventId);
         if ($event->getIdOrganization() != $organizationId){
-            return $response->withStatus(403);
+            return $response->withStatus(400);
         }
 
         return $this->eventRepository->get($eventId);
@@ -61,5 +61,22 @@ class EventService
         }
 
         return $response->withStatus(200);
+    }
+
+    public function getAll(int $organizationId)
+    {
+        return $this->eventRepository->getAll();
+    }
+
+    public function update(Event $event, string $userEmail, ResponseInterface $response)
+    {
+        $response = $this->getInitedResponseWithStatusIfErrorOfAccess($response, $userEmail, $event->getIdOrganization(), $event->getId());
+        if ($response->getStatusCode() != 200){
+            return $response;
+        }
+
+        $this->eventRepository->update($event);
+
+        return $response;
     }
 }
