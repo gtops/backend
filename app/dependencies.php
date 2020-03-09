@@ -37,6 +37,10 @@ use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Services\LocalAdmin\LocalAdminService;
 use App\Application\Actions\LocalAdmin\LocalAdminAction;
+use App\Application\Actions\Event\EventAction;
+use App\Services\Event;
+use App\Services\Event\EventService;
+use App\Persistance\Repositories\Event\EventRepository;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -66,6 +70,14 @@ return function (ContainerBuilder $containerBuilder) {
         {
             return new OrganizationAction($c->get(OrganizationService::class));
         },
+        EventService::class => function(ContainerInterface $c)
+        {
+            return new EventService($c->get(LocalAdminRepository::class), $c->get(EventRepository::class));
+        },
+        EventAction::class => function(ContainerInterface $c)
+        {
+            return new EventAction($c->get(EventService::class));
+        },
         InviteAction::class => function(ContainerInterface $c){
             return new InviteAction($c->get(Invite::class));
         },
@@ -93,6 +105,10 @@ return function (ContainerBuilder $containerBuilder) {
         },
         Role::class => function(ContainerInterface $c){
             return new Role($c->get(RoleRepository::class));
+        },
+        EventRepository::class => function(ContainerInterface $c) {
+            $c->get(DataBase::class);
+            return new EventRepository();
         },
         RoleRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

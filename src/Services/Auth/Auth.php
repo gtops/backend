@@ -49,7 +49,10 @@ class Auth
                 ->format('Y-m-d H:i:s')
         ]);
 
+        $user = $this->userRepository->getByEmail($params['email']);
+
         $accessToken = Token::getEncodedToken([
+            'userId' => $user->getId(),
             'email' => $params['email'],
             'role' => $role,
             'type' => 'acess token',

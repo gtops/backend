@@ -58,7 +58,6 @@ class LocalAdminAction extends Action
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
-        //TODO валидация объекта локальный администратор
         $localAdminId = $this->localAdminService->addWithoutMessage($rowParams['name'], $rowParams['password'], $rowParams['email'], (int)$args['id'], $response);
 
         if ($localAdminId instanceof  ResponseInterface){
@@ -143,6 +142,7 @@ class LocalAdminAction extends Action
         if ($localAdmin == null){
             return $response->withStatus(404);
         }
+
         $localAdminInArray = $localAdmin->toArray();
         unset($localAdminInArray['password']);
         return $this->respond(200, $localAdminInArray, $response);

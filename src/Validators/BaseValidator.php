@@ -108,6 +108,15 @@ abstract class BaseValidator implements ValidateStrategy
         }
     }
 
+    protected function addDateTypeRule(array $paramNames)
+    {
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Date([
+                'message' => '{{' . $paramName . '}} должен быть датой:' . BaseValidator::INVALID_TYPING
+            ]));
+        }
+    }
+
     protected function addIntTypeRule(array $paramNames)
     {
         foreach ($paramNames as $paramName) {

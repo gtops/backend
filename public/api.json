@@ -10,6 +10,67 @@
         "http"
     ],
     "paths": {
+        "/api/v1/organization/{id}/event": {
+            "post": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "\u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0435\u0442 \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u0435 \u043a \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438 \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u044b\u043c \u0430\u0434\u043c\u0438\u043d\u043e\u043c",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "\u0442\u043e\u043a\u0435\u043d",
+                        "type": "string"
+                    },
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438, \u043a \u043a\u043e\u0442\u043e\u0440\u043e\u0439 \u0431\u0443\u0434\u0435\u043c \u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0442\u044c \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/eventRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/organization/{id}/localAdmin/withoutMessageToEmail": {
             "post": {
                 "tags": [
@@ -633,6 +694,9 @@
                                 },
                                 "refreshToken": {
                                     "type": "string"
+                                },
+                                "role": {
+                                    "type": "string"
                                 }
                             }
                         }
@@ -789,6 +853,23 @@
                     "type": "string"
                 },
                 "email": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "eventRequest": {
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "expirationDate": {
+                    "type": "string"
+                },
+                "description": {
                     "type": "string"
                 }
             },
