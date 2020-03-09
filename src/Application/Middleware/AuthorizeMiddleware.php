@@ -18,6 +18,7 @@ class AuthorizeMiddleware implements Middleware
     const UNAUTHORIZED_USER = 'UnauthorizedUser';
     const GLOBAL_ADMIN = 'Глобальный администратор';
     const LOCAL_ADMIN = 'Локальный администратор';
+    const SIMPLE_USER = 'Простой пользователь';
 
     public function process(Request $request, RequestHandler $handler): Response
     {

@@ -13,6 +13,7 @@ use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\Token\Token;
+use http\Client\Curl\User;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Response;
 
@@ -45,10 +46,10 @@ class LocalAdminService
 
         $user = $this->userRepository->getByEmail($email);
         $userId = -1;
-        if ($user == null) {
-            $roles = $this->roleRepository->getAll();
-            $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::LOCAL_ADMIN, $roles);
+        $roles = $this->roleRepository->getAll();
+        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::LOCAL_ADMIN, $roles);
 
+        if ($user == null) {
             $rowParams = [
                 'id' => $userId,
                 'name' => $name,
@@ -62,6 +63,9 @@ class LocalAdminService
             $user = UserCreater::createModel($rowParams);
             $userId = $this->userRepository->add($user);
             $user->setId($userId);
+        }else{
+            $user->setRoleId($roleId);
+            $this->userRepository->update($user);
         }
 
 
@@ -87,6 +91,11 @@ class LocalAdminService
             return $response->withStatus(400);
         }
 
+        $roles = $this->roleRepository->getAll();
+        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles);
+        $user = $this->userRepository->getByEmail($localAdmin->getUser()->getEmail());
+        $user->setRoleId($roleId);
+        $this->userRepository->update($user);
         $this->localAdminRepository->delete($localAdminId);
     }
 

@@ -72,7 +72,7 @@ class RefreshTokenRepository implements IRepository
         // TODO: Implement delete() method.
     }
 
-    public function update(Organization $organization)
+    public function update(IModel $organization)
     {
         // TODO: Implement update() method.
     }

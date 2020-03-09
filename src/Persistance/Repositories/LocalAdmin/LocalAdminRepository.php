@@ -107,7 +107,7 @@ class LocalAdminRepository implements IRepository
         LocalAdminEloquant::query()->where('local_admin_id', '=', $id)->delete();
     }
 
-    public function update(Organization $organization)
+    public function update(IModel $organization)
     {
         // TODO: Implement update() method.
     }

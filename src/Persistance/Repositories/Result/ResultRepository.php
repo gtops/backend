@@ -28,7 +28,7 @@ class ResultRepository implements IRepository
         // TODO: Implement getAll() method.
     }
 
-    public function add(IModel $model)
+    public function add(IModel $model):int
     {
         // TODO: Implement add() method.
     }

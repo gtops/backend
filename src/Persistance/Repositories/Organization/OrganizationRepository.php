@@ -1,5 +1,6 @@
 <?php
 namespace App\Persistance\Repositories\Organization;
+use App\Domain\Models\IModel;
 use \App\Domain\Models\Organization;
 use App\Persistance\ModelsEloquant\Organization\Organization as OrgPDO;
 
@@ -73,7 +74,8 @@ class OrganizationRepository implements \App\Domain\Models\IRepository
         OrgPDO::query()->where('organization_id', '=', $id)->delete();
     }
 
-    public function update(Organization $organization)
+    /**@var $organization Organization*/
+    public function update(IModel $organization)
     {
         OrgPDO::query()->where('organization_id', '=', $organization->getId())->update([
             'name' => $organization->getName(),

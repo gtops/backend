@@ -61,7 +61,8 @@ class AuthAction extends Action
      *    )),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(
      *              @SWG\Property(property="accessToken", type="string"),
-     *              @SWG\Property(property="refreshToken", type="string")
+     *              @SWG\Property(property="refreshToken", type="string"),
+     *              @SWG\Property(property="role", type="string")
      *          )),
      *   @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(

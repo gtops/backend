@@ -13,5 +13,5 @@ interface IRepository
     public function getAll():?array ;
     public function add(IModel $model):int;
     public function delete(int $id);
-    public function update(Organization $organization);
+    public function update(IModel $model);
 }

@@ -13,12 +13,14 @@ use App\Domain\Models\Organization;
 use App\Domain\Models\Role\RoleNotFoundException;
 use App\Domain\Models\User\User;
 use App\Domain\Models\User\UserCreater;
+use App\Persistance\ModelsEloquant\Organization\Organization as OrgPDO;
 use App\Persistance\ModelsEloquant\User\User as UserElaquent;
 use App\Persistance\Repositories\Role;
 use App\Services\Token\Token;
 use Illuminate\Support\Facades\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 use App\Persistance\Repositories\Role\RoleRepository;
+use App\Persistance\ModelsEloquant\User\User as UserPDO;
 
 class UserRepository implements IRepository
 {
@@ -95,7 +97,7 @@ class UserRepository implements IRepository
             'id' => $userElaquent[0]['user_id'],
             'name' => $userElaquent[0]['name'],
             'password' => $userElaquent[0]['password'],
-            'email' => $userElaquent[0],
+            'email' => $userElaquent[0]['email'],
             'roleId' => $userElaquent[0]['role_id'],
             'isActivity' => $userElaquent[0]['is_activity'],
             'dateTime' => new \DateTime($userElaquent[0]['registration_date'])
@@ -115,8 +117,15 @@ class UserRepository implements IRepository
 
     }
 
-    public function update(Organization $organization)
+    /**@var $user User*/
+    public function update(IModel $user)
     {
-        // TODO: Implement update() method.
+        UserPDO::query()->where('user_id', '=', $user->getId())->update([
+            'name' => $user->getName(),
+            'password' => $user->getPassword(),
+            'email' => $user->getEmail(),
+            'role_id' => $user->getRoleId(),
+            'is_activity' => $user->isActivity(),
+            ]);
     }
 }

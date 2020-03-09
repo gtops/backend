@@ -65,7 +65,8 @@ class Auth
 
         $response->getBody()->write(json_encode([
             'accessToken' => $accessToken,
-            'refreshToken' => $refreshToken
+            'refreshToken' => $refreshToken,
+            'role' => $role
         ]));
 
         return $response;
