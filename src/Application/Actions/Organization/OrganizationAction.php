@@ -144,7 +144,7 @@ class OrganizationAction extends \App\Application\Actions\Action
             return $response->withStatus(401);
         }
 
-        if ($request->getHeader('userRole') != AuthorizeMiddleware::GLOBAL_ADMIN){
+        if ($request->getHeader('userRole')[0] != AuthorizeMiddleware::GLOBAL_ADMIN){
             return $response->withStatus(403);
         }
 

@@ -17,7 +17,7 @@ class ResponseEmitter extends SlimResponseEmitter
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 
         $headersControl = $response->getHeaderLine('Access-Control-Allow-Headers');
-        $headersControl = $headersControl.', X-Requested-With, Access-Control-Allow-Headers, Access-Control-Request-Method, Content-Type, Accept, Origin';
+        $headersControl = $headersControl.', X-Requested-With, Access-Control-Allow-Headers, Access-Control-Request-Method, Content-Type, Accept, Origin, Authorization';
 
         $response = $response
             ->withHeader('Access-Control-Allow-Credentials', 'true')

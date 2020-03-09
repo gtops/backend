@@ -11,6 +11,7 @@ namespace App\Persistance\Repositories\TrialRepository;
 
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
+use App\Domain\Models\Organization;
 use App\Domain\Models\Trial;
 use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
 use App\Persistance\ModelsEloquant\ResultGuide\ResultGuide;
@@ -102,7 +103,7 @@ class TrialRepository implements IRepository
         // TODO: Implement getAll() method.
     }
 
-    public function add(IModel $model)
+    public function add(IModel $model):int
     {
         // TODO: Implement add() method.
     }
@@ -110,5 +111,10 @@ class TrialRepository implements IRepository
     public function delete(int $id)
     {
         // TODO: Implement delete() method.
+    }
+
+    public function update(Organization $organization)
+    {
+        // TODO: Implement update() method.
     }
 }
