@@ -413,7 +413,11 @@
                         "name": "body",
                         "in": "body",
                         "schema": {
-                            "$ref": "#/definitions/LocalAdminRequest"
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     }
                 ],

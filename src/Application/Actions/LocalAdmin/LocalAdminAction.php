@@ -74,7 +74,7 @@ class LocalAdminAction extends Action
      *   tags={"LocalAdmin"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять локального админа"),
-     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/LocalAdminRequest")),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="email", type="string"))),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
      *   @SWG\Response(response=404, description="Not found"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
