@@ -41,6 +41,9 @@ use App\Application\Actions\Event\EventAction;
 use App\Services\Event;
 use App\Services\Event\EventService;
 use App\Persistance\Repositories\Event\EventRepository;
+use App\Persistance\Repositories\Role\TeamRepository;
+use App\Services\Team\TeamService;
+use App\Application\Actions\Team\TeamAction;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
@@ -70,6 +73,12 @@ return function (ContainerBuilder $containerBuilder) {
         {
             return new OrganizationAction($c->get(OrganizationService::class));
         },
+        TeamAction::class => function(ContainerInterface $c){
+            return new TeamAction($c->get(TeamService::class));
+        },
+        TeamService::class => function(ContainerInterface $c){
+            return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class));
+        },
         EventService::class => function(ContainerInterface $c)
         {
             return new EventService($c->get(LocalAdminRepository::class), $c->get(EventRepository::class));
@@ -94,6 +103,10 @@ return function (ContainerBuilder $containerBuilder) {
         },
         Auth::class => function(ContainerInterface $c){
             return new Auth($c->get(UserRepository::class), $c->get(RefreshTokenRepository::class), $c->get(RegistrationTokenRepository::class));
+        },
+        TeamRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new TeamRepository();
         },
         RegistrationTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

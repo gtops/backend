@@ -34,14 +34,9 @@ class LocalAdminService
 
     public function addWithoutMessage(string $name, string $password, string $email, int $organizationId, ResponseInterface $response)
     {
-        if ($this->organizationRepository->get($organizationId) == null) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
-            return $response->withStatus(400);
-        }
-
-        if ($this->localAdminRepository->localAdminIsSetOnDB($email, $organizationId)) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой локальный администратор в данной организации существует'))]));
-            return $response->withStatus(400);
+        $response = $this->getInitedResponseWitStatus($organizationId, $email, $response);
+        if ($response->getStatusCode() != 200){
+            return $response;
         }
 
         $user = $this->userRepository->getByEmail($email);
@@ -64,8 +59,8 @@ class LocalAdminService
             $userId = $this->userRepository->add($user);
             $user->setId($userId);
         }else{
-            $user->setRoleId($roleId);
-            $this->userRepository->update($user);
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой пользователь уже существует'))]));
+            return $response->withStatus(400);
         }
 
 
@@ -142,4 +137,42 @@ class LocalAdminService
 
         return null;
     }
+
+    public function addFromExistingAccount($email, int $organizationId, ResponseInterface $response)
+    {
+        $response = $this->getInitedResponseWitStatus($organizationId, $email, $response);
+        if ($response->getStatusCode() != 200){
+            return $response;
+        }
+
+        $user = $this->userRepository->getByEmail($email);
+        $roles = $this->roleRepository->getAll();
+        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::LOCAL_ADMIN, $roles);
+
+        if ($user == null) {
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует'))]));
+            return $response->withStatus(404);
+        }else{
+            $user->setRoleId($roleId);
+            $this->userRepository->update($user);
+        }
+
+
+        return $this->localAdminRepository->add(new LocalAdmin($user, $organizationId, -1));
+    }
+
+   private function getInitedResponseWitStatus(int $organizationId, string $email, ResponseInterface $response)
+   {
+       if ($this->organizationRepository->get($organizationId) == null) {
+           $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
+           return $response->withStatus(400);
+       }
+
+       if ($this->localAdminRepository->localAdminIsSetOnDB($email, $organizationId)) {
+           $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой локальный администратор в данной организации существует'))]));
+           return $response->withStatus(400);
+       }
+
+       return $response;
+   }
 }

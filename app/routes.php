@@ -18,6 +18,7 @@ use App\Application\Actions\Invite\InviteAction;
 use App\Application\Actions\Organization\OrganizationAction;
 use App\Application\Actions\LocalAdmin\LocalAdminAction;
 use App\Application\Actions\Event\EventAction;
+use App\Application\Actions\Team\TeamAction;
 
 return function (App $app) {
     $app->options('/{routes:.+}', function ($request, $response, $args) {
@@ -45,8 +46,8 @@ return function (App $app) {
     $app->put('/api/v1/organization/{id:[0-9]+}', OrganizationAction::class.':update');
 
     //localAdmin
-    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':add');
-    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin/withoutMessageToEmail', LocalAdminAction::class.':addWithoutMessageToEmail');
+    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin/existingAccount', LocalAdminAction::class.':addExistingAccount');
+    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':addWithoutMessageToEmail');
     $app->get('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':getAll');
     $app->get('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', LocalAdminAction::class.':get');
     $app->delete('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', LocalAdminAction::class.':delete');
@@ -59,6 +60,12 @@ return function (App $app) {
     $app->put('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}', EventAction::class.':update');
     $app->get('/api/v1/organization/{id:[0-9]+}/event', EventAction::class.':getAll');
 
+    //Team
+    $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
+    $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':getAll');
+    $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':get');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':delete');
+    $app->put('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':update');
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');

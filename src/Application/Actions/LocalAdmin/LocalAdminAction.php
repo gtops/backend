@@ -2,10 +2,10 @@
 namespace App\Application\Actions\LocalAdmin;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\LocalAdmin\LocalAdminService;
 use App\Validators\LocalAdmin\LocalAdminValidator;
-use App\Validators\Organization\OrganizationObjectValidator;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -22,8 +22,8 @@ class LocalAdminAction extends Action
     /**
      *
      * @SWG\Post(
-     *   path="/api/v1/organization/{id}/localAdmin/withoutMessageToEmail",
-     *   summary="добавляет локального администратора без отправки ему на почту ссылки, по которой он может перейти, чтобы задать свое имя и новый пароль",
+     *   path="/api/v1/organization/{id}/localAdmin",
+     *   summary="добавляет локального администратора,который ранее не существовал в системе, с отправкой на почту ему данных об аккаунте",
      *   tags={"LocalAdmin"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять локального админа"),
@@ -61,7 +61,58 @@ class LocalAdminAction extends Action
         $localAdminId = $this->localAdminService->addWithoutMessage($rowParams['name'], $rowParams['password'], $rowParams['email'], (int)$args['id'], $response);
 
         if ($localAdminId instanceof  ResponseInterface){
-            return $response;
+            return $localAdminId;
+        }
+        return $this->respond(200, ['id' => $localAdminId], $response);
+    }
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/organization/{id}/localAdmin/existingAccount",
+     *   summary="добавляет локального администратора, который ранее существовал в системе",
+     *   tags={"LocalAdmin"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять локального админа"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/LocalAdminRequest")),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *   @SWG\Response(response=404, description="Not found"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function addExistingAccount(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+        $userRole = $request->getHeader('userRole')[0];
+
+        if ($userRole != AuthorizeMiddleware::GLOBAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+
+        if (!isset($rowParams['email'])){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'поле email обязателен'))]));
+            return $response->withStatus(400);
+        }
+
+        if(!filter_var($rowParams['email'], FILTER_VALIDATE_EMAIL)){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'email не соответвует формату почты'))]));
+            return $response->withStatus(400);
+        }
+
+        $localAdminId = $this->localAdminService->addFromExistingAccount($rowParams['email'], (int)$args['id'], $response);
+
+        if ($localAdminId instanceof  Response){
+            return $localAdminId;
         }
         return $this->respond(200, ['id' => $localAdminId], $response);
     }

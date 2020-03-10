@@ -19,6 +19,7 @@ class AuthorizeMiddleware implements Middleware
     const GLOBAL_ADMIN = 'Глобальный администратор';
     const LOCAL_ADMIN = 'Локальный администратор';
     const SIMPLE_USER = 'Простой пользователь';
+    const SECRETARY = 'Секретарь';
 
     public function process(Request $request, RequestHandler $handler): Response
     {
