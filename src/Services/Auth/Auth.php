@@ -10,6 +10,8 @@ namespace App\Services\Auth;
 
 
 use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
+use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\User\RefreshTokenRepository;
 use App\Persistance\Repositories\User\RegistrationTokenRepository;
 use App\Persistance\Repositories\User\UserRepository;
@@ -20,14 +22,16 @@ use Psr\Http\Message\ResponseInterface as Response;
 class Auth
 {
     private $userRepository;
+    private $localAdminRepository;
     private $refTokenRep;
     private $regTokenRep;
 
-    public function __construct(UserRepository $userRepository, RefreshTokenRepository $rToken, RegistrationTokenRepository $regToken)
+    public function __construct(UserRepository $userRepository, RefreshTokenRepository $rToken, RegistrationTokenRepository $regToken, LocalAdminRepository $localAdminRepository)
     {
         $this->userRepository = $userRepository;
         $this->refTokenRep = $rToken;
         $this->regTokenRep = $regToken;
+        $this->localAdminRepository  = $localAdminRepository;
     }
 
     public function login(array $params, Response $response):Response
@@ -66,11 +70,24 @@ class Auth
         $rToken->deleteRefreshTokenWithEmail($params['email']);
         $rToken->addRefreshToken($refreshToken, $params['email']);
 
-        $response->getBody()->write(json_encode([
+        $responseData = [
             'accessToken' => $accessToken,
             'refreshToken' => $refreshToken,
             'role' => $role
-        ]));
+        ];
+
+        $organizationId = -1;
+
+        if (in_array($role, [AuthorizeMiddleware::LOCAL_ADMIN, AuthorizeMiddleware::SECRETARY])){
+            switch ($role){
+                case AuthorizeMiddleware::LOCAL_ADMIN:{
+                    $organizationId = $this->localAdminRepository->getOrganizationIdFilteredByEmail($params['email']);
+                    $responseData['organizationId'] = $organizationId;
+                }
+            }
+        }
+
+        $response->getBody()->write(json_encode($responseData));
 
         return $response;
     }
@@ -133,7 +150,7 @@ class Auth
             return $response->withStatus(400);
         }
 
-        $this->userRepository->addd([
+        $this->userRepository->add([
             'email' => $jwtData['email'],
             'role' => $jwtData['role'],
             'password' => $params['password'],

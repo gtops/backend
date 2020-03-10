@@ -19,9 +19,19 @@ class LocalAdminRepository implements IRepository
         $this->userRepository = new UserRepository();
     }
 
+    public function getOrganizationIdFilteredByEmail(string $email):int
+    {
+        $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->where('user.email', '=', $email)->get();
+        if (count($result) == 0){
+            return -1;
+        }
+
+        return $result[0]['organization_id'];
+    }
+
     public function get(int $id): ?IModel
     {
-        $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->get([
+        $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->where('local_admin.local_admin_id', '=', $id)->get([
             'user.user_id',
             'user.name',
             'user.email',

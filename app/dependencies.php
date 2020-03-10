@@ -102,7 +102,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new AuthAction($c->get(Auth::class));
         },
         Auth::class => function(ContainerInterface $c){
-            return new Auth($c->get(UserRepository::class), $c->get(RefreshTokenRepository::class), $c->get(RegistrationTokenRepository::class));
+            return new Auth($c->get(UserRepository::class), $c->get(RefreshTokenRepository::class), $c->get(RegistrationTokenRepository::class), $c->get(LocalAdminRepository::class));
         },
         TeamRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

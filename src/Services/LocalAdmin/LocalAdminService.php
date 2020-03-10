@@ -153,6 +153,11 @@ class LocalAdminService
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует'))]));
             return $response->withStatus(404);
         }else{
+            if ($user->getRoleId() != $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles)){
+                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этому пользователю уже присуще другая роль'))]));
+                return $response->withStatus(400);
+            }
+
             $user->setRoleId($roleId);
             $this->userRepository->update($user);
         }
