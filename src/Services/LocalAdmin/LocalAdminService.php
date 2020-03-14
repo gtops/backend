@@ -32,7 +32,7 @@ class LocalAdminService
         $this->organizationRepository = $organizationRepository;
     }
 
-    public function addWithoutMessage(string $name, string $password, string $email, int $organizationId, ResponseInterface $response)
+    public function add(string $name, string $password, string $email, $gender, \DateTime $dateOfBirth, int $organizationId, ResponseInterface $response)
     {
         $response = $this->getInitedResponseWitStatus($organizationId, $email, $response);
         if ($response->getStatusCode() != 200){
@@ -52,7 +52,9 @@ class LocalAdminService
                 'email' => $email,
                 'roleId' => $roleId,
                 'isActivity' => 1,
-                'dateTime' => new \DateTime()
+                'dateTime' => new \DateTime(),
+                'gender'=> $gender,
+                'dateOfBirth' => $dateOfBirth
             ];
 
             $user = UserCreater::createModel($rowParams);

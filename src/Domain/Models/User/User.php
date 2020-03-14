@@ -13,6 +13,8 @@ class User implements IModel
     private $roleId;
     private $isActivity;
     private $registrationDate;
+    private $dateOfBirth;
+    private $gender;
 
     public function __construct(
         int $id,
@@ -21,7 +23,9 @@ class User implements IModel
         string $email,
         string $roleId,
         string $isActivity,
-        \DateTime $registrationDate
+        \DateTime $registrationDate,
+        int $gender,
+        \DateTime $dateOfBirth
     )
     {
         $this->id = $id;
@@ -31,6 +35,12 @@ class User implements IModel
         $this->roleId = $roleId;
         $this->isActivity = $isActivity;
         $this->registrationDate = $registrationDate;
+        $this->dateOfBirth = $dateOfBirth;
+        if (!in_array($gender, [1, 0])){
+            throw new GenderException();
+        }
+
+        $this->gender = $gender;
     }
 
     public function getId():?int
@@ -69,6 +79,12 @@ class User implements IModel
             ->format('Y-m-d H:i:s');
     }
 
+    public function getDateOfBirth():string
+    {
+        return $this->dateOfBirth->setTimezone(new \DateTimeZone('europe/moscow'))
+            ->format('Y-m-d H:i:s');
+    }
+
     public function setRoleId(int $roleId)
     {
         $this->roleId = $roleId;
@@ -76,6 +92,11 @@ class User implements IModel
 
     public function setId(int $id){
         $this->id = $id;
+    }
+
+    public function getGender()
+    {
+        return $this->gender;
     }
 
     public function toArray(): array
@@ -87,7 +108,9 @@ class User implements IModel
             'email' => $this->getEmail(),
             'roleId' => $this->getRoleId(),
             'isActivity' => $this->isActivity(),
-            'registrationDate' => $this->getRegistrationDate()
+            'registrationDate' => $this->getRegistrationDate(),
+            'gender' => $this->getGender(),
+            'dateOfBirth' => $this->getDateOfBirth()
         ];
     }
 }

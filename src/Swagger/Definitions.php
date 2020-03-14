@@ -13,6 +13,8 @@
  *    @SWG\Property(property="branch", type="string"),
  *    @SWG\Property(property="bik", type="string"),
  *    @SWG\Property(property="correspondent_account", type="string"),
+ *    @SWG\Property(property="countOfAllEvents", type="integer"),
+ *    @SWG\Property(property="countOfActiveEvents", type="integer")
  * )
 */
 
@@ -39,6 +41,8 @@
  *    @SWG\Property(property="name", type="string"),
  *    @SWG\Property(property="password", type="string"),
  *    @SWG\Property(property="email", type="string"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="gender", type="integer", enum={0, 1}),
  * )
  */
 
@@ -75,6 +79,8 @@
  *    @SWG\Property(property="email", type="string"),
  *    @SWG\Property(property="roleId", type="integer"),
  *    @SWG\Property(property="isActivity", type="string"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="gender", type="integer", enum={0, 1}),
  *    @SWG\Property(property="registrationDate", type="string"),
  *    @SWG\Property(property="organizationId", type="string"),
  *    @SWG\Property(property="localAdminId", type="integer")

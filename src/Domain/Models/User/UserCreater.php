@@ -16,7 +16,9 @@ class UserCreater implements IModelCreater
             $rowParams['email'],
             $rowParams['roleId'],
             $rowParams['isActivity'],
-            $rowParams['dateTime']
+            $rowParams['dateTime'],
+            $rowParams['gender'],
+            $rowParams['dateOfBirth']
         );
     }
 }

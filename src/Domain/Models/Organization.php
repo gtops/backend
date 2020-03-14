@@ -16,7 +16,8 @@ class Organization implements IModel
     private $branch;
     private $bik;
     private $correspondentAccount;
-
+    private $countOfAllEvents;
+    private $countOfActiveEvents;
     public function __construct
     (
         string $id,
@@ -28,7 +29,9 @@ class Organization implements IModel
         string $paymentAccount,
         string $branch,
         string $bik,
-        string $correspondentAccount
+        string $correspondentAccount,
+        int $countOfAllEvents = 0,
+        int $countOfActiveEvents = 0
     )
     {
         $this->id = $id;
@@ -41,6 +44,28 @@ class Organization implements IModel
         $this->branch = $branch;
         $this->bik = $bik;
         $this->correspondentAccount = $correspondentAccount;
+        $this->countOfAllEvents = $countOfAllEvents;
+        $this->countOfActiveEvents = $countOfActiveEvents;
+    }
+
+    public function getCountOfAllEvents():int
+    {
+        return $this->countOfAllEvents;
+    }
+
+    public function getCountOfActiveEvents():int
+    {
+        return $this->countOfActiveEvents;
+    }
+
+    public function setCountOfAllEvents(int $countOfAllEvents)
+    {
+        $this->countOfAllEvents = $countOfAllEvents;
+    }
+
+    public function setCountOfActiveEvents(int $countOfActiveEvents)
+    {
+        $this->countOfActiveEvents = $countOfActiveEvents;
     }
 
     public function getId():string
@@ -105,7 +130,9 @@ class Organization implements IModel
             'payment_account' => $this->getPaymentAccount(),
             'branch' => $this->getBranch(),
             'bik' => $this->getBik(),
-            'correspondent_account' => $this->getCorrespondentAccount()
+            'correspondent_account' => $this->getCorrespondentAccount(),
+            'countOfAllEvents' => $this->getCountOfAllEvents(),
+            'countOfActiveEvents' => $this->countOfActiveEvents
         ];
     }
 }

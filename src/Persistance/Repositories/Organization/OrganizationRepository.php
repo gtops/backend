@@ -3,6 +3,8 @@ namespace App\Persistance\Repositories\Organization;
 use App\Domain\Models\IModel;
 use \App\Domain\Models\Organization;
 use App\Persistance\ModelsEloquant\Organization\Organization as OrgPDO;
+use Illuminate\Support\Facades\Date;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class OrganizationRepository implements \App\Domain\Models\IRepository
 {
@@ -14,7 +16,7 @@ class OrganizationRepository implements \App\Domain\Models\IRepository
             return null;
         }
 
-        return new Organization(
+        $organization = new Organization(
             $organization[0]['organization_id'],
             $organization[0]['name'],
             $organization[0]['address'],
@@ -26,6 +28,37 @@ class OrganizationRepository implements \App\Domain\Models\IRepository
             $organization[0]['bik'],
             $organization[0]['correspondent_account']
         );
+
+        $this->initCountOfEventsInOrganization($organization);
+
+        return $organization;
+    }
+
+    private function initCountOfEventsInOrganization(Organization $organization)
+    {
+        $result = OrgPDO::query()->join('event', 'event.organization_id', '=', 'organization.organization_id')
+            ->where('organization.organization_id','=', $organization->getId())
+            ->get([
+                'event.expiration_date'
+            ]);
+
+        if (count($result) == 0){
+            $organization->setCountOfAllEvents(0);
+            $organization->setCountOfActiveEvents(0);
+            return;
+        }
+
+        $organization->setCountOfAllEvents(count($result));
+
+        $countOfActiveEvents = 0;
+
+        foreach ($result as $event){
+            if ($event['expiration_date'] >= (new \DateTime())->format('Y-m-d H:i:s')){
+                $countOfActiveEvents++;
+            }
+        }
+
+        $organization->setCountOfActiveEvents($countOfActiveEvents);
     }
 
     /**
@@ -41,7 +74,7 @@ class OrganizationRepository implements \App\Domain\Models\IRepository
 
         $organizationsForResponse = [];
         foreach ($organizations as $organization){
-            $organizationsForResponse[] = new Organization
+            $organization = new Organization
             (
                 $organization['organization_id'],
                 $organization['name'],
@@ -54,6 +87,10 @@ class OrganizationRepository implements \App\Domain\Models\IRepository
                 $organization['bik'],
                 $organization['correspondent_account']
             );
+
+            $this->initCountOfEventsInOrganization($organization);
+
+            $organizationsForResponse[] = $organization;
         }
 
         return $organizationsForResponse;

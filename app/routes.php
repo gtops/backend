@@ -47,7 +47,7 @@ return function (App $app) {
 
     //localAdmin
     $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin/existingAccount', LocalAdminAction::class.':addExistingAccount');
-    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':addWithoutMessageToEmail');
+    $app->post('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':add');
     $app->get('/api/v1/organization/{id:[0-9]+}/localAdmin', LocalAdminAction::class.':getAll');
     $app->get('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', LocalAdminAction::class.':get');
     $app->delete('/api/v1/organization/{id:[0-9]+}/localAdmin/{idLocalAdmin:[0-9]+}', LocalAdminAction::class.':delete');

@@ -9,6 +9,7 @@ use App\Domain\Models\Organization;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Persistance\ModelsEloquant\LocalAdmin\LocalAdmin as LocalAdminEloquant;
+use Illuminate\Support\Facades\Date;
 use function MongoDB\BSON\toRelaxedExtendedJSON;
 
 class LocalAdminRepository implements IRepository
@@ -39,7 +40,9 @@ class LocalAdminRepository implements IRepository
             'user.is_activity',
             'user.registration_date',
             'local_admin.organization_id',
-            'local_admin.local_admin_id'
+            'local_admin.local_admin_id',
+            'user.gender',
+            'user.date_of_birth'
         ]);
 
         if (count($result) == 0){
@@ -53,7 +56,9 @@ class LocalAdminRepository implements IRepository
             'email' => $result[0]['email'],
             'roleId' => $result[0]['role_id'],
             'dateTime' => new \DateTime($result[0]['registration_date']),
-            'isActivity' => $result[0]['is_activity']
+            'isActivity' => $result[0]['is_activity'],
+            'gender' => $result[0]['gender'],
+            'dateOfBirth' => new \DateTime($result[0]['date_of_birth'])
         ]);
 
         return new LocalAdmin($user, $result[0]['organization_id'], $result[0]['local_admin_id']);
@@ -71,6 +76,8 @@ class LocalAdminRepository implements IRepository
             'user.role_id',
             'user.is_activity',
             'user.registration_date',
+            'user.gender',
+            'user.date_of_birth',
             'local_admin.organization_id'
         ]);
 

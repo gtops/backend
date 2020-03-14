@@ -973,6 +973,9 @@
                                 },
                                 "role": {
                                     "type": "string"
+                                },
+                                "organizationId": {
+                                    "type": "integer"
                                 }
                             }
                         }
@@ -1084,6 +1087,12 @@
                 },
                 "correspondent_account": {
                     "type": "string"
+                },
+                "countOfAllEvents": {
+                    "type": "integer"
+                },
+                "countOfActiveEvents": {
+                    "type": "integer"
                 }
             },
             "type": "object"
@@ -1130,6 +1139,16 @@
                 },
                 "email": {
                     "type": "string"
+                },
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
                 }
             },
             "type": "object"
@@ -1190,6 +1209,16 @@
                 },
                 "isActivity": {
                     "type": "string"
+                },
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer",
+                    "enum": [
+                        0,
+                        1
+                    ]
                 },
                 "registrationDate": {
                     "type": "string"

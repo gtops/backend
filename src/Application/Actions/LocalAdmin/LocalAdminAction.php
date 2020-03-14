@@ -9,6 +9,7 @@ use App\Validators\LocalAdmin\LocalAdminValidator;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseInterface as Response;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class LocalAdminAction extends Action
 {
@@ -38,7 +39,7 @@ class LocalAdminAction extends Action
      * )
      *
      */
-    public function addWithoutMessageToEmail(Request $request, Response $response, $args):Response
+    public function add(Request $request, Response $response, $args):Response
     {
         if ($this->tokenWithError($response, $request)){
             return $response->withStatus(401);
@@ -58,7 +59,7 @@ class LocalAdminAction extends Action
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
-        $localAdminId = $this->localAdminService->addWithoutMessage($rowParams['name'], $rowParams['password'], $rowParams['email'], (int)$args['id'], $response);
+        $localAdminId = $this->localAdminService->add($rowParams['name'], $rowParams['password'], $rowParams['email'], $rowParams['gender'], new \DateTime($rowParams['dateOfBirth']), (int)$args['id'], $response);
 
         if ($localAdminId instanceof  ResponseInterface){
             return $localAdminId;
@@ -241,11 +242,6 @@ class LocalAdminAction extends Action
     }
 
     public function update(Request $request, Response $response, $args)
-    {
-
-    }
-
-    public function add(Request $request, Response $response, $args)
     {
 
     }

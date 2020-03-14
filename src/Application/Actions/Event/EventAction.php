@@ -63,7 +63,7 @@ class EventAction extends Action
 
         $eventId = $this->eventService->add($event, $userEmail, $response);
 
-        if ($eventId instanceof ResponseInterface) {
+        if ($eventId instanceof Response) {
             return $eventId;
         }
         return $this->respond(200, ['id' => $eventId], $response);

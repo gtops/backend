@@ -75,7 +75,9 @@ class UserRepository implements IRepository
             'email' => $user->getEmail(),
             'role_id' => $user->getRoleId(),
             'is_activity' => 1,
-            'registration_date' => $user->getRegistrationDate()
+            'registration_date' => $user->getRegistrationDate(),
+            'gender' => $user->getGender(),
+            'date_of_birth' => $user->getDateOfBirth()
         ])->getAttribute('user_id');
 
         return $userId;
@@ -100,7 +102,9 @@ class UserRepository implements IRepository
             'email' => $userElaquent[0]['email'],
             'roleId' => $userElaquent[0]['role_id'],
             'isActivity' => $userElaquent[0]['is_activity'],
-            'dateTime' => new \DateTime($userElaquent[0]['registration_date'])
+            'dateTime' => new \DateTime($userElaquent[0]['registration_date']),
+            'gender' => $userElaquent[0]['gender'],
+            'dateOfBirth' => new \DateTime($userElaquent[0]['date_of_birth'])
         ]);
     }
 

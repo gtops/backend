@@ -23,7 +23,9 @@ class User extends Model
         "password",
         "email",
         "role_id",
+        'gender',
+        'date_of_birth',
         "is_activity",
-        "registration_date"
+        "registration_date",
     );
 }
