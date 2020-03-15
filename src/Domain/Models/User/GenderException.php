@@ -4,7 +4,9 @@
 namespace App\Domain\Models\User;
 
 
-class GenderException extends \Exception
+use Exception;
+
+class GenderException extends Exception
 {
 
 }

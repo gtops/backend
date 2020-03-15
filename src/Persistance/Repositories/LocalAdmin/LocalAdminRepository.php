@@ -5,12 +5,9 @@ use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\LocalAdmin\LocalAdminNotFoundException;
-use App\Domain\Models\Organization;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Persistance\ModelsEloquant\LocalAdmin\LocalAdmin as LocalAdminEloquant;
-use Illuminate\Support\Facades\Date;
-use function MongoDB\BSON\toRelaxedExtendedJSON;
 
 class LocalAdminRepository implements IRepository
 {
@@ -93,7 +90,10 @@ class LocalAdminRepository implements IRepository
         return $localAdmins;
     }
 
-    /**@var $model LocalAdmin*/
+    /**
+     * @param LocalAdmin $model
+     * @return int
+     */
     public function add(IModel $model):int
     {
         if (!($model instanceof LocalAdmin)){

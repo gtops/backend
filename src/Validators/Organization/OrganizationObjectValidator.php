@@ -6,7 +6,7 @@ class OrganizationObjectValidator extends BaseValidator
 {
     protected function addSpecificRules(array &$params, array $options = null)
     {
-        $params = self::initParams($params);
+        $params = $this->initParams($params);
         $this->addNotNullNotBlankRules([
             'id',
             'name',
@@ -24,7 +24,7 @@ class OrganizationObjectValidator extends BaseValidator
         $this->addIntTypeRule(['id']);
     }
 
-    private static function initParams(array $params){
+    private function initParams(array $params){
         $params['id'] = $params['id'] ?? null;
         $params['name'] = $params['name'] ?? null;
         $params['address'] = $params['address'] ?? null;

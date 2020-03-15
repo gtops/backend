@@ -86,3 +86,21 @@
  *    @SWG\Property(property="localAdminId", type="integer")
  * )
  */
+
+/**
+ * @SWG\Definition(
+ *    definition="secretaryResponse",
+ *    type="object",
+ *    @SWG\Property(property="userId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="email", type="string"),
+ *    @SWG\Property(property="roleId", type="integer"),
+ *    @SWG\Property(property="isActivity", type="string"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="gender", type="integer", enum={0, 1}),
+ *    @SWG\Property(property="registrationDate", type="string"),
+ *    @SWG\Property(property="organizationId", type="string"),
+ *    @SWG\Property(property="eventId", type="string"),
+ *    @SWG\Property(property="secretaryId", type="integer")
+ * )
+ */
