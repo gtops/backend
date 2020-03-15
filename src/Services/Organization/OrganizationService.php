@@ -25,7 +25,7 @@ class OrganizationService
 
     public function getOrganization(int $id):?IModel
     {
-        return $this->organizationRepository->get($id);
+        return $this->organizationRepository->getFilteredByEventId($id);
     }
 
     /**

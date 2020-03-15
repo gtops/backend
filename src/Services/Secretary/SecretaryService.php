@@ -43,7 +43,7 @@ class SecretaryService
 
     public function addFromExistingAccount($localAdminEmail,  $secretaryEmail, int $organizationId, int $eventId, ResponseInterface $response)
     {
-        $response = $this->getInitedResponseWitStatus($organizationId, $localAdminEmail, $secretaryEmail, $eventId, $response);
+        $response = $this->getInitedResponseWitStatus($organizationId, $localAdminEmail, $eventId, $response);
         if ($response->getStatusCode() != 200){
             return $response;
         }
@@ -68,6 +68,17 @@ class SecretaryService
         $this->secretaryRepository->add(new Secretary(-1 , $eventId, $organizationId, $user));
     }
 
+
+    public function get(int $organizationId, int $eventId, string $localAdminEmail, ResponseInterface $response)
+    {
+        $response = $this->getInitedResponseWitStatus($organizationId, $localAdminEmail, $eventId, $response);
+        if ($response->getStatusCode() != 200){
+            return $response;
+        }
+
+        return $secretaries = $this->secretaryRepository->getFilteredByEventId($eventId);
+    }
+
     private function getRoleIdWithName(string $name, array $roles):?int
     {
         foreach ($roles as $role){
@@ -79,20 +90,22 @@ class SecretaryService
         return null;
     }
 
-    private function getInitedResponseWitStatus(int $organizationId, string $localAdminEmail, string $secretaryEmail, int $eventId, ResponseInterface $response)
+
+
+    private function getInitedResponseWitStatus(int $organizationId, string $localAdminEmail, int $eventId, ResponseInterface $response)
     {
         if (!$this->localAdminRepository->localAdminIsSetOnDB($localAdminEmail, $organizationId)) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данный локальный администратор не может редактировать мероприятия этой организации'))]));
-            return $response->withStatus(400);
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данный локальный администратор не может работать с мероприятиями этой организации'))]));
+            return $response->withStatus(403);
         }
 
-        if ($this->organizationRepository->get($organizationId) == null) {
+        if ($this->organizationRepository->getFilteredByEventId($organizationId) == null) {
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
             return $response->withStatus(400);
         }
 
         /**@var $event Event*/
-        $event = $this->eventRepository->get($eventId);
+        $event = $this->eventRepository->getFilteredByEventId($eventId);
         if ($event == null){
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данного мероприятия не существует'))]));
             return $response->withStatus(400);
@@ -100,7 +113,7 @@ class SecretaryService
 
         if ($event->getIdOrganization() != $organizationId){
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'мероприятие не относится к данной организации'))]));
-            return $response->withStatus(400);
+            return $response->withStatus(403);
         }
 
         return $response;

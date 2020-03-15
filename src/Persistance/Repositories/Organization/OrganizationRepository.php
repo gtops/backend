@@ -7,7 +7,7 @@ use App\Persistance\ModelsEloquant\Organization\Organization as OrgPDO;
 class OrganizationRepository implements \App\Domain\Models\IRepository
 {
 
-    public function get(int $id): ?\App\Domain\Models\IModel
+    public function getFilteredByEventId(int $id): ?\App\Domain\Models\IModel
     {
         $organization = OrgPDO::query()->where('organization_id', '=', $id)->get();
         if (count($organization) == 0){

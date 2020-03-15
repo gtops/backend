@@ -40,7 +40,7 @@ class RegistrationTokenRepository implements IRepository
         Token::query()->where('token', '=', $token)->delete();
     }
 
-    public function get(int $id): IModel
+    public function getFilteredByEventId(int $id): IModel
     {
         // TODO: Implement get() method.
     }

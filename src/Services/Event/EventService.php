@@ -40,12 +40,12 @@ class EventService
     public function get(int $organizationId, int $eventId, ResponseInterface $response)
     {
         /**@var $event Event*/
-        $event = $this->eventRepository->get($eventId);
+        $event = $this->eventRepository->getFilteredByEventId($eventId);
         if ($event->getIdOrganization() != $organizationId){
             return $response->withStatus(400);
         }
 
-        return $this->eventRepository->get($eventId);
+        return $this->eventRepository->getFilteredByEventId($eventId);
     }
 
     private function getInitedResponseWithStatusIfErrorOfAccess(ResponseInterface $response, string $userEmail, int $organizationId, int $eventId)
@@ -55,7 +55,7 @@ class EventService
         }
 
         /**@var $event Event*/
-        $event = $this->eventRepository->get($eventId);
+        $event = $this->eventRepository->getFilteredByEventId($eventId);
         if ($event->getIdOrganization() != $organizationId){
             return $response->withStatus(403);
         }

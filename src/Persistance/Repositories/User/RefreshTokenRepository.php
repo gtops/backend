@@ -49,7 +49,7 @@ class RefreshTokenRepository implements IRepository
         ]);
     }
 
-    public function get(int $id): IModel
+    public function getFilteredByEventId(int $id): IModel
     {
         // TODO: Implement get() method.
     }

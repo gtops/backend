@@ -77,7 +77,7 @@ class LocalAdminService
     public function delete(int $localAdminId, int $organizationId, ResponseInterface $response)
     {
         /**@var $localAdmin LocalAdmin*/
-        $localAdmin = $this->localAdminRepository->get($localAdminId);
+        $localAdmin = $this->localAdminRepository->getFilteredByEventId($localAdminId);
 
         if ($localAdmin == null){
             return $response->withStatus(200);
@@ -99,7 +99,7 @@ class LocalAdminService
     public function get(int $id, int $organizationId): ?IModel
     {
         /**@var $localAdmin LocalAdmin*/
-        $localAdmin = $this->localAdminRepository->get($id);
+        $localAdmin = $this->localAdminRepository->getFilteredByEventId($id);
         if ($localAdmin == null){
             return null;
         }
@@ -170,7 +170,7 @@ class LocalAdminService
 
    private function getInitedResponseWitStatus(int $organizationId, string $email, ResponseInterface $response)
    {
-       if ($this->organizationRepository->get($organizationId) == null) {
+       if ($this->organizationRepository->getFilteredByEventId($organizationId) == null) {
            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
            return $response->withStatus(400);
        }

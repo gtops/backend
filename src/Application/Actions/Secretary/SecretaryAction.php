@@ -62,6 +62,13 @@ class SecretaryAction extends Action
      * )
      *
      */
+
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
     public function addExistingAccount(Request $request, Response $response, $args):Response
     {
         if ($this->tokenWithError($response, $request)){
@@ -113,11 +120,42 @@ class SecretaryAction extends Action
      *          ))
      *     )))
      * )
-     *
      */
-    public function get()
-    {
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function get(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
+
+        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
+        $secretaries = $this->secretaryService->get((int)$args['id'], (int)$args['eventId'], $localAdminEmail, $response);
+        if ($secretaries == null){
+            return $response->withStatus(404);
+        }
+
+        if ($secretaries instanceof  Response){
+            return $secretaries;
+        }
+
+        $secretariesInArray = [];
+
+        foreach ($secretaries as $secretary){
+            $secretariesInArray[] = $secretary->toArray();
+        }
+
+        return $this->respond(200, $secretariesInArray, $response);
     }
 
     /**

@@ -63,7 +63,7 @@ class UserRepository implements IRepository
         }
 
         $roleRep = new RoleRepository();
-        $roles = $roleRep->get($user->getRoleId());
+        $roles = $roleRep->getFilteredByEventId($user->getRoleId());
 
         if ($roles == null){
             throw new RoleNotFoundException('role not found');
@@ -83,7 +83,7 @@ class UserRepository implements IRepository
         return $userId;
     }
 
-    public function get(int $id): IModel
+    public function getFilteredByEventId(int $id): IModel
     {
         // TODO: Implement get() method.
     }

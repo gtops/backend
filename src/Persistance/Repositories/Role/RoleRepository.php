@@ -27,7 +27,7 @@ class RoleRepository implements IRepository
         return $roles;
     }
 
-    public function get(int $id): ?IModel
+    public function getFilteredByEventId(int $id): ?IModel
     {
         $roleSql = Role::query()->where('role_id', '=', $id)->get();
 

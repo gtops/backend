@@ -2,3 +2,5 @@
 /coverage/
 /vendor/
 !/logs/README.md
+backend.rar
+composer.phar

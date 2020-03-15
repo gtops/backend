@@ -27,7 +27,7 @@ class LocalAdminRepository implements IRepository
         return $result[0]['organization_id'];
     }
 
-    public function get(int $id): ?IModel
+    public function getFilteredByEventId(int $id): ?IModel
     {
         $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->where('local_admin.local_admin_id', '=', $id)->get([
             'user.user_id',
