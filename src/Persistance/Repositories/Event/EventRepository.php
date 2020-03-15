@@ -12,7 +12,7 @@ class EventRepository implements IRepository
 
     public function get(int $id): ?IModel
     {
-        $results = EventPDO::query()->get();
+        $results = EventPDO::query()->where('event_id', '=', $id)->get();
 
         if (count($results) == 0){
             return null;

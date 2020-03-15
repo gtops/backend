@@ -44,9 +44,29 @@ use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\Role\TeamRepository;
 use App\Services\Team\TeamService;
 use App\Application\Actions\Team\TeamAction;
+use App\Services\Secretary\SecretaryService;
+use App\Persistance\Repositories\Secretary\SecretaryRepository;
+use App\Application\Actions\Secretary\SecretaryAction;
 
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
+        SecretaryAction::class => function(ContainerInterface $c){
+            return new SecretaryAction($c->get(SecretaryService::class));
+        },
+        SecretaryService::class => function(ContainerInterface $c){
+            return new SecretaryService(
+                $c->get(SecretaryRepository::class),
+                $c->get(UserRepository::class),
+                $c->get(OrganizationRepository::class),
+                $c->get(LocalAdminRepository::class),
+                $c->get(EventRepository::class),
+                $c->get(RoleRepository::class)
+            );
+        },
+        SecretaryRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new SecretaryRepository();
+        },
         LocalAdminAction::class => function(ContainerInterface $c)
         {
             return new LocalAdminAction($c->get(LocalAdminService::class));

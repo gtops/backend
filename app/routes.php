@@ -70,6 +70,9 @@ return function (App $app) {
 
     //Secretary
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':add');
+    $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/existingAccount', SecretaryAction::class.':addExistingAccount');
+    $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':get');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/{secretaryId:[0-9]+}', SecretaryAction::class.':delete');
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');

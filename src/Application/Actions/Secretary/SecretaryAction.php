@@ -2,11 +2,21 @@
 
 namespace App\Application\Actions\Secretary;
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
+use App\Services\Secretary\SecretaryService;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class SecretaryAction extends Action
 {
+    private $secretaryService;
+
+    public function __construct(SecretaryService $secretaryService)
+    {
+        $this->secretaryService = $secretaryService;;
+    }
+
     /**
      *
      * @SWG\Post(
@@ -54,7 +64,34 @@ class SecretaryAction extends Action
      */
     public function addExistingAccount(Request $request, Response $response, $args):Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
 
+        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+
+        if (!isset($rowParams['email'])){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'поле email обязателен'))]));
+            return $response->withStatus(400);
+        }
+
+        if(!filter_var($rowParams['email'], FILTER_VALIDATE_EMAIL)){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'email не соответвует формату почты'))]));
+            return $response->withStatus(400);
+        }
+
+        $localAdminId = $this->secretaryService->addFromExistingAccount($localAdminEmail, $rowParams['email'], (int)$args['id'], (int)$args['eventId'], $response);
+
+        if ($localAdminId instanceof  Response){
+            return $localAdminId;
+        }
+        return $this->respond(200, ['id' => $localAdminId], $response);
     }
 
     /**
