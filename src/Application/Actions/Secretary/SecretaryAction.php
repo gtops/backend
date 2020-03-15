@@ -93,12 +93,12 @@ class SecretaryAction extends Action
             return $response->withStatus(400);
         }
 
-        $localAdminId = $this->secretaryService->addFromExistingAccount($localAdminEmail, $rowParams['email'], (int)$args['id'], (int)$args['eventId'], $response);
+        $secretaryId = $this->secretaryService->addFromExistingAccount($localAdminEmail, $rowParams['email'], (int)$args['id'], (int)$args['eventId'], $response);
 
-        if ($localAdminId instanceof  Response){
-            return $localAdminId;
+        if ($secretaryId instanceof  Response){
+            return $secretaryId;
         }
-        return $this->respond(200, ['id' => $localAdminId], $response);
+        return $this->respond(200, ['id' => $secretaryId], $response);
     }
 
     /**
@@ -178,8 +178,32 @@ class SecretaryAction extends Action
      * )
      *
      */
-    public function delete()
-    {
 
+    /**
+     * @param Request $request
+     * @param Response $response
+     * @param $args
+     * @return Response
+     */
+    public function delete(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
+
+        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
+        $result = $this->secretaryService->delete((int)$args['id'], (int)$args['eventId'], (int)$args['secretaryId'], $localAdminEmail, $response);
+
+        if ($result instanceof Response){
+            return $result;
+        }
+
+        return  $response;
     }
 }

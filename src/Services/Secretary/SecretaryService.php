@@ -90,7 +90,32 @@ class SecretaryService
         return null;
     }
 
+    public function delete(int $organizationId, int $eventId, int $secretaryId, string $localAdminEmail, ResponseInterface $response)
+    {
+        $response = $this->getInitedResponseWitStatus($organizationId, $localAdminEmail, $eventId, $response);
+        if ($response->getStatusCode() != 200){
+            return $response;
+        }
 
+        $secretary = $this->secretaryRepository->get($secretaryId);
+        if ($secretary == null){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данного секретаря не сущесвует'))]));
+            return $response->withStatus(400);
+        }
+
+        if ($secretary->getEventId() != $eventId){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данный секретарь не относится к этому мероприятию'))]));
+            return $response->withStatus(400);
+        }
+
+        $roles = $this->roleRepository->getAll();
+        $user = $this->userRepository->getByEmail($secretary->getUser()->getEmail());
+        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles);
+        $user->setRoleId($roleId);
+        $this->userRepository->update($user);
+
+        $this->secretaryRepository->delete($secretaryId);
+    }
 
     private function getInitedResponseWitStatus(int $organizationId, string $localAdminEmail, int $eventId, ResponseInterface $response)
     {
