@@ -210,7 +210,6 @@ class LocalAdminAction extends Action
      *   @SWG\Response(response=200, description="OK",
      *          @SWG\Property(type="array", @SWG\Items(ref="#/definitions/LocalAdminResponse"))
      *   ),
-     *  @SWG\Response(response=404, description="Not found"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
      *              @SWG\Property(property="type", type="string"),
@@ -235,7 +234,7 @@ class LocalAdminAction extends Action
         $localAdmins = $this->localAdminService->getAll($idOrganization);
 
         if ($localAdmins == null){
-            return $response->withStatus(404);
+            return $this->respond(200, [], $response);
         }
 
         return $this->respond(200, $localAdmins, $response);

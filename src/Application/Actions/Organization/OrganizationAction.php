@@ -99,7 +99,6 @@ class OrganizationAction extends \App\Application\Actions\Action
      *   @SWG\Response(response=200, description="OK",
      *          @SWG\Property(type="array", @SWG\Items(ref="#/definitions/OrganizationResponse"))
      *   ),
-     *  @SWG\Response(response=404, description="Not found"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
      *              @SWG\Property(property="type", type="string"),
@@ -113,7 +112,7 @@ class OrganizationAction extends \App\Application\Actions\Action
     {
         $organizations = $this->organizationService->getOrganizations();
         if ($organizations == null){
-            $this->respond(404, [], $response);
+            $this->respond(200, [], $response);
         }
 
         return $this->respond(200, OrganizationsToResponsePresenter::getView($organizations), $response);

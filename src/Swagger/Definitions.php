@@ -89,6 +89,16 @@
 
 /**
  * @SWG\Definition(
+ *    definition="teamResponse",
+ *    type="object",
+ *    @SWG\Property(property="teamId", type="integer"),
+ *    @SWG\Property(property="eventId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ * )
+ */
+
+/**
+ * @SWG\Definition(
  *    definition="secretaryResponse",
  *    type="object",
  *    @SWG\Property(property="userId", type="integer"),

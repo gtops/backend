@@ -151,7 +151,6 @@ class SecretaryAction extends Action
      *   @SWG\Response(response=200, description="OK",
      *          @SWG\Schema(ref="#/definitions/secretaryResponse")
      *   ),
-     *  @SWG\Response(response=404, description="Not found"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
      *              @SWG\Property(property="type", type="string"),
@@ -181,7 +180,7 @@ class SecretaryAction extends Action
 
         $secretaries = $this->secretaryService->get((int)$args['id'], (int)$args['eventId'], $localAdminEmail, $response);
         if ($secretaries == null){
-            return $response->withStatus(404);
+            return $this->respond(200, [], $response);
         }
 
         if ($secretaries instanceof  Response){
