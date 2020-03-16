@@ -6,12 +6,14 @@ use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\Event\Event;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\Token\Token;
 use Psr\Http\Message\ResponseInterface;
 
 class SecretaryService
@@ -115,6 +117,41 @@ class SecretaryService
         $this->userRepository->update($user);
 
         $this->secretaryRepository->delete($secretaryId);
+    }
+
+    public function add(int $eventId, int $organizationId, string $name, string $password,  \DateTime $dateOfBirth, string $email, int $gender, $localAdminEmail, ResponseInterface $response)
+    {
+        $response = $this->getInitedResponseWitStatus($organizationId, $localAdminEmail, $eventId, $response);
+        if ($response->getStatusCode() != 200){
+            return $response;
+        }
+
+        $user = $this->userRepository->getByEmail($email);
+        $roles = $this->roleRepository->getAll();
+        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SECRETARY, $roles);
+
+        if ($user == null) {
+            $user = UserCreater::createModel([
+                'id' => -1,
+                'name' => $name,
+                'password' => Token::getEncodedPassword($password),
+                'email' => $email,
+                'roleId' => $roleId,
+                'isActivity' => 1,
+                'dateTime' => new \DateTime(),
+                'dateOfBirth' => $dateOfBirth,
+                'gender' => $gender
+            ]);
+
+            $userId = $this->userRepository->add($user);
+            $user->setId($userId);
+        }else{
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой пользователь уже существует'))]));
+            return $response->withStatus(400);
+        }
+
+        $secretary = new Secretary(-1, $eventId, $organizationId, $user);
+        return $this->secretaryRepository->add($secretary);
     }
 
     private function getInitedResponseWitStatus(int $organizationId, string $localAdminEmail, int $eventId, ResponseInterface $response)

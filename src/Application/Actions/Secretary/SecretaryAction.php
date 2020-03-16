@@ -4,9 +4,14 @@ namespace App\Application\Actions\Secretary;
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
+use App\Domain\Models\User\UserCreater;
 use App\Services\Secretary\SecretaryService;
+use App\Services\Token\Token;
+use App\Validators\Secretary\SecretaryValidator;
+use Illuminate\Support\Facades\Date;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class SecretaryAction extends Action
 {
@@ -39,7 +44,41 @@ class SecretaryAction extends Action
      */
     public function add(Request $request, Response $response, $args):Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
 
+        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $rowParams['organizationId'] = (int)$args['id'];
+        $rowParams['eventId'] = (int)$args['eventId'];
+
+        $errors = (new SecretaryValidator())->validate($rowParams);
+
+        if (count($errors) > 0){
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $id = $this->secretaryService->add(
+            $rowParams['eventId'],
+            $rowParams['organizationId'],
+            $rowParams['name'],
+            $rowParams['password'],
+            new \DateTime($rowParams['dateOfBirth']),
+            $rowParams['email'],
+            $rowParams['gender'],
+            $localAdminEmail, $response
+        );
+
+        if ($id instanceof  Response){
+            return $id;
+        }
+        return $this->respond(200, ['id' => $id], $response);
     }
 
     /**
