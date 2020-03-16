@@ -87,7 +87,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
         OrganizationService::class => function(ContainerInterface $c)
         {
-            return new OrganizationService($c->get(OrganizationRepository::class));
+            return new OrganizationService(
+                $c->get(OrganizationRepository::class),
+                $c->get(SecretaryRepository::class),
+                $c->get(LocalAdminRepository::class),
+                $c->get(UserRepository::class),
+                $c->get(RoleRepository::class)
+            );
         },
         OrganizationAction::class => function(ContainerInterface $c)
         {
@@ -101,7 +107,13 @@ return function (ContainerBuilder $containerBuilder) {
         },
         EventService::class => function(ContainerInterface $c)
         {
-            return new EventService($c->get(LocalAdminRepository::class), $c->get(EventRepository::class));
+            return new EventService(
+                $c->get(LocalAdminRepository::class),
+                $c->get(EventRepository::class),
+                $c->get(SecretaryRepository::class),
+                $c->get(RoleRepository::class),
+                $c->get(UserRepository::class)
+            );
         },
         EventAction::class => function(ContainerInterface $c)
         {

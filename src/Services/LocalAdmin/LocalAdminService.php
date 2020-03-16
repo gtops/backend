@@ -77,7 +77,7 @@ class LocalAdminService
     public function delete(int $localAdminId, int $organizationId, ResponseInterface $response)
     {
         /**@var $localAdmin LocalAdmin*/
-        $localAdmin = $this->localAdminRepository->getFilteredByEventId($localAdminId);
+        $localAdmin = $this->localAdminRepository->get($localAdminId);
 
         if ($localAdmin == null){
             return $response->withStatus(200);
@@ -99,7 +99,7 @@ class LocalAdminService
     public function get(int $id, int $organizationId): ?IModel
     {
         /**@var $localAdmin LocalAdmin*/
-        $localAdmin = $this->localAdminRepository->getFilteredByEventId($id);
+        $localAdmin = $this->localAdminRepository->get($id);
         if ($localAdmin == null){
             return null;
         }
@@ -116,7 +116,7 @@ class LocalAdminService
         $response = [];
         $localAdmins = $this->localAdminRepository->getAll();
         foreach ($localAdmins as $localAdmin) {
-            if ($localAdmin['organization_id'] == $organizationId){
+            if ($localAdmin['organizationId'] == $organizationId){
                 $response[] = $localAdmin;
             }
         }
@@ -170,7 +170,7 @@ class LocalAdminService
 
    private function getInitedResponseWitStatus(int $organizationId, string $email, ResponseInterface $response)
    {
-       if ($this->organizationRepository->getFilteredByEventId($organizationId) == null) {
+       if ($this->organizationRepository->get($organizationId) == null) {
            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
            return $response->withStatus(400);
        }

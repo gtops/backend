@@ -9,26 +9,27 @@ use App\Persistance\ModelsEloquant\Secretary\Secretary as SecretaryPDO;
 
 class SecretaryRepository implements IRepository
 {
+    private $dateForCreateSecretary = [
+        'event.organization_id',
+        'secretary.secretary_id',
+        'secretary.event_id',
+        'user.user_id',
+        'user.password',
+        'user.name',
+        'user.email',
+        'user.role_id',
+        'user.is_activity',
+        'user.registration_date',
+        'user.date_of_birth',
+        'user.gender'
+    ];
 
     public function get(int $id):?IModel
     {
         $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('secretary.secretary_id', '=', $id)
-            ->get([
-                'event.organization_id',
-                'secretary.secretary_id',
-                'secretary.event_id',
-                'user.user_id',
-                'user.name',
-                'user.email',
-                'user.email',
-                'user.role_id',
-                'user.is_activity',
-                'user.registration_date',
-                'user.date_of_birth',
-                'user.gender'
-            ]);
+            ->get($this->dateForCreateSecretary);
 
         if (count($results) == 0){
             return null;
@@ -58,20 +59,7 @@ class SecretaryRepository implements IRepository
         $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('secretary.event_id', '=', $eventId)
-            ->get([
-            'event.organization_id',
-            'secretary.secretary_id',
-            'secretary.event_id',
-            'user.user_id',
-            'user.name',
-            'user.email',
-            'user.email',
-            'user.role_id',
-            'user.is_activity',
-            'user.registration_date',
-            'user.date_of_birth',
-            'user.gender'
-        ]);
+            ->get($this->dateForCreateSecretary);
 
         if (count($results) == 0){
             return null;
@@ -83,7 +71,7 @@ class SecretaryRepository implements IRepository
             $user = UserCreater::createModel([
                 'id' => $result['user_id'],
                 'name' => $result['name'],
-                'password' => '',
+                'password' => $result['password'],
                 'email' => $result['email'],
                 'roleId' => $result['role_id'],
                 'dateTime' => new \DateTime($result['registration_date']),
@@ -98,9 +86,40 @@ class SecretaryRepository implements IRepository
         return $secretaries;
     }
 
-    /**
-     * @inheritDoc
-     */
+
+    public function getFilteredByOrgId(int $organizationId): ?array
+    {
+        $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
+            ->join('user', 'user.user_id', '=', 'secretary.user_id')
+            ->where('event.organization_id', '=', $organizationId)
+            ->get($this->dateForCreateSecretary);
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        $secretaries = [];
+
+        foreach ($results as $result) {
+            $user = UserCreater::createModel([
+                'id' => $result['user_id'],
+                'name' => $result['name'],
+                'password' => $result['password'],
+                'email' => $result['email'],
+                'roleId' => $result['role_id'],
+                'dateTime' => new \DateTime($result['registration_date']),
+                'isActivity' => $result['is_activity'],
+                'dateOfBirth' => new \DateTime($result['date_of_birth']),
+                'gender' => $result['gender']
+            ]);
+
+            $secretaries[] = new Secretary($result['secretary_id'], $result['event_id'], $result['organization_id'], $user);
+        }
+
+        return $secretaries;
+    }
+
+
     public function getAll(): ?array
     {
 

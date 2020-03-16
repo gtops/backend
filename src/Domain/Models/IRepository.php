@@ -6,6 +6,7 @@ namespace App\Domain\Models;
 
 interface IRepository
 {
+    public function get(int $id):?IModel;
     /**
      * @return IModel[]
     */

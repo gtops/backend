@@ -27,7 +27,7 @@ class RoleRepository implements IRepository
         return $roles;
     }
 
-    public function getFilteredByEventId(int $id): ?IModel
+    public function get(int $id): ?IModel
     {
         $roleSql = Role::query()->where('role_id', '=', $id)->get();
 
@@ -36,6 +36,17 @@ class RoleRepository implements IRepository
         }
 
         return new ModelRole($id, $roleSql[0]['name_of_role']);
+    }
+
+    public function getByName(string $name): ?IModel
+    {
+        $roleSql = Role::query()->where('name_of_role', '=', $name)->get();
+
+        if (count($roleSql) == 0){
+            return null;
+        }
+
+        return new ModelRole($roleSql[0]['role_id'], $roleSql[0]['name_of_role']);
     }
 
     /**

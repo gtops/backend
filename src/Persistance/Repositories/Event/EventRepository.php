@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Date;
 class EventRepository implements IRepository
 {
 
-    public function getFilteredByEventId(int $id): ?IModel
+    public function get(int $id): ?IModel
     {
         $results = EventPDO::query()->where('event_id', '=', $id)->get();
 

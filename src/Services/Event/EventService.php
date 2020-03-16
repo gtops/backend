@@ -2,20 +2,30 @@
 
 namespace App\Services\Event;
 use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Domain\Models\Event\Event;
+use App\Persistance\Repositories\Role\RoleRepository;
+use App\Persistance\Repositories\Secretary\SecretaryRepository;
+use App\Persistance\Repositories\User\UserRepository;
 use Psr\Http\Message\ResponseInterface;
 
 class EventService
 {
     private $eventRepository;
     private $localAdminRepository;
+    private $roleRepository;
+    private $secretaryRepository;
+    private $userRepository;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository)
+    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
+        $this->roleRepository = $roleRepository;
+        $this->secretaryRepository = $secretaryRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -34,18 +44,32 @@ class EventService
             return $response;
         }
 
+        $roleIdOfSimpleUser = $this->roleRepository->getByName(AuthorizeMiddleware::SIMPLE_USER)->getId();
+        $secretariesInOrganization = $this->secretaryRepository->getFilteredByEventId($eventId);
+
+        $this->changeAdminStatusToSimple($secretariesInOrganization, $roleIdOfSimpleUser);
+
         $this->eventRepository->delete($eventId);
+    }
+
+    private function changeAdminStatusToSimple(array $admins, $simpleRoleId)
+    {
+        foreach ($admins as $admin){
+            $user = $admin->getUser();
+            $user->setRoleId($simpleRoleId);
+            $this->userRepository->update($user);
+        }
     }
 
     public function get(int $organizationId, int $eventId, ResponseInterface $response)
     {
         /**@var $event Event*/
-        $event = $this->eventRepository->getFilteredByEventId($eventId);
+        $event = $this->eventRepository->get($eventId);
         if ($event->getIdOrganization() != $organizationId){
             return $response->withStatus(400);
         }
 
-        return $this->eventRepository->getFilteredByEventId($eventId);
+        return $this->eventRepository->get($eventId);
     }
 
     private function getInitedResponseWithStatusIfErrorOfAccess(ResponseInterface $response, string $userEmail, int $organizationId, int $eventId)
@@ -55,7 +79,7 @@ class EventService
         }
 
         /**@var $event Event*/
-        $event = $this->eventRepository->getFilteredByEventId($eventId);
+        $event = $this->eventRepository->get($eventId);
         if ($event->getIdOrganization() != $organizationId){
             return $response->withStatus(403);
         }

@@ -161,13 +161,13 @@ class SecretaryService
             return $response->withStatus(403);
         }
 
-        if ($this->organizationRepository->getFilteredByEventId($organizationId) == null) {
+        if ($this->organizationRepository->get($organizationId) == null) {
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
             return $response->withStatus(400);
         }
 
         /**@var $event Event*/
-        $event = $this->eventRepository->getFilteredByEventId($eventId);
+        $event = $this->eventRepository->get($eventId);
         if ($event == null){
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данного мероприятия не существует'))]));
             return $response->withStatus(400);

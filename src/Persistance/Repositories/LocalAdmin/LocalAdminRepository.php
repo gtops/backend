@@ -11,6 +11,19 @@ use App\Persistance\ModelsEloquant\LocalAdmin\LocalAdmin as LocalAdminEloquant;
 
 class LocalAdminRepository implements IRepository
 {
+    private $dateForCreateLocalAdmin = [
+        'user.password',
+        'user.user_id',
+        'user.name',
+        'user.email',
+        'user.role_id',
+        'user.is_activity',
+        'user.registration_date',
+        'local_admin.organization_id',
+        'local_admin.local_admin_id',
+        'user.gender',
+        'user.date_of_birth'];
+
     private $userRepository;
     public function __construct()
     {
@@ -27,20 +40,9 @@ class LocalAdminRepository implements IRepository
         return $result[0]['organization_id'];
     }
 
-    public function getFilteredByEventId(int $id): ?IModel
+    public function get(int $id): ?IModel
     {
-        $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->where('local_admin.local_admin_id', '=', $id)->get([
-            'user.user_id',
-            'user.name',
-            'user.email',
-            'user.role_id',
-            'user.is_activity',
-            'user.registration_date',
-            'local_admin.organization_id',
-            'local_admin.local_admin_id',
-            'user.gender',
-            'user.date_of_birth'
-        ]);
+        $result = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->where('local_admin.local_admin_id', '=', $id)->get($this->dateForCreateLocalAdmin);
 
         if (count($result) == 0){
             return null;
@@ -61,6 +63,35 @@ class LocalAdminRepository implements IRepository
         return new LocalAdmin($user, $result[0]['organization_id'], $result[0]['local_admin_id']);
     }
 
+    public function getFilteredByOrgId(int $organizationId):?array
+    {
+        $results = LocalAdminEloquant::query()->join('user', 'user.user_id', '=', 'local_admin.user_id')->where('local_admin.organization_id', '=', $organizationId)->get($this->dateForCreateLocalAdmin);
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        $localAdmins = [];
+
+        foreach ($results as $result) {
+            $user = UserCreater::createModel([
+                'id' => $result['user_id'],
+                'name' => $result['name'],
+                'password' => $result['password'],
+                'email' => $result['email'],
+                'roleId' => $result['role_id'],
+                'dateTime' => new \DateTime($result['registration_date']),
+                'isActivity' => $result['is_activity'],
+                'gender' => $result['gender'],
+                'dateOfBirth' => new \DateTime($result['date_of_birth'])
+            ]);
+
+            $localAdmins[] = new LocalAdmin($user, $result['organization_id'], $result['local_admin_id']);
+        }
+
+        return $localAdmins;
+    }
+
     /**
      * @inheritDoc
      */
@@ -75,7 +106,8 @@ class LocalAdminRepository implements IRepository
             'user.registration_date',
             'user.gender',
             'user.date_of_birth',
-            'local_admin.organization_id'
+            'local_admin.organization_id',
+            'local_admin_id'
         ]);
 
         if (count($results) == 0){
@@ -84,7 +116,18 @@ class LocalAdminRepository implements IRepository
 
         $localAdmins = [];
         foreach ($results as $result){
-            $localAdmins[] = $result;
+            $localAdmins[] = [
+                'userId' => $result['user_id'],
+                'name' => $result['name'],
+                'email' => $result['email'],
+                'roleId' => $result['role_id'],
+                'isActivity' => $result['is_activity'],
+                'registrationDate' => $result['registration_date'],
+                'gender' => $result['gender'],
+                'dateOfBirth' => $result['date_of_birth'],
+                'organizationId' => $result['organization_id'],
+                'localAdminId' => $result['local_admin_id']
+            ];
         }
 
         return $localAdmins;
