@@ -3,6 +3,7 @@
 namespace App\Services\Event;
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
+use App\Domain\Models\Secretary\Secretary;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Domain\Models\Event\Event;
@@ -52,12 +53,21 @@ class EventService
         $this->eventRepository->delete($eventId);
     }
 
-    private function changeAdminStatusToSimple(array $admins, $simpleRoleId)
+    /**@var $admins Secretary[]*/
+    private function changeAdminStatusToSimple(?array $admins, $simpleRoleId)
     {
+        if ($admins == null){
+            return;
+        }
+
         foreach ($admins as $admin){
             $user = $admin->getUser();
-            $user->setRoleId($simpleRoleId);
-            $this->userRepository->update($user);
+            $secretaryInEvents = $this->secretaryRepository->getFilteredByUserEmail($user->getEmail());
+
+            if (count($secretaryInEvents) == 1) {
+                $user->setRoleId($simpleRoleId);
+                $this->userRepository->update($user);
+            }
         }
     }
 

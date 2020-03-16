@@ -6,6 +6,7 @@ use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\Event\Event;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\User\User;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
@@ -58,8 +59,18 @@ class SecretaryService
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует'))]));
             return $response->withStatus(404);
         }else{
-            if ($user->getRoleId() != $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles)){
+            if ($user->getRoleId() != $this->roleRepository->getByName(AuthorizeMiddleware::SIMPLE_USER)->getId() && $user->getRoleId() != $this->roleRepository->getByName(AuthorizeMiddleware::SECRETARY)->getId()){
                 $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этому пользователю уже присуще другая роль'))]));
+                return $response->withStatus(400);
+            }
+
+            if ($this->secretaryInOtherOrganization($user, $organizationId)){
+                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этот пользователь является секретарем в другой организации'))]));
+                return $response->withStatus(400);
+            }
+
+            if ($this->secretaryIsSetOnThisEvent($user, $eventId)){
+                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этот пользователь уже является секретарем в данном мероприятии'))]));
                 return $response->withStatus(400);
             }
 
@@ -70,6 +81,39 @@ class SecretaryService
         $this->secretaryRepository->add(new Secretary(-1 , $eventId, $organizationId, $user));
     }
 
+    private function secretaryIsSetOnThisEvent(User $user, int $evenId):bool
+    {
+        $secretaries = $this->secretaryRepository->getFilteredByUserEmail($user->getEmail());
+
+        if ($secretaries == null){
+            return false;
+        }
+
+        foreach ($secretaries as $secretary){
+            if ($secretary->getEventId() == $evenId){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function secretaryInOtherOrganization(User $user, $organizationId):bool
+    {
+        if ($user->getRoleId() != $this->roleRepository->getByName(AuthorizeMiddleware::SECRETARY)->getId()) {
+            return false;
+        }
+
+        $secretaries = $this->secretaryRepository->getFilteredByUserEmail($user->getEmail());
+
+        foreach ($secretaries as $secretary){
+            if ($secretary->getOrganizationId() != $organizationId){
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public function get(int $organizationId, int $eventId, string $localAdminEmail, ResponseInterface $response)
     {
@@ -111,10 +155,14 @@ class SecretaryService
         }
 
         $roles = $this->roleRepository->getAll();
-        $user = $this->userRepository->getByEmail($secretary->getUser()->getEmail());
-        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles);
-        $user->setRoleId($roleId);
-        $this->userRepository->update($user);
+        $secretariesInEvent = $this->secretaryRepository->getFilteredByUserEmail($secretary->getUser()->getEmail());
+
+        if (count($secretariesInEvent) == 1){
+            $user = $this->userRepository->getByEmail($secretary->getUser()->getEmail());
+            $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles);
+            $user->setRoleId($roleId);
+            $this->userRepository->update($user);
+        }
 
         $this->secretaryRepository->delete($secretaryId);
     }

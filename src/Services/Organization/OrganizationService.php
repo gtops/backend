@@ -46,8 +46,12 @@ class OrganizationService
         $this->organizationRepository->delete($id);
     }
 
-    private function changeAdminStatusToSimple(array $admins, $simpleRoleId)
+    private function changeAdminStatusToSimple(?array $admins, $simpleRoleId)
     {
+        if ($admins == null){
+            return;
+        }
+
         foreach ($admins as $admin){
             $user = $admin->getUser();
             $user->setRoleId($simpleRoleId);

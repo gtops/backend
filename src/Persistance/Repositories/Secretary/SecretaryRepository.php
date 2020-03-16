@@ -65,25 +65,7 @@ class SecretaryRepository implements IRepository
             return null;
         }
 
-        $secretaries = [];
-
-        foreach ($results as $result) {
-            $user = UserCreater::createModel([
-                'id' => $result['user_id'],
-                'name' => $result['name'],
-                'password' => $result['password'],
-                'email' => $result['email'],
-                'roleId' => $result['role_id'],
-                'dateTime' => new \DateTime($result['registration_date']),
-                'isActivity' => $result['is_activity'],
-                'dateOfBirth' => new \DateTime($result['date_of_birth']),
-                'gender' => $result['gender']
-            ]);
-
-            $secretaries[] = new Secretary($result['secretary_id'], $result['event_id'], $result['organization_id'], $user);
-        }
-
-        return $secretaries;
+        return $this->getSecretaries($results);
     }
 
 
@@ -94,29 +76,7 @@ class SecretaryRepository implements IRepository
             ->where('event.organization_id', '=', $organizationId)
             ->get($this->dateForCreateSecretary);
 
-        if (count($results) == 0){
-            return null;
-        }
-
-        $secretaries = [];
-
-        foreach ($results as $result) {
-            $user = UserCreater::createModel([
-                'id' => $result['user_id'],
-                'name' => $result['name'],
-                'password' => $result['password'],
-                'email' => $result['email'],
-                'roleId' => $result['role_id'],
-                'dateTime' => new \DateTime($result['registration_date']),
-                'isActivity' => $result['is_activity'],
-                'dateOfBirth' => new \DateTime($result['date_of_birth']),
-                'gender' => $result['gender']
-            ]);
-
-            $secretaries[] = new Secretary($result['secretary_id'], $result['event_id'], $result['organization_id'], $user);
-        }
-
-        return $secretaries;
+        return $this->getSecretaries($results);
     }
 
 
@@ -146,5 +106,42 @@ class SecretaryRepository implements IRepository
     public function update(IModel $model)
     {
         // TODO: Implement update() method.
+    }
+
+    public function getFilteredByUserEmail(string $userEmail):?array
+    {
+        $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
+            ->join('user', 'user.user_id', '=', 'secretary.user_id')
+            ->where('user.email', '=', $userEmail)
+            ->get($this->dateForCreateSecretary);
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        return $this->getSecretaries($results);
+    }
+
+    private function getSecretaries($results)
+    {
+        $secretaries = [];
+
+        foreach ($results as $result) {
+            $user = UserCreater::createModel([
+                'id' => $result['user_id'],
+                'name' => $result['name'],
+                'password' => $result['password'],
+                'email' => $result['email'],
+                'roleId' => $result['role_id'],
+                'dateTime' => new \DateTime($result['registration_date']),
+                'isActivity' => $result['is_activity'],
+                'dateOfBirth' => new \DateTime($result['date_of_birth']),
+                'gender' => $result['gender']
+            ]);
+
+            $secretaries[] = new Secretary($result['secretary_id'], $result['event_id'], $result['organization_id'], $user);
+        }
+
+        return $secretaries;
     }
 }
