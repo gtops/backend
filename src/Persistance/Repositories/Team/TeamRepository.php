@@ -45,7 +45,7 @@ class TeamRepository implements IRepository
                 'event.organization_id' => $organizationId,
                 'team.event_id' => $eventId
             ])
-            ->get();
+            ->get(['team.team_id', 'team.event_id', 'team.name']);
 
         return $this->getTeams($objects);
         //todo сделать выборку количества людей
