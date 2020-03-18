@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Services\AccessService\AccessService;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -41,7 +42,7 @@ use App\Application\Actions\Event\EventAction;
 use App\Services\Event;
 use App\Services\Event\EventService;
 use App\Persistance\Repositories\Event\EventRepository;
-use App\Persistance\Repositories\Role\TeamRepository;
+use App\Persistance\Repositories\Team\TeamRepository;
 use App\Services\Team\TeamService;
 use App\Application\Actions\Team\TeamAction;
 use App\Services\Secretary\SecretaryService;
@@ -100,7 +101,17 @@ return function (ContainerBuilder $containerBuilder) {
             return new OrganizationAction($c->get(OrganizationService::class));
         },
         TeamAction::class => function(ContainerInterface $c){
-            return new TeamAction($c->get(TeamService::class));
+            return new TeamAction($c->get(TeamService::class), $c->get(AccessService::class));
+        },
+        AccessService::class => function(ContainerInterface $c){
+            return new AccessService(
+                $c->get(UserRepository::class),
+                $c->get(LocalAdminRepository::class),
+                $c->get(SecretaryRepository::class),
+                $c->get(OrganizationRepository::class),
+                $c->get(RoleRepository::class),
+                $c->get(EventRepository::class)
+            );
         },
         TeamService::class => function(ContainerInterface $c){
             return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class));

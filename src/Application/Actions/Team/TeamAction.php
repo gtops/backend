@@ -2,6 +2,8 @@
 
 namespace App\Application\Actions\Team;
 use App\Application\Actions\Action;
+use App\Application\Middleware\AuthorizeMiddleware;
+use App\Services\AccessService\AccessService;
 use App\Services\Team\TeamService;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -9,9 +11,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 class TeamAction extends Action
 {
     private $temaService;
-    public function __construct(TeamService $teamService)
+    private $accessService;
+    public function __construct(TeamService $teamService, AccessService $accessService)
     {
         $this->temaService = $teamService;
+        $this->accessService = $accessService;
     }
 
     /**
@@ -36,7 +40,24 @@ class TeamAction extends Action
      */
     public function add(Request $request, Response $response, $args): Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        $access = $this->accessService->hasAccessWorkWithTeam($userRole, (int)$args['id'], (int)$args['eventId'], $userEmail);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, $access, $response);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $teamId = $this->temaService->add($rowParams['name'], (int)$args['eventId']);
+        return  $this->respond(200, ['id' => $teamId], $response);
     }
 
     /**
@@ -86,7 +107,14 @@ class TeamAction extends Action
      */
     public function getAll(Request $request, Response $response, $args): Response
     {
+        $teams = $this->temaService->getAll((int)$args['id'], (int)$args['eventId']);
+        $teamsInArray = [];
 
+        foreach ($teams as $team){
+            $teamsInArray[] = $team->toArray();
+        }
+
+        return $this->respond(200, $teamsInArray, $response);
     }
 
     /**

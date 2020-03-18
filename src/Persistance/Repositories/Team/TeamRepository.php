@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Persistance\Repositories\Role;
+namespace App\Persistance\Repositories\Team;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\Team\Team;
@@ -29,10 +29,26 @@ class TeamRepository implements IRepository
             return null;
         }
 
-        $teams = [];
-        foreach ($results as $result){
-            $teams[] = new Team($result['team_id'], $result['event_id'], $result['name']);
-        }
+        return $this->getTeams($results);
+    }
+
+    /**
+     * @param int $eventId
+     * @param int $organizationId
+     * @return Team[]
+     */
+    public function getAllFilteredByEventIdOrgId(int $organizationId, int $eventId):array
+    {
+        $objects = TeamPdo::query()
+            ->join('event', 'event.event_id', '=', 'team.event_id')
+            ->where([
+                'event.organization_id' => $organizationId,
+                'team.event_id' => $eventId
+            ])
+            ->get();
+
+        return $this->getTeams($objects);
+        //todo сделать выборку количества людей
     }
 
     public function getAll(): ?array
@@ -65,5 +81,16 @@ class TeamRepository implements IRepository
         TeamPdo::query()->where('team_id', '=', $model->getId())->update([
             'name' => $model->getName()
         ]);
+    }
+
+    private function getTeams($teamsInObject)
+    {
+        $teams = [];
+
+        foreach ($teamsInObject as $item) {
+            $teams[] = new Team($item['team_id'], $item['event_id'], $item['name']);
+        }
+
+        return $teams;
     }
 }
