@@ -3,14 +3,6 @@ declare(strict_types=1);
 
 use Slim\App;
 use App\Swagger\SwaggerWatcher;
-use App\Application\Actions\Trial\GetListTrialByGenderAndAgeAction;
-use App\Application\Actions\Trial\GetSecondResultOfTrialByFirstResultAction;
-use App\Application\Actions\Role\GetRoleAction;
-use App\Application\Actions\User\SendInviteAction;
-use App\Application\Actions\User\InviteValidationAction;
-use App\Application\Actions\User\RegistrationAction;
-use App\Application\Actions\User\LoginAction;
-use \App\Application\Actions\User\GetNewTokensAction;
 use \App\Application\Actions\User\AuthAction;
 use App\Application\Actions\Trial\TrialAction;
 use App\Application\Actions\Role\RoleAction;
