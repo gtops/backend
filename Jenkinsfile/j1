@@ -2,20 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Get code from SCM') {
-            checkout(
-                    [$class: 'GitSCM', branches: [[name: '*/development']],
-                     doGenerateSubmoduleConfigurations: false,
-                     extensions: [],
-                     submoduleCfg: [],
-                     userRemoteConfigs: []]
-            )
-        }
-
         stage('Prepare') {
             steps {
                 sh 'composer install'
             }
         }
     }
+
 }

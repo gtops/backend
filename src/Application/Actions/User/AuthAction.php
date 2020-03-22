@@ -28,15 +28,35 @@ class AuthAction extends Action
         $this->auth = $auth;
     }
 
-    public function registration(Request $request, Response $response, $args): Response
+ /**
+*
+*  @SWG\Post(
+*   path="/api/v1/auth/confirmAccount",
+*   summary="делает аккаунт пользователя действительным с переданным паролем",
+*   operationId="",
+*   tags={"User"},
+*   @SWG\Parameter(in="header", name="Authorization", type="string"),
+*   @SWG\Parameter(in="body", name="body", @SWG\Schema(
+*      @SWG\Property(property="password", type="string", description="length min 6 symbols")
+*    )),
+*   @SWG\Response(response=200, description="OK"),
+*   @SWG\Response(response=400, description="Error", @SWG\Schema(
+*          @SWG\Property(property="errors", type="array", @SWG\Items(
+*              @SWG\Property(property="type", type="string"),
+*              @SWG\Property(property="description", type="string")
+*          ))
+*     ))
+* )
+*
+*/
+    public function confirmAccount(Request $request, Response $response, $args): Response
     {
-        if (isset($request->getHeader('error')[0])){
-            return $this->respond(403, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
         }
 
         $params = json_decode($request->getBody()->getContents(), true);
-        $params['token'] = $request->getHeader('Authorization')[0] ?? null;
-
+        $params['token'] = $request->getHeader('Authorization')[0];
         $validator = new RegistrationValidator();
         $errors = $validator->validate($params);
 
@@ -44,8 +64,7 @@ class AuthAction extends Action
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
-        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
-        return $this->auth->registration($params, $response);
+        return $this->auth->confirmAccount($params, $response);
     }
 
     /**

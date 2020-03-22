@@ -74,7 +74,7 @@ class UserRepository implements IRepository
             'password' => $user->getPassword(),
             'email' => $user->getEmail(),
             'role_id' => $user->getRoleId(),
-            'is_activity' => 1,
+            'is_activity' => $user->isActivity(),
             'registration_date' => $user->getRegistrationDate(),
             'gender' => $user->getGender(),
             'date_of_birth' => $user->getDateOfBirth()

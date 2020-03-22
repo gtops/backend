@@ -22,7 +22,7 @@ class User implements IModel
         string $password,
         string $email,
         string $roleId,
-        string $isActivity,
+        int $isActivity,
         \DateTime $registrationDate,
         int $gender,
         \DateTime $dateOfBirth
@@ -53,6 +53,11 @@ class User implements IModel
         return $this->name;
     }
 
+    public function setIsActivity()
+    {
+        $this->isActivity = 1;
+    }
+
     public function getPassword():string
     {
         return $this->password;
@@ -61,6 +66,14 @@ class User implements IModel
     public function getEmail():string
     {
         return $this->email;
+    }
+
+    /**
+     * @param string $password
+     */
+    public function setPassword(string $password): void
+    {
+        $this->password = $password;
     }
 
     public function getRoleId():int

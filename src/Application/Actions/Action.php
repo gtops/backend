@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 namespace App\Application\Actions;
+use App\Application\Middleware\AuthorizeMiddleware;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\Validator\Constraints as Assert;

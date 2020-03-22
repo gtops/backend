@@ -133,29 +133,23 @@ class Auth
         return $response;
     }
 
-    public function registration(array $params, Response $response):Response
+    public function confirmAccount(array $params, Response $response):Response
     {
-        $tokenDataFromDb = $this->regTokenRep->getTokenFromDB($params['token']);
-        if (!isset($tokenDataFromDb[0]->token)){
+        $tokenDataFromDb = $this->regTokenRep->getByTokenValue($params['token']);
+        if ($tokenDataFromDb->getToken() == null){
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'Невалидный токен'))]));
             return $response->withStatus(400);
         }
 
         $this->regTokenRep->deleteTokenFromDB($params['token']);
         $jwtData = (array)Token::getDecodedToken($params['token']);
-        $params['password'] = Token::getEncodedPassword($params['password']);
+        $password = Token::getEncodedPassword($params['password']);
 
-        if ($this->userRepository->userIsSetOnDBWithEmail($jwtData['email'])){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой email существует'))]));
-            return $response->withStatus(400);
-        }
+        $user = $this->userRepository->getByEmail($jwtData['email']);
+        $user->setPassword($password);
+        $user->setIsActivity();
 
-        $this->userRepository->add([
-            'email' => $jwtData['email'],
-            'role' => $jwtData['role'],
-            'password' => $params['password'],
-            'name' => $params['name']
-        ]);
+        $this->userRepository->add($user);
 
         return $response->withStatus(200);
     }

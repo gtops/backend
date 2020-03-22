@@ -23,15 +23,19 @@ class EmailSendler
             ->setEncryption('ssl');
 
         $this->mailer = new \Swift_Mailer($transport);
-    }
+}
 
     public function sendInvite($email, $token)
     {
         $message = (new \Swift_Message('Invite to registration on GTO service'))
             ->setFrom(['gto_service@gtoservice.ru' => 'GTO'])
             ->setTo([$email => ''])
-            ->setBody('чтобы зарегистрироваться, пройдите по ссылке: <a href="http://gtoservice.ru/user/invite/'.$token.'">ссылка</a>', 'text/html');
+            ->setBody('чтобы зарегистрироваться, пройдите по ссылке: <a href="http://gtoservice.ru/user/invite?token='.$token.'&email='.$email.'">ссылка</a>', 'text/html');
 
-        $this->mailer->send($message);
+        $failedRecipients = [];
+        $this->mailer->send($message, $failedRecipients);
+        if (count($failedRecipients) != 0){
+            throw new \Exception();
+        }
     }
 }

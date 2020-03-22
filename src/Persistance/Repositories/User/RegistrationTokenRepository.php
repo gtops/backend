@@ -10,6 +10,7 @@ namespace App\Persistance\Repositories\User;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\Organization;
+use App\Domain\Models\Token\RegistrationToken;
 use App\Persistance\ModelsEloquant\RegistrationToken\RegistrationToken as Token;
 
 class RegistrationTokenRepository implements IRepository
@@ -29,9 +30,14 @@ class RegistrationTokenRepository implements IRepository
 
     }
 
-    public function getTokenFromDB(string $token)
+    public function getByTokenValue(string $token):?RegistrationToken
     {
-       return Token::query()->where('token', '=', $token)->get();
+       $token = Token::query()->where('token', '=', $token)->get();
+       if ($token == null){
+           return null;
+       }
+
+       return new RegistrationToken($token[0]['registration_token_id'], $token[0]['token'], new \DateTime($token[0]['dateTimeToDelete']));
 
     }
 

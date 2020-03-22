@@ -8,7 +8,12 @@
 
 namespace App\Services\Invite;
 use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
+use App\Domain\Models\IModel;
+use App\Domain\Models\User\User;
+use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\User\RegistrationTokenRepository;
+use App\Persistance\Repositories\User\UserRepository;
 use App\Services\EmailSendler\EmailSendler;
 use App\Services\Token\Token;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -17,41 +22,51 @@ class Invite
 {
     private $regTokenRep;
     private $emailSendler;
+    private $userRepository;
+    private $roleRepository;
 
-    public function __construct(RegistrationTokenRepository $registrationTokenRepository, EmailSendler $emailSendler)
+    public function __construct(RegistrationTokenRepository $registrationTokenRepository, EmailSendler $emailSendler, UserRepository $userRepository, RoleRepository $roleRepository)
     {
         $this->emailSendler = $emailSendler;
         $this->regTokenRep = $registrationTokenRepository;
+        $this->userRepository = $userRepository;
+        $this->roleRepository = $roleRepository;
     }
 
-    public function sendInviteToOrganization(array $params, Response $response):Response
+    /**@var $user User*/
+    public function sendInviteToRegistration(IModel $user, Response $response):Response
     {
-        $role = $params['role'];
-        $email = $params['email'];
+        if ($this->userRepository->getByEmail($user->getEmail()) != null){
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой пользователь сушествует'))]));
+            return $response->withStatus(400);
+        }
 
         $token = Token::getEncodedToken([
-            'email' => $email,
-            'role' => $role,
+            'email' => $user->getEmail(),
             'type' => 'access token',
             'liveTime' => 24 * 7 * 3600,
+            'role' => '',
             'addedTime' => (new \DateTime)
                 ->setTimezone(new \DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
         ]);
 
-        $this->regTokenRep->addTokenToDB($token);
-
         try {
-            $this->emailSendler->sendInvite($params['email'], $token);
+            $this->emailSendler->sendInvite($user->getEmail(), $token);
         }catch (\Exception $err){
-            $response->getBody()->write(json_encode(new ActionError(ActionError::BAD_REQUEST, 'invalid email')));
+            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой почты не сушествует'))]));
             return $response->withStatus(400);
         }
 
+        $role = $this->roleRepository->getByName(AuthorizeMiddleware::SIMPLE_USER);
+        $user->setRoleId($role->getId());
+        $this->userRepository->add($user);
+
+        $this->regTokenRep->addTokenToDB($token);
         return $response;
     }
 
-    public function valid(array $params, Response $response):Response
+    /*public function valid(array $params, Response $response):Response
     {
         $tokenDataFromDb = $this->regTokenRep->getTokenFromDB($params['token']);
 
@@ -62,5 +77,5 @@ class Invite
         $response->getBody()->write(json_encode(['email' => $params['email']]));
 
         return $response->withStatus(200);
-    }
+    }*/
 }

@@ -13,9 +13,7 @@ use App\Application\Actions\Swagger;
 use App\Persistance\ModelsEloquant\DataBase;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use App\Services\EmailSendler\EmailSendler;
-use App\Application\Actions\User\SendInviteAction;
 use App\Services\Token\Token;
-use App\Application\Actions\User\InviteValidationAction;
 use \App\Application\Actions\User\AuthAction;
 use \App\Persistance\Repositories\User\UserRepository;
 use App\Persistance\Repositories\User\RefreshTokenRepository;
@@ -135,7 +133,7 @@ return function (ContainerBuilder $containerBuilder) {
         },
         Invite::class => function(ContainerInterface $c){
             $c->get(Token::class);
-            return new Invite($c->get(RegistrationTokenRepository::class), $c->get(EmailSendler::class));
+            return new Invite($c->get(RegistrationTokenRepository::class), $c->get(EmailSendler::class), $c->get(UserRepository::class), $c->get(RoleRepository::class));
         },
         RoleAction::class => function(ContainerInterface $c){
             return new RoleAction($c->get(Role::class));
@@ -177,12 +175,6 @@ return function (ContainerBuilder $containerBuilder) {
         UserRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new UserRepository();
-        },
-        InviteValidationAction::class => function(ContainerInterface $c){
-            $c->get(Token::class);
-            $c->get(DataBase::class);
-            $inviteValidateAction = new InviteValidationAction();
-            return $inviteValidateAction;
         },
         Token::class => function(ContainerInterface $c){
             Token::$key = $c->get('privateSettings')['Token']['key'];

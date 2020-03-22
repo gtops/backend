@@ -1,25 +1,5 @@
-/*
-*
-* * @SWG\Post(
-*   path="/api/v1/auth/registration",
-*   summary="регистрирует пользователя по приглашению",
-*   operationId="регистрирует пользователя по приглашению",
-*   tags={"User"},
-*   @SWG\Parameter(in="header", name="Authorization", type="string"),
-*   @SWG\Parameter(in="body", name="body", @SWG\Schema(
-*      @SWG\Property(property="name", type="string"),
-*      @SWG\Property(property="password", type="string", description="length min 6 symbols")
-*    )),
-*   @SWG\Response(response=200, description="OK"),
-*   @SWG\Response(response=400, description="Error", @SWG\Schema(
-*          @SWG\Property(property="errors", type="array", @SWG\Items(
-*              @SWG\Property(property="type", type="string"),
-*              @SWG\Property(property="description", type="string")
-*          ))
-*     ))
-* )
-*
-*/
+<?php
+
 
 /**
  * Created by PhpStorm.
@@ -33,6 +13,7 @@ namespace App\Application\Actions\Invite;
 
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
+use App\Domain\Models\User\UserCreater;
 use App\Services\Invite\Invite;
 use App\Validators\Invite\InviteValidator;
 use App\Validators\ValidateStrategy;
@@ -54,14 +35,16 @@ class InviteAction extends Action
     /**
      *
      * * @SWG\Post(
-     *   path="/api/v1/invite",
+     *   path="/api/v1/auth/invite",
      *   summary="Отправка приглашения на регистрацию",
      *   operationId="Отправка приглашения на регистрацию",
-     *   tags={"Invite"},
+     *   tags={"User"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string"),
      *   @SWG\Parameter(in="body", name="body", @SWG\Schema(
      *      @SWG\Property(property="email", type="string"),
-     *      @SWG\Property(property="role", type="string")
+     *      @SWG\Property(property="name", type="string"),
+     *      @SWG\Property(property="gender", type="integer"),
+     *      @SWG\Property(property="dateOfBirth", type="string"),
      *    )),
      *   @SWG\Response(response=200, description="OK"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
@@ -74,15 +57,9 @@ class InviteAction extends Action
      *
      */
 
-    public function sendInviteToOrganization(Request $request, Response $response):Response
+    public function sendInviteToRegistration(Request $request, Response $response):Response
     {
-        if (isset($request->getHeader('error')[0])){
-            return $this->respond(403, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
-        }
-
         $params = json_decode($request->getBody()->getContents(), true);
-        $params['userEmail'] = $request->getHeader('userEmail')[0];
-        $params['userRole'] = $request->getHeader('userRole')[0];
 
         $validator = new InviteValidator();
         $errors = $validator->validate($params);
@@ -92,35 +69,18 @@ class InviteAction extends Action
         }
 
         $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
-        return $this->inviteService->sendInviteToOrganization($params, $response);
-    }
+        $user = UserCreater::createModel([
+            'id' => -1,
+            'name' => $params['name'],
+            'password' => '',
+            'email' => $params['email'],
+            'roleId' => -1,
+            'dateTime' => new \DateTime(),
+            'isActivity' => 0,
+            'dateOfBirth' => new \DateTime($params['dateOfBirth']),
+            'gender' => $params['gender']
+        ]);
 
-    /**
-     *
-     * * @SWG\Post(
-     *   path="/api/v1/invite/isValid",
-     *   summary="проверка валиданости токена приглашеня на регистрацию",
-     *   operationId="проверка валиданости токена приглашеня на регистрацию",
-     *   tags={"Invite"},
-     *   @SWG\Parameter(in="header", name="Authorization", type="string"),
-     *   @SWG\Response(response=200, description="OK", @SWG\Schema(
-     *              @SWG\Property(property="email", type="string")
-     *          )),
-     *  @SWG\Response(response=404, description="Not Found")
-     *     ))
-     * )
-     *
-     */
-    public function validate(Request $request, Response $response):Response
-    {
-        if (isset($request->getHeader('error')[0])){
-            return $this->respond(403, ['errors' => array(new ActionError(ActionError::UNAUTHENTICATED, $request->getHeader('error')[0]))], $response);
-        }
-
-        $params['token'] = $request->getHeader('Authorization')[0];
-        $params['email'] = $request->getHeader('userEmail')[0];
-
-        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
-        return $this->inviteService->valid($params, $response);
+        return $this->inviteService->sendInviteToRegistration($user, $response);
     }
 }
