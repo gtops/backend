@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 
+use App\Application\Actions\EventParticipant\EventParticipantAction;
 use Slim\App;
 use App\Swagger\SwaggerWatcher;
 use \App\Application\Actions\User\AuthAction;
@@ -67,6 +68,10 @@ return function (App $app) {
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/existingAccount', SecretaryAction::class.':addExistingAccount');
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':get');
     $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/{secretaryId:[0-9]+}', SecretaryAction::class.':delete');
+
+    //eventParticipant
+    $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');
+    $app->get('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':getAllForEvent');
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');

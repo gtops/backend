@@ -4,18 +4,62 @@ namespace App\Application\Actions\Event;
 use App\Application\Actions\Action;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\Event\Event;
+use App\Domain\Models\EventParticipant\EventParticipant;
+use App\Services\AccessService\AccessService;
 use App\Services\Event\EventService;
 use App\Validators\Event\EventValidator;
+use DateTime;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class EventAction extends Action
 {
     private $eventService;
+    private $accessService;
 
-    public function __construct(EventService $eventService)
+    public function __construct(EventService $eventService, AccessService $accessService)
     {
+        $this->accessService = $accessService;
         $this->eventService = $eventService;
+    }
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/event/{eventId}/apply",
+     *   summary="пользователь подает заявку на участие в мероприятии",
+     *   tags={"ParticipantEvent"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function apply(Request $request, Response $response, $args): Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userEmail = $request->getHeader('userEmail')[0];
+        $eventId = (int)$args['eventId'];
+        $access = $this->accessService->hasAccessApplyToEvent($eventId, $userEmail);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, $access, $response);
+        }
+
+        $participantId = $this->eventService->applyToEvent($eventId, $userEmail, false);
+        return $this->respond(200, ['id' => $participantId], $response);
     }
 
     /**
@@ -59,7 +103,7 @@ class EventAction extends Action
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
-        $event = new Event('-1', $rowParams['organizationId'], $rowParams['name'], new \DateTime($rowParams['startDate']), new \DateTime($rowParams['expirationDate']), $rowParams['description']);
+        $event = new Event('-1', $rowParams['organizationId'], $rowParams['name'], new DateTime($rowParams['startDate']), new DateTime($rowParams['expirationDate']), $rowParams['description'], Event::LEAD_UP);
 
         $eventId = $this->eventService->add($event, $userEmail, $response);
 
@@ -225,7 +269,7 @@ class EventAction extends Action
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
-        $event = new Event($rowParams['eventId'], $rowParams['organizationId'], $rowParams['name'], new \DateTime($rowParams['startDate']), new \DateTime($rowParams['expirationDate']), $rowParams['description']);
+        $event = new Event($rowParams['eventId'], $rowParams['organizationId'], $rowParams['name'], new DateTime($rowParams['startDate']), new DateTime($rowParams['expirationDate']), $rowParams['description']);
 
         return $this->eventService->update($event, $userEmail, $response);
     }

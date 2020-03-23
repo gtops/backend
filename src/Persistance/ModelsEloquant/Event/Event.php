@@ -13,6 +13,7 @@ class Event extends Model
         "name",
         "start_date",
         "expiration_date",
-        "description"
+        "description",
+        "status"
     );
 }

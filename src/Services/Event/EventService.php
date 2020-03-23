@@ -3,8 +3,10 @@
 namespace App\Services\Event;
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
+use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\Secretary\Secretary;
 use App\Persistance\Repositories\Event\EventRepository;
+use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Domain\Models\Event\Event;
 use App\Persistance\Repositories\Role\RoleRepository;
@@ -19,14 +21,16 @@ class EventService
     private $roleRepository;
     private $secretaryRepository;
     private $userRepository;
+    private $eventParticipantRepository;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository)
+    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
         $this->roleRepository = $roleRepository;
         $this->secretaryRepository = $secretaryRepository;
         $this->userRepository = $userRepository;
+        $this->eventParticipantRepository = $eventParticipantRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -112,5 +116,12 @@ class EventService
         $this->eventRepository->update($event);
 
         return $response;
+    }
+
+    public function applyToEvent(int $eventId, string $userEmail, bool $confirmed, $teamId = null)
+    {
+        $user = $this->userRepository->getByEmail($userEmail);
+        $participant = new EventParticipant(-1, $eventId, $user->getId(), $confirmed, $teamId);
+        return $this->eventParticipantRepository->add($participant);
     }
 }

@@ -16,6 +16,8 @@ use App\Persistance\Repositories\User\RefreshTokenRepository;
 use App\Persistance\Repositories\User\RegistrationTokenRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\Token\Token;
+use DateTime;
+use DateTimeZone;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -41,15 +43,13 @@ class Auth
             return $response->withStatus(400);
         }
         $role = $this->userRepository->getRoleOfUser($params['email']);
-        $logger = new Logger('a');
-        $logger->alert($role);
         $refreshToken = Token::getEncodedToken([
             'email' => $params['email'],
             'role' => $role,
             'type' => 'refresh token',
             'liveTime' => 24 * 7 * 3600,
-            'addedTime' => (new \DateTime)
-                ->setTimezone(new \DateTimeZone('europe/moscow'))
+            'addedTime' => (new DateTime)
+                ->setTimezone(new DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
         ]);
 
@@ -61,8 +61,8 @@ class Auth
             'role' => $role,
             'type' => 'acess token',
             'liveTime' => 600,
-            'addedTime' => (new \DateTime())
-                ->setTimezone(new \DateTimeZone('europe/moscow'))
+            'addedTime' => (new DateTime())
+                ->setTimezone(new DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
         ]);
 
@@ -108,8 +108,8 @@ class Auth
             'role' => $decodedToken['role'],
             'type' => 'refresh token',
             'liveTime' => 24 * 7 * 3600,
-            'addedTime' => (new \DateTime)
-                ->setTimezone(new \DateTimeZone('europe/moscow'))
+            'addedTime' => (new DateTime)
+                ->setTimezone(new DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
         ]);
 
@@ -118,8 +118,8 @@ class Auth
             'role' => $decodedToken['role'],
             'type' => 'acess token',
             'liveTime' => 120,
-            'addedTime' => (new \DateTime())
-                ->setTimezone(new \DateTimeZone('europe/moscow'))
+            'addedTime' => (new DateTime())
+                ->setTimezone(new DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
         ]);
 

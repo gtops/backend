@@ -5,6 +5,7 @@ use App\Domain\Models\Event\Event;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Persistance\ModelsEloquant\Event\Event as EventPDO;
+use DateTime;
 use Illuminate\Support\Facades\Date;
 
 class EventRepository implements IRepository
@@ -22,9 +23,10 @@ class EventRepository implements IRepository
             $results[0]['event_id'],
             $results[0]['organization_id'],
             $results[0]['name'],
-            new \DateTime($results[0]['start_date']),
-            new \DateTime($results[0]['expiration_date']),
-            $results[0]['description']
+            new DateTime($results[0]['start_date']),
+            new DateTime($results[0]['expiration_date']),
+            $results[0]['description'],
+            $results[0]['status']
         );
     }
 
@@ -47,7 +49,8 @@ class EventRepository implements IRepository
                 'name' => $result['name'],
                 'startDate' => $result['start_date'],
                 'expirationDate' => $result['expiration_date'],
-                'description' => $result['description']
+                'description' => $result['description'],
+                'status' => $result['status']
             ];
         }
 
@@ -63,7 +66,8 @@ class EventRepository implements IRepository
             'name' => $model->getName(),
             'start_date' => $eventInArray['startDate'],
             'expiration_date' => $eventInArray['expirationDate'],
-            'description' => $model->getDescription()
+            'description' => $model->getDescription(),
+            'status' => $model->getStatus()
         ]);
 
         return $object->getAttribute('event_id');
@@ -82,7 +86,8 @@ class EventRepository implements IRepository
             'name' => $model->getName(),
             'description' => $model->getDescription(),
             'start_date' => $eventInArray['startDate'],
-            'expiration_date' => $eventInArray['expirationDate']
+            'expiration_date' => $eventInArray['expirationDate'],
+            'status' => $model->getStatus()
         ]);
     }
 }

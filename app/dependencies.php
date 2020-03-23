@@ -1,7 +1,10 @@
 <?php
 declare(strict_types=1);
 
+use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Services\AccessService\AccessService;
+use App\Services\EventParticipant\EventParticipantService;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -51,6 +54,12 @@ return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         SecretaryAction::class => function(ContainerInterface $c){
             return new SecretaryAction($c->get(SecretaryService::class));
+        },
+        EventParticipantAction::class => function(ContainerInterface $c){
+            return new EventParticipantAction($c->get(AccessService::class), $c->get(EventParticipantService::class));
+        },
+        EventParticipantService::class => function(ContainerInterface $c){
+            return new EventParticipantService($c->get(EventParticipantRepository::class), $c->get(UserRepository::class));
         },
         SecretaryService::class => function(ContainerInterface $c){
             return new SecretaryService(
@@ -108,7 +117,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(SecretaryRepository::class),
                 $c->get(OrganizationRepository::class),
                 $c->get(RoleRepository::class),
-                $c->get(EventRepository::class)
+                $c->get(EventRepository::class),
+                $c->get(EventParticipantRepository::class)
             );
         },
         TeamService::class => function(ContainerInterface $c){
@@ -121,12 +131,13 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(EventRepository::class),
                 $c->get(SecretaryRepository::class),
                 $c->get(RoleRepository::class),
-                $c->get(UserRepository::class)
+                $c->get(UserRepository::class),
+                $c->get(EventParticipantRepository::class)
             );
         },
         EventAction::class => function(ContainerInterface $c)
         {
-            return new EventAction($c->get(EventService::class));
+            return new EventAction($c->get(EventService::class), $c->get(AccessService::class));
         },
         InviteAction::class => function(ContainerInterface $c){
             return new InviteAction($c->get(Invite::class));
@@ -152,6 +163,10 @@ return function (ContainerBuilder $containerBuilder) {
         RegistrationTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new RegistrationTokenRepository();
+        },
+        EventParticipantRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new EventParticipantRepository();
         },
         RefreshTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
