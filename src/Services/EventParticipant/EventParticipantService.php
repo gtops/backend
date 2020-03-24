@@ -22,4 +22,17 @@ class EventParticipantService
         return $this->eventParticipantRepository->getAllByEventId($eventId);
     }
 
+    public function confirmApply(int $participantId)
+    {
+        /**@var $participant EventParticipant*/
+        $participant = $this->eventParticipantRepository->get($participantId);
+        $participant->doConfirm();
+        $this->eventParticipantRepository->update($participant);
+    }
+
+    public function delete(int $participantId)
+    {
+        $this->eventParticipantRepository->delete($participantId);
+    }
+
 }

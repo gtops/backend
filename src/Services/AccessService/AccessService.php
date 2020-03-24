@@ -71,7 +71,7 @@ class AccessService
     {
         $user = $this->userRepository->getByEmail($email);
         $event = $this->eventRepository->get($eventId);
-        $participant = $this->eventParticipantRepository->getByEmail($email);
+        $participant = $this->eventParticipantRepository->getByEmail($email, $eventId);
         $this->addErrorIfEventNoInLeadUpStatus($event);
         $this->addErrorIfEventNotExists($event);
         $this->addErrorIfParticipantExistOnEvent($participant);
@@ -191,6 +191,41 @@ class AccessService
         }
     }
 
+    public function hasAccessWorkWithParticipant(string $userEmail, int $eventId, int $participantId, string $userRole)
+    {
+        $event = $this->eventRepository->get($eventId);
+        $participant = $this->eventParticipantRepository->get($participantId);
+        $this->addErrorIfEventNoInLeadUpStatus($event);
+        $this->addErrorIfEventNotExists($event);
+        $this->addErrorIfOnEventNotExistThisParticipant($event, $participant);
+
+        switch ($userRole){
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                return true;
+            }
+            default:{
+                return false;
+            }
+        }
+    }
+
+    /**@var $event Event*/
+    private function localAdminHasAccessWorkWithParticipant(string $email, ?IModel $event){
+        if ($event == null){
+            return $this->getResponse();
+        }
+
+        $orgId = $event->getIdOrganization();
+        if(!$this->localAdminRepository->localAdminIsSetOnDB($email, $orgId)){
+            $this->response = false;
+        }
+
+        return $this->getResponse();
+    }
+
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
         if ($organization == null){
@@ -229,5 +264,17 @@ class AccessService
         }
 
         $this->response = false;
+    }
+
+    /**@var $participant EventParticipant*/
+    private function addErrorIfOnEventNotExistThisParticipant(?IModel $event, ?IModel $participant)
+    {
+        if ($event == null || $participant == null){
+            return;
+        }
+
+        if ($event->getId() !== $participant->getEventId()){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'переданный участник не относится к данному мероприятию'));
+        }
     }
 }

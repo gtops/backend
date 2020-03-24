@@ -6,12 +6,21 @@ use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Persistance\ModelsEloquant\EventParticipant\EventParticipant as EventParticipantPDO;
 
+
 class EventParticipantRepository implements IRepository
 {
 
     public function get(int $id): ?IModel
     {
-        // TODO: Implement get() method.
+        $result = EventParticipantPDO::query()
+            ->where('event_participant_id', '=', $id)
+            ->get();
+
+        if (count($result) == 0){
+            return null;
+        }
+
+        return $this->getEventParticipant($result[0]);
     }
 
     /**
@@ -35,19 +44,30 @@ class EventParticipantRepository implements IRepository
 
     public function delete(int $id)
     {
-        // TODO: Implement delete() method.
+        EventParticipantPDO::query()
+            ->where('event_participant_id', '=', $id)
+            ->delete();
     }
 
+    /**@var $model EventParticipant*/
     public function update(IModel $model)
     {
-        // TODO: Implement update() method.
+        EventParticipantPDO::query()->where('event_participant_id', '=', $model->getEventParticipantId())->update([
+            'team_id' => $model->getTeamId(),
+            'event_id' => $model->getEventId(),
+            'confirmed' => $model->isConfirmed(),
+            'user_id' => $model->getUserId()
+        ]);
     }
 
-    public function getByEmail(string $email):?EventParticipant
+    public function getByEmail(string $email, $eventId):?EventParticipant
     {
         $result = EventParticipantPDO::query()
                 ->join('user', 'event_participant.user_id', '=', 'user.user_id')
-                ->where('user.email', '=', $email)
+                ->where([
+                    'user.email' => $email,
+                    'event_id' => $eventId
+                ])
                 ->get([
                     'event_participant_id',
                     'event_participant.user_id',

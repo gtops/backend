@@ -71,4 +71,9 @@ class EventParticipant implements IModel
             'isConfirmed' => $this->isConfirmed()
         ];
     }
+
+    public function doConfirm()
+    {
+        $this->confirmed = true;
+    }
 }

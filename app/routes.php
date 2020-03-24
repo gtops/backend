@@ -72,6 +72,8 @@ return function (App $app) {
     //eventParticipant
     $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');
     $app->get('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':getAllForEvent');
+    $app->post('/api/v1/event/{eventId:[0-9]+}/participant/{participantId:[0-9]+}', EventParticipantAction::class.':confirmApply');
+    $app->delete('/api/v1/event/{eventId:[0-9]+}/participant/{participantId:[0-9]+}', EventParticipantAction::class.':deleteParticipant');
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');
