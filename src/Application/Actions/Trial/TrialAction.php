@@ -108,7 +108,7 @@ class TrialAction extends Action
         $errors = $validator->validate($params);
 
         if (count($errors) > 0){
-            return $this->respond(400, ['errros' => $errors], $response);
+            return $this->respond(400, ['errors' => $errors], $response);
         }
 
         return $this->trialService->getSecondResult($params, $response);

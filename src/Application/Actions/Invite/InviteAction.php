@@ -17,6 +17,7 @@ use App\Domain\Models\User\UserCreater;
 use App\Services\Invite\Invite;
 use App\Validators\Invite\InviteValidator;
 use App\Validators\ValidateStrategy;
+use DateTime;
 use Monolog\Logger;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -65,7 +66,7 @@ class InviteAction extends Action
         $errors = $validator->validate($params);
 
         if (count($errors) > 0){
-            return $this->respond(400, ['errros' => $errors], $response);
+            return $this->respond(400, ['errors' => $errors], $response);
         }
 
         $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
@@ -75,9 +76,9 @@ class InviteAction extends Action
             'password' => '',
             'email' => $params['email'],
             'roleId' => -1,
-            'dateTime' => new \DateTime(),
+            'dateTime' => new DateTime(),
             'isActivity' => 0,
-            'dateOfBirth' => new \DateTime($params['dateOfBirth']),
+            'dateOfBirth' => new DateTime($params['dateOfBirth']),
             'gender' => $params['gender']
         ]);
 
