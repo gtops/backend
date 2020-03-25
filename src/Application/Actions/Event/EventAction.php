@@ -71,7 +71,7 @@ class EventAction extends Action
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
      *   @SWG\Response(response=200, description="OK",
-     *           @SWG\Property(type="array", @SWG\Items(ref="#/definitions/eventResponse"))
+     *           @SWG\Property(type="array", @SWG\Items(ref="#/definitions/eventsForUser"))
      *   ),
      *   @SWG\Response(response=401, description=""),
      *   @SWG\Response(response=403, description="")
@@ -87,13 +87,7 @@ class EventAction extends Action
         $userEmail = $request->getHeader('userEmail')[0];
 
         $events = $this->eventService->getForUser($userEmail);
-        $eventsToResponse = [];
-
-        foreach ($events as $event){
-            $eventsToResponse[] = $event->toArray();
-        }
-
-        return $this->respond(200, $eventsToResponse, $response);
+        return $this->respond(200, $events, $response);
     }
 
     /**
@@ -128,7 +122,7 @@ class EventAction extends Action
             return $response->withStatus(403);
         }else if ($access !== true){
             /**@var $access array*/
-            return $this->respond(400, $access, $response);
+            return $this->respond(400, ['errors' => $access], $response);
         }
 
         $participantId = $this->eventService->applyToEvent($eventId, $userEmail, false);

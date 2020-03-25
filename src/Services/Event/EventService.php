@@ -143,7 +143,9 @@ class EventService
         $participants = $this->eventParticipantRepository->getByEmail($userEmail);
         $events = [];
         foreach ($participants as $participant){
-            $events[] = $this->eventRepository->get($participant->getEventId());
+            $event = $this->eventRepository->get($participant->getEventId())->toArray();
+            $event['userConfirmed'] = $participant->isConfirmed();
+            $events[] = $event;
         }
 
         return $events;

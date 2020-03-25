@@ -206,7 +206,7 @@
                 }
             }
         },
-        "/api/v1/event/{eventId}/getForSecretary": {
+        "/api/v1/event/forSecretary": {
             "get": {
                 "tags": [
                     "Event"
@@ -245,7 +245,7 @@
                 }
             }
         },
-        "/api/v1/event/{eventId}/getForUser": {
+        "/api/v1/event/forUser": {
             "get": {
                 "tags": [
                     "Event"
@@ -271,7 +271,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/eventResponse"
+                                "$ref": "#/definitions/eventsForUser"
                             }
                         }
                     },
@@ -2284,6 +2284,35 @@
                 },
                 "status": {
                     "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "eventsForUser": {
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "organizationId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "expirationDate": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "userConfirmed": {
+                    "type": "boolean"
                 }
             },
             "type": "object"

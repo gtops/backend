@@ -73,6 +73,21 @@
 
 /**
  * @SWG\Definition(
+ *    definition="eventsForUser",
+ *    type="object",
+ *    @SWG\Property(property="id", type="integer"),
+ *    @SWG\Property(property="organizationId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="startDate", type="string"),
+ *    @SWG\Property(property="expirationDate", type="string"),
+ *    @SWG\Property(property="description", type="string"),
+ *    @SWG\Property(property="status", type="string"),
+ *    @SWG\Property(property="userConfirmed", type="boolean")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
  *    definition="participantEvent",
  *    type="object",
  *    @SWG\Property(property="EventParticipantId", type="integer"),
