@@ -10,7 +10,7 @@
         "http"
     ],
     "paths": {
-        "/api/v1/team/{teamId:[0-9]+}/participant": {
+        "/api/v1/team/{teamId}/participant": {
             "post": {
                 "tags": [
                     "ParticipantEvent"
@@ -230,7 +230,49 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/eventResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/eventResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": ""
+                    },
+                    "403": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/v1/event/{eventId}/getForUser": {
+            "get": {
+                "tags": [
+                    "Event"
+                ],
+                "summary": "\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u0439, \u0432 \u043a\u043e\u0442\u043e\u0440\u044b\u0445 \u043e\u043d \u0443\u0447\u0430\u0441\u0442\u0432\u0443\u0435\u0442",
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "description": "\u0442\u043e\u043a\u0435\u043d",
+                        "type": "string"
+                    },
+                    {
+                        "name": "eventId",
+                        "in": "query",
+                        "description": "id \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/eventResponse"
+                            }
                         }
                     },
                     "401": {

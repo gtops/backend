@@ -103,7 +103,25 @@ class TeamAction extends Action
      */
     public function getListForTeamLead(Request $request, Response $response, $args): Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        if ($userRole != AuthorizeMiddleware::TEAM_LEAD){
+            return $response->withStatus(403);
+        }
+
+        $teams = $this->temaService->getListForTeamLead($userEmail);
+
+        $teamsInArray = [];
+        foreach ($teams as $team){
+            $teamsInArray[] = $team->toArray();
+        }
+
+        return $this->respond(200, $teamsInArray, $response);
     }
 
     /**

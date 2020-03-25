@@ -5,6 +5,7 @@ use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\Team\Team;
 use App\Persistance\ModelsEloquant\Team\Team as TeamPdo;
+use App\Persistance\ModelsEloquant\TeamLead\TeamLead;
 
 class TeamRepository implements IRepository
 {
@@ -92,5 +93,15 @@ class TeamRepository implements IRepository
         }
 
         return $teams;
+    }
+
+    public function getAllForTeamLeadWithUserId(int $userId)
+    {
+        $results = TeamLead::query()
+            ->join('team', 'team_lead.team_id', '=', 'team.team_id')
+            ->where('team_lead.user_id', '=', $userId)
+            ->get();
+
+        return $this->getTeams($results);
     }
 }

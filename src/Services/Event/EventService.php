@@ -136,4 +136,16 @@ class EventService
 
         return $events;
     }
+
+    /**@return Event[]*/
+    public function getForUser(string $userEmail):array
+    {
+        $participants = $this->eventParticipantRepository->getByEmail($userEmail);
+        $events = [];
+        foreach ($participants as $participant){
+            $events[] = $this->eventRepository->get($participant->getEventId());
+        }
+
+        return $events;
+    }
 }

@@ -95,6 +95,24 @@ class EventParticipantRepository implements IRepository
         return $this->getEventParticipant($result[0]);
     }
 
+    /**@return EventParticipant[]*/
+    public function getByEmail(string $email):array
+    {
+        $results = EventParticipantPDO::query()
+            ->join('user', 'event_participant.user_id', '=', 'user.user_id')
+            ->where([
+                'user.email' => $email
+            ])
+            ->get($this->dateForParticipant);
+
+        $participants = [];
+        foreach ($results as $result){
+            $participants[] = $this->getEventParticipant($result);
+        }
+
+        return $participants;
+    }
+
     private function getEventParticipant($params):EventParticipant
     {
         $user = UserCreater::createModel([
