@@ -2,7 +2,13 @@
 
 namespace App\Application\Actions\TeamLead;
 
-class TeamLeadAction
+use App\Application\Actions\Action;
+use App\Domain\Models\TeamLead\TeamLead;
+use App\Services\TeamLead\TeamLeadService;
+use Psr\Http\Message\RequestInterface as Request;
+use Psr\Http\Message\ResponseInterface as Response;
+
+class TeamLeadAction extends Action
 {
     /**
      *
@@ -23,6 +29,14 @@ class TeamLeadAction
      * )
      *
      */
+
+    private $teamLeadService;
+
+    public function __construct(TeamLeadService $teamLeadService)
+    {
+        $this->teamLeadService = $teamLeadService;
+    }
+
     public function add()
     {
 
@@ -69,8 +83,16 @@ class TeamLeadAction
      * )
      *
      */
-    public function getAll()
-    {
 
+    public function getAllForTeam(Request $request, Response $response, $args):Response
+    {
+        $teamId = (int)$args['teamId'];
+        $teamLeads = $this->teamLeadService->getAllForTeam($teamId);
+        $teamLeadsInArray = [];
+        foreach ($teamLeads as $teamLead){
+            $teamLeadsInArray[] = $teamLead->toArray();
+        }
+
+        return $this->respond(200, $teamLeadsInArray, $response);
     }
 }

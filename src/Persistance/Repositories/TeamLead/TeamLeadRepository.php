@@ -8,6 +8,7 @@ use App\Domain\Models\TeamLead\TeamLead;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\ModelsEloquant\Team\Team;
 use App\Persistance\ModelsEloquant\TeamLead\TeamLead as TeamLeadPDO;
+use DateTime;
 
 class TeamLeadRepository implements IRepository
 {
@@ -99,5 +100,23 @@ class TeamLeadRepository implements IRepository
         }
 
         return $this->getTeamLead($result[0]);
+    }
+
+    /**@return TeamLead[]*/
+    public function getByTeamId(int $teamId):array
+    {
+        $results = TeamLeadPDO::query()
+            ->join('user', 'team_lead.user_id', '=', 'user.user_id')
+            ->where([
+                'team_lead.team_id' => $teamId
+            ])
+            ->get($this->dateForTeamLead);
+
+        $teamLeads = [];
+        foreach ($results as $result){
+            $teamLeads[] = $this->getTeamLead($result);
+        }
+
+        return $teamLeads;
     }
 }

@@ -2,10 +2,12 @@
 declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Application\Actions\TeamLead\TeamLeadAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
+use App\Services\TeamLead\TeamLeadService;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -174,6 +176,12 @@ return function (ContainerBuilder $containerBuilder) {
         EventParticipantRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new EventParticipantRepository();
+        },
+        TeamLeadAction::class => function(ContainerInterface $c){
+            return new TeamLeadAction($c->get(TeamLeadService::class));
+        },
+        TeamLeadService::class => function(ContainerInterface $c){
+            return new TeamLeadService($c->get(TeamLeadRepository::class));
         },
         RefreshTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

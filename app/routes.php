@@ -84,7 +84,7 @@ return function (App $app) {
 
     //TeamLead
     $app->post('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':add');
-    $app->get('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':getAll');
+    $app->get('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':getAllForTeam');
     $app->delete('/api/v1/teamLead/{teamLeadId:[0-9]+}', TeamLeadAction::class.':delete');
 
     //роли
