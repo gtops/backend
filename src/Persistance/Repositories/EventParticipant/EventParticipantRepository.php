@@ -150,4 +150,21 @@ class EventParticipantRepository implements IRepository
 
         return $response;
     }
+
+    /**
+     * @param int $teamId
+     * @return EventParticipant[]
+     */
+    public function getAllFilteredByTeamId(int $teamId):array
+    {
+        $results = EventParticipantPDO::query()
+            ->join('user', 'event_participant.user_id', '=', 'user.user_id')
+            ->where('team_id', '=', $teamId)->get($this->dateForParticipant);
+        $response = [];
+        foreach ($results as $result){
+            $response[] = $this->getEventParticipant($result);
+        }
+
+        return $response;
+    }
 }

@@ -46,4 +46,9 @@ class EventParticipantService
         return $this->eventParticipantRepository->add($eventParticipant);
     }
 
+    public function getAllForTeam(int $teamId)
+    {
+        return $this->eventParticipantRepository->getAllFilteredByTeamId($teamId);
+    }
+
 }

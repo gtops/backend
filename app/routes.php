@@ -80,6 +80,7 @@ return function (App $app) {
     $app->get('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':getAllForEvent');
     $app->post('/api/v1/participant/{participantId:[0-9]+}', EventParticipantAction::class.':confirmApply');
     $app->delete('/api/v1/participant/{participantId:[0-9]+}', EventParticipantAction::class.':deleteParticipant');
+    $app->get('/api/v1/team/{teamId:[0-9]+}/participant', EventParticipantAction::class.':getAllForTeam');
 
     //TeamLead
     $app->post('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':add');

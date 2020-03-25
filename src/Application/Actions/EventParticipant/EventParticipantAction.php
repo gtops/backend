@@ -22,6 +22,32 @@ class EventParticipantAction extends Action
 
     /**
      *
+     * * @SWG\Get(
+     *   path="/api/v1/team/{teamid}/participant",
+     *   summary="получение участников команды",
+     *   tags={"ParticipantEvent"},
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Property(type="array", @SWG\Items(ref="#/definitions/participantEvent"))
+     *   ),
+     * )
+     *
+     */
+    public function getAllForTeam(Request $request, Response $response, $args):Response
+    {
+        $participantsArray = [];
+        $teamId = (int)$args['teamId'];
+        $participants = $this->eventParticipantService->getAllForTeam($teamId);
+
+        foreach ($participants as $participant){
+            $participantsArray[] = $participant->toArray();
+        }
+
+        return $this->respond(200, $participantsArray, $response);
+    }
+
+    /**
+     *
      * @SWG\Post(
      *   path="/api/v1/team/{teamId}/participant",
      *   summary="добавление участника в команду(тренер той команды, которая передана или же локальный админ и секретарь данного мероприятия)",
