@@ -3,6 +3,7 @@
 namespace App\Application\Actions\EventParticipant;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use Psr\Http\Message\RequestInterface as Request;
@@ -22,7 +23,7 @@ class EventParticipantAction extends Action
     /**
      *
      * @SWG\Post(
-     *   path="/api/v1/team/{teamId:[0-9]+}/participant",
+     *   path="/api/v1/team/{teamId}/participant",
      *   summary="добавление участника в команду(тренер той команды, которая передана или же локальный админ и секретарь данного мероприятия)",
      *   tags={"ParticipantEvent"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
@@ -40,14 +41,23 @@ class EventParticipantAction extends Action
      */
     public function add(Request $request, Response $response, $args):Response
     {
-        /*if ($this->tokenWithError($response, $request)) {
+        if ($this->tokenWithError($response, $request)) {
             return $response->withStatus(401);
         }
 
         $userRole = $request->getHeader('userRole')[0];
         $userEmail = $request->getHeader('userEmail')[0];
+        $params = json_decode($request->getBody()->getContents(), true);
+        $emailOfUserToAdd = $params['email'];
 
-        $access = $this->accessService->hasAccessWorkWithParticipant();
+        if (!filter_var($emailOfUserToAdd, FILTER_VALIDATE_EMAIL)){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'email не соответвует формату почты');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
+            return $response->withStatus(400);
+        }
+
+        $teamId = (int)$args['teamId'];
+        $access = $this->accessService->hasAccessAddParticipantToTeam($userEmail, $userRole, $teamId, $emailOfUserToAdd);
 
         if ($access === false){
             return $response->withStatus(403);
@@ -55,8 +65,8 @@ class EventParticipantAction extends Action
             return $this->respond(400, $access, $response);
         }
 
-        $this->eventParticipantService->confirmApply($participantId);
-        return $response;*/
+        $id = $this->eventParticipantService->addToTeam($emailOfUserToAdd, false, $teamId);
+        return $this->respond(200, ['id' => $id], $response);
     }
 
     /**

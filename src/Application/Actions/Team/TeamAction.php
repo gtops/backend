@@ -38,6 +38,7 @@ class TeamAction extends Action
      * )
      *
      */
+
     public function add(Request $request, Response $response, $args): Response
     {
         if ($this->tokenWithError($response, $request)){
@@ -58,6 +59,29 @@ class TeamAction extends Action
         $rowParams = json_decode($request->getBody()->getContents(), true);
         $teamId = $this->temaService->add($rowParams['name'], (int)$args['eventId']);
         return  $this->respond(200, ['id' => $teamId], $response);
+    }
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/team/{teamId}/confirm",
+     *   summary="делает подтвержденным всех членов команды(секретарь мероприятия, локальный админ)",
+     *   tags={"Team"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id организации"),
+     *   @SWG\Response(response=200, description="OK"),
+     *   @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function confirm()
+    {
+
     }
 
     /**
@@ -166,7 +190,7 @@ class TeamAction extends Action
 
     /**
      *
-     * @SWG\Post(
+     * @SWG\Put(
      *   path="/api/v1/team/{teamId}",
      *   summary="редактирует данные команды(локальный админ или секретарь, который имеет право редактирования данного мероприятия)",
      *   tags={"Team"},

@@ -138,8 +138,6 @@ class AuthAction extends Action
         }
 
         $params['refreshToken'] = $request->getHeader('Authorization')[0] ?? null;
-
-        $response = $response->withHeader('Access-Control-Allow-Headers', 'Authorization');
         return $this->auth->refresh($params, $response);
     }
 }

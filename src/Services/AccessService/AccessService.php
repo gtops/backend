@@ -9,12 +9,15 @@ use App\Domain\Models\IModel;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\Organization;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\User\User;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
+use App\Persistance\Repositories\Team\TeamRepository;
+use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use Illuminate\Database\Eloquent\Model;
 
@@ -29,7 +32,8 @@ class AccessService
     private $errors;
     private $response;
     private $eventParticipantRepository;
-
+    private $teamRepository;
+    private $teamLeadRepository;
     public function __construct
     (
         UserRepository $userRepository,
@@ -38,7 +42,9 @@ class AccessService
         OrganizationRepository $organizationRepository,
         RoleRepository $roleRepository,
         EventRepository $eventRepository,
-        EventParticipantRepository $eventParticipantRepository
+        EventParticipantRepository $eventParticipantRepository,
+        TeamRepository $teamRepository,
+        TeamLeadRepository $teamLeadRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -48,6 +54,8 @@ class AccessService
         $this->rolRepository = $roleRepository;
         $this->eventRepository = $eventRepository;
         $this->eventParticipantRepository = $eventParticipantRepository;
+        $this->teamRepository = $teamRepository;
+        $this->teamLeadRepository = $teamLeadRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -71,7 +79,7 @@ class AccessService
     {
         $user = $this->userRepository->getByEmail($email);
         $event = $this->eventRepository->get($eventId);
-        $participant = $this->eventParticipantRepository->getByEmail($email, $eventId);
+        $participant = $this->eventParticipantRepository->getByEmailAndEvent($email, $eventId);
         $this->addErrorIfEventNoInLeadUpStatus($event);
         $this->addErrorIfEventNotExists($event);
         $this->addErrorIfParticipantExistOnEvent($participant);
@@ -83,6 +91,43 @@ class AccessService
         if ($eventParticipant != null){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'вы уже подавали заявку на участие'));
         }
+    }
+
+    public function hasAccessAddParticipantToTeam(string $userEmail, string $userRole, int $teamId, string $emailParticipant)
+    {
+        $team = $this->teamRepository->get($teamId);
+        $event = $this->eventRepository->get($team->getEventId());
+        $this->addErrorIfTeamNotExists($team);
+        $this->addErrorIfParticipantExistOnThisEvent($emailParticipant, $event);
+
+        switch ($userRole){
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                return $this->secretaryHasAccessWorkWithParticipant($userEmail, $event);
+            }
+            case AuthorizeMiddleware::TEAM_LEAD:{
+                return $this->teamLeadHasAccessWorkWithParticipantOnTeam($teamId, $userEmail, $event);
+            }
+            default:{
+                return false;
+            }
+        }
+    }
+
+    private function teamLeadHasAccessWorkWithParticipantOnTeam(int $teamId, string $email, ?IModel $event)
+    {
+        $teamLead = $this->teamLeadRepository->getByEmailAndTeamId($email, $teamId);
+        if ($teamLead == null){
+            $this->response = false;
+        }
+
+        if ($event->getStatus() != Event::LEAD_UP){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
+        }
+
+        return $this->getResponse();
     }
 
     public function hasAccessWorkWithTeam(string $role, int $organizationId, int $eventId, string $email)
@@ -306,6 +351,24 @@ class AccessService
 
         if ($event->getId() !== $participant->getEventId()){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'переданный участник не относится к данному мероприятию'));
+        }
+    }
+
+    private function addErrorIfParticipantExistOnThisEvent(string $emailParticipant, ?IModel $event)
+    {
+        if ($event == null){
+            return;
+        }
+
+        if ($this->eventParticipantRepository->getByEmailAndEvent($emailParticipant, $event->getId()) != null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такой участник уже есть в мероприятии'));
+        }
+    }
+
+    private function addErrorIfTeamNotExists(?IModel $team)
+    {
+        if ($team == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такой команды не существует'));
         }
     }
 }

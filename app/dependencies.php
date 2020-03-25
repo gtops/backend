@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
+use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use DI\ContainerBuilder;
@@ -59,7 +60,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new EventParticipantAction($c->get(AccessService::class), $c->get(EventParticipantService::class));
         },
         EventParticipantService::class => function(ContainerInterface $c){
-            return new EventParticipantService($c->get(EventParticipantRepository::class), $c->get(UserRepository::class));
+            return new EventParticipantService($c->get(EventParticipantRepository::class), $c->get(UserRepository::class), $c->get(TeamRepository::class));
         },
         SecretaryService::class => function(ContainerInterface $c){
             return new SecretaryService(
@@ -118,7 +119,9 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(OrganizationRepository::class),
                 $c->get(RoleRepository::class),
                 $c->get(EventRepository::class),
-                $c->get(EventParticipantRepository::class)
+                $c->get(EventParticipantRepository::class),
+                $c->get(TeamRepository::class),
+                $c->get(TeamLeadRepository::class)
             );
         },
         TeamService::class => function(ContainerInterface $c){
@@ -163,6 +166,10 @@ return function (ContainerBuilder $containerBuilder) {
         RegistrationTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new RegistrationTokenRepository();
+        },
+        TeamLeadRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new TeamLeadRepository();
         },
         EventParticipantRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

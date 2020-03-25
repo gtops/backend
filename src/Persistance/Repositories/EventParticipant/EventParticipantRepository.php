@@ -78,7 +78,7 @@ class EventParticipantRepository implements IRepository
         ]);
     }
 
-    public function getByEmail(string $email, $eventId):?EventParticipant
+    public function getByEmailAndEvent(string $email, $eventId):?EventParticipant
     {
         $result = EventParticipantPDO::query()
                 ->join('user', 'event_participant.user_id', '=', 'user.user_id')
