@@ -90,4 +90,28 @@ class EventRepository implements IRepository
             'status' => $model->getStatus()
         ]);
     }
+
+    public function getAllFilteredByOrganizationId(int $organizationId)
+    {
+        $results = EventPDO::query()->where('organization_id', '=', $organizationId)->get();
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        $events = [];
+        foreach ($results as $result){
+            $events[] = [
+                'id' => $result['event_id'],
+                'organizationId' => $result['organization_id'],
+                'name' => $result['name'],
+                'startDate' => $result['start_date'],
+                'expirationDate' => $result['expiration_date'],
+                'description' => $result['description'],
+                'status' => $result['status']
+            ];
+        }
+
+        return $events;
+    }
 }

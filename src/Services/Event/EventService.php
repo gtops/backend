@@ -103,7 +103,7 @@ class EventService
 
     public function getAll(int $organizationId)
     {
-        return $this->eventRepository->getAll();
+        return $this->eventRepository->getAllFilteredByOrganizationId($organizationId);
     }
 
     public function update(Event $event, string $userEmail, ResponseInterface $response)
