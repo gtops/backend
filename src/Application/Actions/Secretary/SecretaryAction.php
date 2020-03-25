@@ -19,73 +19,14 @@ class SecretaryAction extends Action
 
     public function __construct(SecretaryService $secretaryService)
     {
-        $this->secretaryService = $secretaryService;;
-    }
-
-    /**
-     *
-     * @SWG\Post(
-     *   path="/api/v1/organization/{id}/event/{id}/secretary",
-     *   summary="добавляет секретаря, с отправкой на почту ему данных об аккаунте",
-     *   tags={"Secretary"},
-     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
-     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
-     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия, право не редактирование которого добавляем"),
-     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/LocalAdminRequest")),
-     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
-     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
-     *          @SWG\Property(property="errors", type="array", @SWG\Items(
-     *              @SWG\Property(property="type", type="string"),
-     *              @SWG\Property(property="description", type="string")
-     *          ))
-     *     )))
-     * )
-     *
-     */
-    public function add(Request $request, Response $response, $args):Response
-    {
-        if ($this->tokenWithError($response, $request)){
-            return $response->withStatus(401);
-        }
-        $userRole = $request->getHeader('userRole')[0];
-        $localAdminEmail = $request->getHeader('userEmail')[0];
-
-        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
-            return $response->withStatus(403);
-        }
-
-        $rowParams = json_decode($request->getBody()->getContents(), true);
-        $rowParams['organizationId'] = (int)$args['id'];
-        $rowParams['eventId'] = (int)$args['eventId'];
-
-        $errors = (new SecretaryValidator())->validate($rowParams);
-
-        if (count($errors) > 0){
-            return $this->respond(400, ['errors' => $errors], $response);
-        }
-
-        $id = $this->secretaryService->add(
-            $rowParams['eventId'],
-            $rowParams['organizationId'],
-            $rowParams['name'],
-            $rowParams['password'],
-            new \DateTime($rowParams['dateOfBirth']),
-            $rowParams['email'],
-            $rowParams['gender'],
-            $localAdminEmail, $response
-        );
-
-        if ($id instanceof  Response){
-            return $id;
-        }
-        return $this->respond(200, ['id' => $id], $response);
+        $this->secretaryService = $secretaryService;
     }
 
     /**
      *
      * @SWG\Post(
      *   path="/api/v1/organization/{id}/event/{eventId}/secretary/existingAccount",
-     *   summary="добавляет секретаря, из ранее существующих аккаунтов",
+     *   summary="добавляет секретаря, из ранее существующих аккаунтов(локальный админ)",
      *   tags={"Secretary"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
@@ -200,7 +141,7 @@ class SecretaryAction extends Action
      *
      * * @SWG\Delete(
      *   path="/api/v1/organization/{id}/event/{eventId}/secretary{secretaryId}",
-     *   summary="удаляет секретаря от определенной организации",
+     *   summary="удаляет секретаря от определенной организации(локальный админ)",
      *   tags={"Secretary"},
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия, от которого удаляем секретаря"),

@@ -124,4 +124,16 @@ class EventService
         $participant = new EventParticipant(-1, $eventId, $user->getId(), $confirmed, $teamId);
         return $this->eventParticipantRepository->add($participant);
     }
+
+    public function getForSecretary(string $userEmail)
+    {
+        $secretaries = $this->secretaryRepository->getFilteredByUserEmail($userEmail);
+        $events = [];
+
+        foreach ($secretaries as $secretary){
+            $events[] = $this->eventRepository->get($secretary->getEventId());
+        }
+
+        return $events;
+    }
 }

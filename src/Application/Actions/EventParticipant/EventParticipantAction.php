@@ -19,6 +19,28 @@ class EventParticipantAction extends Action
         $this->eventParticipantService = $eventParticipantService;
     }
 
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/team/{teamId:[0-9]+}/participant",
+     *   summary="добавление участника в команду(тренер той команды, которая передана или же локальный админ и секретарь данного мероприятия)",
+     *   tags={"ParticipantEvent"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id команды, к которой добавляем участника"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function add(Request $request, Response $response, $args):Response
+    {
+
+    }
 
     /**
      *
@@ -51,7 +73,7 @@ class EventParticipantAction extends Action
      *
      * @SWG\Post(
      *   path="/api/v1/event/{eventId}/participant/{participantId}",
-     *   summary="локальный админ или секретарь могут приянять заявку от participantId которй подал его на участие в мероприятии",
+     *   summary="локальный админ или секретарь могут приянять заявку от participantId которй подал его на участие в мероприятии(локальный админ и секретарь этого мероприятия)",
      *   tags={"ParticipantEvent"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
@@ -96,7 +118,7 @@ class EventParticipantAction extends Action
      *
      * @SWG\Delete(
      *   path="/api/v1/event/{eventId}/participant/{participantId}",
-     *   summary="Удаляет участника из мероприятия",
+     *   summary="Удаляет участника из мероприятия(локальный админ и секретарь этого мероприятия)",
      *   tags={"ParticipantEvent"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),

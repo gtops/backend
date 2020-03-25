@@ -149,7 +149,7 @@ class Auth
         $user->setPassword($password);
         $user->setIsActivity();
 
-        $this->userRepository->add($user);
+        $this->userRepository->update($user);
 
         return $response->withStatus(200);
     }

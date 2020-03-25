@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Application\Actions\TeamLead\TeamLeadAction;
 use Slim\App;
 use App\Swagger\SwaggerWatcher;
 use \App\Application\Actions\User\AuthAction;
@@ -55,6 +56,7 @@ return function (App $app) {
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}', EventAction::class.':get');
     $app->put('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}', EventAction::class.':update');
     $app->get('/api/v1/organization/{id:[0-9]+}/event', EventAction::class.':getAll');
+    $app->get('/api/v1/event/forSecretary', EventAction::class.':getForSecretary');
 
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
@@ -71,9 +73,15 @@ return function (App $app) {
 
     //eventParticipant
     $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');
+    $app->post('/api/v1/team/{teamId:[0-9]+}/participant', EventAction::class.':add');
     $app->get('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':getAllForEvent');
     $app->post('/api/v1/event/{eventId:[0-9]+}/participant/{participantId:[0-9]+}', EventParticipantAction::class.':confirmApply');
     $app->delete('/api/v1/event/{eventId:[0-9]+}/participant/{participantId:[0-9]+}', EventParticipantAction::class.':deleteParticipant');
+
+    //TeamLead
+    $app->post('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':add');
+    $app->get('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':getAll');
+    $app->delete('/api/v1/teamLead/{teamLeadId:[0-9]+}', TeamLeadAction::class.':delete');
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');

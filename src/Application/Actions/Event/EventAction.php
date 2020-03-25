@@ -25,6 +25,45 @@ class EventAction extends Action
 
     /**
      *
+     * * @SWG\Get(
+     *   path="/api/v1/event/{eventId}/getForSecretary",
+     *   summary="получение мероприятия дсотупные секретарю(секретарь)",
+     *   tags={"Event"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Schema(ref="#/definitions/eventResponse")
+     *   ),
+     *   @SWG\Response(response=401, description=""),
+     *   @SWG\Response(response=403, description="")
+     * )
+     *
+     */
+    public function getForSecretary(Request $request, Response $response, $args): Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        if ($userRole != AuthorizeMiddleware::SECRETARY){
+            return $response->withStatus(403);
+        }
+
+        $events = $this->eventService->getForSecretary($userEmail);
+        $eventsToResponse = [];
+
+        foreach ($events as $event){
+            $eventsToResponse[] = $event->toArray();
+        }
+
+        return $this->respond(200, $eventsToResponse, $response);
+    }
+
+    /**
+     *
      * @SWG\Post(
      *   path="/api/v1/event/{eventId}/apply",
      *   summary="пользователь подает заявку на участие в мероприятии",
@@ -66,7 +105,7 @@ class EventAction extends Action
      *
      * @SWG\Post(
      *   path="/api/v1/organization/{id}/event",
-     *   summary="добавляет мероприятие к организации локальным админом",
+     *   summary="добавляет мероприятие к организации локальным админом(локальный админ)",
      *   tags={"Event"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять мероприятия"),
@@ -117,7 +156,7 @@ class EventAction extends Action
      *
      * * @SWG\Delete(
      *   path="/api/v1/organization/{id}/event/{eventId}",
-     *   summary="удаляет мероприятие, относящего к определенной организации, по id",
+     *   summary="удаляет мероприятие, относящего к определенной организации, по id(локальный админ)",
      *   tags={"Event"},
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
@@ -230,7 +269,7 @@ class EventAction extends Action
      *
      * @SWG\Put(
      *   path="/api/v1/organization/{id}/event/{eventId}",
-     *   summary="обновляет данные о мероприятии, id которого передан",
+     *   summary="обновляет данные о мероприятии, id которого передан(локальный админ или секретарь, который относится к данному мероприятию)",
      *   tags={"Event"},
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),

@@ -22,7 +22,7 @@ class TeamAction extends Action
      *
      * @SWG\Post(
      *   path="/api/v1/organization/{id}/event/{eventId}/team",
-     *   summary="добавляет команду в определенное мероприятие",
+     *   summary="добавляет команду в определенное мероприятие(локальный админ или секретарь этого мероприятия)",
      *   tags={"Team"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
@@ -58,6 +58,28 @@ class TeamAction extends Action
         $rowParams = json_decode($request->getBody()->getContents(), true);
         $teamId = $this->temaService->add($rowParams['name'], (int)$args['eventId']);
         return  $this->respond(200, ['id' => $teamId], $response);
+    }
+
+    /**
+     *
+     * @SWG\Get(
+     *   path="/api/v1/team",
+     *   summary="получает те команды, которые относятся к данному тренеру(тренер)",
+     *   tags={"Team"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(ref="#/definitions/teamResponse")),
+     *   @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function getListForTeamLead(Request $request, Response $response, $args): Response
+    {
+
     }
 
     /**
@@ -120,8 +142,8 @@ class TeamAction extends Action
     /**
      *
      * @SWG\Delete(
-     *   path="/api/v1/organization/{id}/event/{eventId}/team/{teamId}",
-     *   summary="удаляет определенную команду, относящейся к определенному мероприятию",
+     *   path="/api/v1/team/{teamId}",
+     *   summary="удаляет определенную команду, относящейся к определенному мероприятию(локальный админ или секретарь, которые имеет право редактировать данное мероприятие)",
      *   tags={"Team"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
@@ -145,8 +167,8 @@ class TeamAction extends Action
     /**
      *
      * @SWG\Post(
-     *   path="/api/v1/organization/{id}/event/{eventId}/team/{teamId}",
-     *   summary="редактирует данные команды",
+     *   path="/api/v1/team/{teamId}",
+     *   summary="редактирует данные команды(локальный админ или секретарь, который имеет право редактирования данного мероприятия)",
      *   tags={"Team"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),

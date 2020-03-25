@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Organization;
 
+use App\Application\Actions\Action;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\Presenters\OrganizationsToResponsePresenter;
 use App\Validators\Organization\OrganizationObjectValidator;
@@ -10,7 +11,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use App\Domain\Models\OrganizationCreater;
 use App\Services\Organization\OrganizationService;
 
-class OrganizationAction extends \App\Application\Actions\Action
+class OrganizationAction extends Action
 {
     private $organizationService;
 
@@ -23,7 +24,7 @@ class OrganizationAction extends \App\Application\Actions\Action
      *
      * @SWG\Post(
      *   path="/api/v1/organization",
-     *   summary="добавляет организацию",
+     *   summary="добавляет организацию(глобальный админ)",
      *   tags={"Organization"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/OrganizationRequest")),
@@ -122,7 +123,7 @@ class OrganizationAction extends \App\Application\Actions\Action
      *
      * * @SWG\Delete(
      *   path="/api/v1/organization/{id}",
-     *   summary="удаляет организацию по id",
+     *   summary="удаляет организацию по id(глобальный админ)",
      *   tags={"Organization"},
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
@@ -156,7 +157,7 @@ class OrganizationAction extends \App\Application\Actions\Action
      *
      * @SWG\Put(
      *   path="/api/v1/organization/{id}",
-     *   summary="обновляет данные об организации, id которого передан",
+     *   summary="обновляет данные об организации, id которого передан(глобальный админ)",
      *   tags={"Organization"},
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
