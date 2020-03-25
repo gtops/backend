@@ -9,6 +9,7 @@
 namespace App\Application\Actions\User;
 
 use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
 use App\Validators\Auth\LoginValidator;
 use App\Validators\Auth\RegistrationValidator;
 use App\Validators\ValidateStrategy;
@@ -107,6 +108,39 @@ class AuthAction extends Action
         }
 
         return $this->auth->login($params, $response);
+    }
+
+    /**
+     *
+     * @SWG\Get(
+     *   path="/api/v1/auth/info",
+     *   summary="возвращает информацию об аккаунте",
+     *   tags={"User"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id команды"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(
+     *     @SWG\Property(property="name", type="string"),
+     *     @SWG\Property(property="gender", type="integer"),
+     *     @SWG\Property(property="dateOfBirth", type="string"),
+     *     @SWG\Property(property="role", type="string"),
+     *     ))
+     * )
+     *
+     */
+    public function getInfo(Request $request, Response $response, $args): Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
+        $data = [
+            'email' => $request->getHeader('userEmail')[0],
+            'name' => $request->getHeader('name')[0],
+            'gender' => $request->getHeader('gender')[0],
+            'dateOfBirth' => $request->getHeader('dateOfBirth')[0]
+        ];
+
+        return $this->respond(200, $data, $response);
     }
 
     /**

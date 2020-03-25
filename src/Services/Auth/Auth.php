@@ -56,6 +56,9 @@ class Auth
         $user = $this->userRepository->getByEmail($params['email']);
 
         $accessToken = Token::getEncodedToken([
+            'gender' => $user->getGender(),
+            'dateOfBirth' => $user->getDateOfBirth(),
+            'name' => $user->getName(),
             'userId' => $user->getId(),
             'email' => $params['email'],
             'role' => $role,

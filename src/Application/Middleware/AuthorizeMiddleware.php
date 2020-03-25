@@ -35,6 +35,9 @@ class AuthorizeMiddleware implements Middleware
                 $request = $request->withHeader('error', 'ваш токен устарел');
             }
             $request = $request->withHeader('userEmail', $tokenInArray['email']);
+            $request = $request->withHeader('name', $tokenInArray['name']);
+            $request = $request->withHeader('gender', $tokenInArray['gender']);
+            $request = $request->withHeader('dateOfBirth', $tokenInArray['dateOfBirth']);
             $request = $request->withHeader('userRole', $tokenInArray['role']);
 
         }catch (Exception $err){
