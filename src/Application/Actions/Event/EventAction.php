@@ -26,7 +26,7 @@ class EventAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/api/v1/event/{eventId}/getForSecretary",
+     *   path="/api/v1/event/forSecretary",
      *   summary="получение мероприятия дсотупные секретарю(секретарь)",
      *   tags={"Event"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
@@ -65,7 +65,7 @@ class EventAction extends Action
     /**
      *
      * * @SWG\Get(
-     *   path="/api/v1/event/{eventId}/getForUser",
+     *   path="/api/v1/event/forUser",
      *   summary="получение мероприятий, в которых он участвует",
      *   tags={"Event"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),

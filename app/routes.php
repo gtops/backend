@@ -57,6 +57,7 @@ return function (App $app) {
     $app->put('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}', EventAction::class.':update');
     $app->get('/api/v1/organization/{id:[0-9]+}/event', EventAction::class.':getAll');
     $app->get('/api/v1/event/forSecretary', EventAction::class.':getForSecretary');
+    $app->get('/api/v1/event/forUser', EventAction::class.':getForUser');
 
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
