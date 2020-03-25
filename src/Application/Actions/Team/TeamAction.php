@@ -115,13 +115,7 @@ class TeamAction extends Action
         }
 
         $teams = $this->temaService->getListForTeamLead($userEmail);
-
-        $teamsInArray = [];
-        foreach ($teams as $team){
-            $teamsInArray[] = $team->toArray();
-        }
-
-        return $this->respond(200, $teamsInArray, $response);
+        return $this->respond(200, $teams, $response);
     }
 
     /**

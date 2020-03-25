@@ -142,6 +142,8 @@
  *    @SWG\Property(property="teamId", type="integer"),
  *    @SWG\Property(property="eventId", type="integer"),
  *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="organizationId", type="integer"),
+ *    @SWG\Property(property="nameofEvent", type="string"),
  * )
  */
 

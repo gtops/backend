@@ -125,7 +125,7 @@ return function (ContainerBuilder $containerBuilder) {
             );
         },
         TeamService::class => function(ContainerInterface $c){
-            return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class));
+            return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class), $c->get(EventRepository::class));
         },
         EventService::class => function(ContainerInterface $c)
         {
