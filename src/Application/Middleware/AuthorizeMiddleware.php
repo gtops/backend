@@ -5,6 +5,7 @@ namespace App\Application\Middleware;
 
 use App\Services\Logger;
 use App\Services\Token\Token;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\MiddlewareInterface as Middleware;
@@ -20,6 +21,7 @@ class AuthorizeMiddleware implements Middleware
     const LOCAL_ADMIN = 'Локальный администратор';
     const SIMPLE_USER = 'Простой пользователь';
     const SECRETARY = 'Секретарь';
+    const TEAM_LEAD = 'Тренер';
 
     public function process(Request $request, RequestHandler $handler): Response
     {
@@ -35,7 +37,7 @@ class AuthorizeMiddleware implements Middleware
             $request = $request->withHeader('userEmail', $tokenInArray['email']);
             $request = $request->withHeader('userRole', $tokenInArray['role']);
 
-        }catch (\Exception $err){
+        }catch (Exception $err){
             $request = $request->withHeader('error', 'невалидный токен');
             $request = $request->withHeader('userRole', self::UNAUTHORIZED_USER);
         }

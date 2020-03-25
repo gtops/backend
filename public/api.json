@@ -28,6 +28,17 @@
                         "in": "query",
                         "description": "id \u043a\u043e\u043c\u0430\u043d\u0434\u044b, \u043a \u043a\u043e\u0442\u043e\u0440\u043e\u0439 \u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0435\u043c \u0443\u0447\u0430\u0441\u0442\u043d\u0438\u043a\u0430",
                         "type": "integer"
+                    },
+                    {
+                        "name": "body",
+                        "in": "body",
+                        "schema": {
+                            "properties": {
+                                "email": {
+                                    "type": "string"
+                                }
+                            }
+                        }
                     }
                 ],
                 "responses": {
@@ -1286,7 +1297,12 @@
                 "responses": {
                     "200": {
                         "description": "OK",
-                        "schema": {}
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/teamLead"
+                            }
+                        }
                     }
                 }
             },
@@ -2198,6 +2214,50 @@
                     "type": "integer"
                 },
                 "isConfirmed": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "isActivity": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "teamLead": {
+            "properties": {
+                "teamLeadId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "teamId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "isActivity": {
                     "type": "boolean"
                 }
             },

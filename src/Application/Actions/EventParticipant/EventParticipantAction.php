@@ -27,6 +27,7 @@ class EventParticipantAction extends Action
      *   tags={"ParticipantEvent"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id команды, к которой добавляем участника"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="email", type="string"))),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
@@ -39,7 +40,23 @@ class EventParticipantAction extends Action
      */
     public function add(Request $request, Response $response, $args):Response
     {
+        /*if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        $access = $this->accessService->hasAccessWorkWithParticipant();
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            return $this->respond(400, $access, $response);
+        }
+
+        $this->eventParticipantService->confirmApply($participantId);
+        return $response;*/
     }
 
     /**
@@ -97,11 +114,10 @@ class EventParticipantAction extends Action
         $userRole = $request->getHeader('userRole')[0];
         $userEmail = $request->getHeader('userEmail')[0];
 
-        $eventId = (int)$args['eventId'];
         $participantId = (int)$args['participantId'];
 
         //todo доделать принятие заявки в плане разрешений
-        $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $eventId, $participantId, $userRole);
+        $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $participantId, $userRole);
 
         if ($access === false){
             return $response->withStatus(403);
@@ -142,11 +158,10 @@ class EventParticipantAction extends Action
         $userRole = $request->getHeader('userRole')[0];
         $userEmail = $request->getHeader('userEmail')[0];
 
-        $eventId = (int)$args['eventId'];
         $participantId = (int)$args['participantId'];
 
         //todo доделать принятие заявки в плане разрешений
-        $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $eventId, $participantId, $userRole);
+        $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $participantId, $userRole);
 
         if ($access === false){
             return $response->withStatus(403);

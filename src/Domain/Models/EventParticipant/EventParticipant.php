@@ -3,6 +3,7 @@
 namespace App\Domain\Models\EventParticipant;
 
 use App\Domain\Models\IModel;
+use App\Domain\Models\User\User;
 
 class EventParticipant implements IModel
 {
@@ -11,14 +12,17 @@ class EventParticipant implements IModel
     private $userId;
     private $teamId;
     private $confirmed;
+    private $user;
 
-    public function __construct(int $eventParticipantId, int $eventId,  int $userId, bool $confirmed, ?int $teamId = null)
+    public function __construct(int $eventParticipantId, int $eventId,  int $userId, bool $confirmed, User $user, ?int $teamId = null)
     {
         $this->eventParticipantId = $eventParticipantId;
         $this->eventId = $eventId;
         $this->userId = $userId;
         $this->teamId = $teamId;
         $this->confirmed = $confirmed;
+        $this->user = $user;
+        $ar = $user->toArray();
     }
 
     /**
@@ -61,14 +65,25 @@ class EventParticipant implements IModel
         return $this->confirmed;
     }
 
+    public function getUser():User
+    {
+        return $this->user;
+    }
+
     public function toArray(): array
     {
+        $user = $this->getUser()->toArray();
         return [
             'EventParticipantId' => $this->getEventParticipantId(),
             'userId' => $this->getUserId(),
             'eventId' => $this->getEventId(),
             'teamId' => $this->getTeamId(),
-            'isConfirmed' => $this->isConfirmed()
+            'isConfirmed' => $this->isConfirmed(),
+            'name' => $user['name'],
+            'email' => $user['email'],
+            'gender' => $user['gender'],
+            'dateOfBirth' => $user['dateOfBirth'],
+            'isActivity' => $user['isActivity']
         ];
     }
 

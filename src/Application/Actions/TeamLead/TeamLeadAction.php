@@ -59,7 +59,7 @@ class TeamLeadAction
      *   tags={"TeamLead"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id команды"),
-     *   @SWG\Response(response=200, description="OK", @SWG\Schema(),
+     *   @SWG\Response(response=200, description="OK", @SWG\Property(type="array", @SWG\Items(ref="#/definitions/teamLead")),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
      *              @SWG\Property(property="type", type="string"),

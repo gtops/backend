@@ -191,24 +191,55 @@ class AccessService
         }
     }
 
-    public function hasAccessWorkWithParticipant(string $userEmail, int $eventId, int $participantId, string $userRole)
+    public function hasAccessWorkWithParticipant(string $userEmail, int $participantId, string $userRole)
     {
-        $event = $this->eventRepository->get($eventId);
         $participant = $this->eventParticipantRepository->get($participantId);
-        $this->addErrorIfEventNoInLeadUpStatus($event);
-        $this->addErrorIfEventNotExists($event);
-        $this->addErrorIfOnEventNotExistThisParticipant($event, $participant);
+        $this->addErrorIfParticipantNotExists($participant);
+        $event = $this->eventRepository->get($participant->getEventId() ?? -1);
 
         switch ($userRole){
             case AuthorizeMiddleware::LOCAL_ADMIN:{
                 return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
             }
             case AuthorizeMiddleware::SECRETARY:{
-                return true;
+                return $this->secretaryHasAccessWorkWithParticipant($userEmail, $event);
+            }
+            case AuthorizeMiddleware::TEAM_LEAD:{
+
             }
             default:{
                 return false;
             }
+        }
+    }
+
+    /**@var $event Event*/
+    private function secretaryHasAccessWorkWithParticipant(string $userEmail, ?IModel $event)
+    {
+        if ($event == null){
+            return $this->getResponse();
+        }
+
+        if ($event->getStatus() != Event::LEAD_UP){
+            $this->response = false;
+        }
+
+        $secretaries = $this->secretaryRepository->getFilteredByEventId($event->getId());
+
+        foreach ($secretaries as $secretary){
+            if ($secretary->getUser()->getEmail() == $userEmail){
+                return $this->getResponse();
+            }
+        }
+
+        $this->response = false;
+        return $this->getResponse();
+    }
+
+    private function addErrorIfParticipantNotExists(?IModel $participant)
+    {
+        if ($participant == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'переданный участник не существует'));
         }
     }
 

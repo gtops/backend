@@ -4,17 +4,35 @@ namespace App\Persistance\Repositories\EventParticipant;
 use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
+use App\Domain\Models\User\UserCreater;
 use App\Persistance\ModelsEloquant\EventParticipant\EventParticipant as EventParticipantPDO;
+use DateTime;
 
 
 class EventParticipantRepository implements IRepository
 {
 
+    private $dateForParticipant = [
+        'user.password',
+        'user.user_id',
+        'user.name',
+        'user.email',
+        'user.role_id',
+        'user.is_activity',
+        'user.registration_date',
+        'event_participant.event_participant_id',
+        'event_participant.team_id',
+        'event_participant.event_id',
+        'event_participant.confirmed',
+        'user.gender',
+        'user.date_of_birth'];
+
     public function get(int $id): ?IModel
     {
         $result = EventParticipantPDO::query()
+            ->join('user', 'event_participant.user_id', '=', 'user.user_id')
             ->where('event_participant_id', '=', $id)
-            ->get();
+            ->get($this->dateForParticipant);
 
         if (count($result) == 0){
             return null;
@@ -68,13 +86,7 @@ class EventParticipantRepository implements IRepository
                     'user.email' => $email,
                     'event_id' => $eventId
                 ])
-                ->get([
-                    'event_participant_id',
-                    'event_participant.user_id',
-                    'event_id',
-                    'confirmed',
-                    'team_id'
-                ]);
+                ->get($this->dateForParticipant);
 
         if (count($result) == 0){
             return null;
@@ -85,19 +97,34 @@ class EventParticipantRepository implements IRepository
 
     private function getEventParticipant($params):EventParticipant
     {
+        $user = UserCreater::createModel([
+            'id' => $params['user_id'],
+            'name' => $params['name'],
+            'password' => $params['password'],
+            'email' => $params['email'],
+            'roleId' => $params['role_id'],
+            'dateTime' => new DateTime($params['registration_date']),
+            'isActivity' => $params['is_activity'],
+            'dateOfBirth' => new DateTime($params['date_of_birth']),
+            'gender' => $params['gender']
+        ]);
+
         return new EventParticipant
         (
             $params['event_participant_id'],
             $params['event_id'],
             $params['user_id'],
             $params['confirmed'],
+            $user,
             $params['team_id']
         );
     }
 
     public function getAllByEventId($eventId)
     {
-        $results = EventParticipantPDO::query()->where('event_id', '=', $eventId)->get();
+        $results = EventParticipantPDO::query()
+            ->join('user', 'event_participant.user_id', '=', 'user.user_id')
+            ->where('event_id', '=', $eventId)->get($this->dateForParticipant);
         $response = [];
         foreach ($results as $result){
             $response[] = $this->getEventParticipant($result);

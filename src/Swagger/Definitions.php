@@ -79,7 +79,27 @@
  *    @SWG\Property(property="userId", type="integer"),
  *    @SWG\Property(property="eventId", type="integer"),
  *    @SWG\Property(property="teamId", type="integer"),
- *    @SWG\Property(property="isConfirmed", type="boolean")
+ *    @SWG\Property(property="isConfirmed", type="boolean"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="email", type="string"),
+ *    @SWG\Property(property="gender", type="integer"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="isActivity", type="boolean")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="teamLead",
+ *    type="object",
+ *    @SWG\Property(property="teamLeadId", type="integer"),
+ *    @SWG\Property(property="userId", type="integer"),
+ *    @SWG\Property(property="teamId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="email", type="string"),
+ *    @SWG\Property(property="gender", type="integer"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="isActivity", type="boolean")
  * )
  */
 

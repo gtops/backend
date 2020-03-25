@@ -121,7 +121,7 @@ class EventService
     public function applyToEvent(int $eventId, string $userEmail, bool $confirmed, $teamId = null)
     {
         $user = $this->userRepository->getByEmail($userEmail);
-        $participant = new EventParticipant(-1, $eventId, $user->getId(), $confirmed, $teamId);
+        $participant = new EventParticipant(-1, $eventId, $user->getId(), $confirmed, $user, $teamId);
         return $this->eventParticipantRepository->add($participant);
     }
 

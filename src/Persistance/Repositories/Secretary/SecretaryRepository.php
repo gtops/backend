@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Persistance\Repositories\Secretary;
+use App\Domain\Models\Event\Event;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\Secretary\Secretary;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\ModelsEloquant\Secretary\Secretary as SecretaryPDO;
+use DateTime;
 
 class SecretaryRepository implements IRepository
 {
@@ -41,9 +43,9 @@ class SecretaryRepository implements IRepository
             'password' => '',
             'email' => $results[0]['email'],
             'roleId' => $results[0]['role_id'],
-            'dateTime' => new \DateTime($results[0]['registration_date']),
+            'dateTime' => new DateTime($results[0]['registration_date']),
             'isActivity' => $results[0]['is_activity'],
-            'dateOfBirth' => new \DateTime($results[0]['date_of_birth']),
+            'dateOfBirth' => new DateTime($results[0]['date_of_birth']),
             'gender' => $results[0]['gender']
         ]);
 
@@ -59,6 +61,7 @@ class SecretaryRepository implements IRepository
         $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('secretary.event_id', '=', $eventId)
+            ->where('event.status', '!=', Event::COMPLETED)
             ->get($this->dateForCreateSecretary);
 
         if (count($results) == 0){
@@ -74,6 +77,7 @@ class SecretaryRepository implements IRepository
         $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('event.organization_id', '=', $organizationId)
+            ->where('event.status', '!=', Event::COMPLETED)
             ->get($this->dateForCreateSecretary);
 
         return $this->getSecretaries($results);
@@ -110,9 +114,11 @@ class SecretaryRepository implements IRepository
 
     public function getFilteredByUserEmail(string $userEmail):?array
     {
-        $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
+        $results = SecretaryPDO::query()
+            ->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
-            ->where('user.email', '=', $userEmail)
+            ->where('user.email',  '=', $userEmail)
+            ->where('event.status', '!=', Event::COMPLETED)
             ->get($this->dateForCreateSecretary);
 
         if (count($results) == 0){
@@ -133,9 +139,9 @@ class SecretaryRepository implements IRepository
                 'password' => $result['password'],
                 'email' => $result['email'],
                 'roleId' => $result['role_id'],
-                'dateTime' => new \DateTime($result['registration_date']),
+                'dateTime' => new DateTime($result['registration_date']),
                 'isActivity' => $result['is_activity'],
-                'dateOfBirth' => new \DateTime($result['date_of_birth']),
+                'dateOfBirth' => new DateTime($result['date_of_birth']),
                 'gender' => $result['gender']
             ]);
 
