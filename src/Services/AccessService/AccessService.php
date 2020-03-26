@@ -261,6 +261,7 @@ class AccessService
     /**@var $event Event*/
     private function secretaryHasAccessWorkWithParticipant(string $userEmail, ?IModel $event)
     {
+        $userEmail = mb_strtolower($userEmail);
         if ($event == null){
             return $this->getResponse();
         }
