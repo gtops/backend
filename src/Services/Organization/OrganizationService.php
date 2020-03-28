@@ -32,8 +32,8 @@ class OrganizationService
 
     public function addOrganization(Organization $organization)
     {
-        $organization = $this->organizationRepository->getFilteredByName($organization->getName());
-        if ($organization != null){
+        $organizationToCheck = $this->organizationRepository->getFilteredByName($organization->getName());
+        if ($organizationToCheck != null){
             return -1;
         }
 
@@ -80,9 +80,11 @@ class OrganizationService
 
     public function update(Organization $organization)
     {
-        $organization = $this->organizationRepository->getFilteredByName($organization->getName());
-        if ($organization != null){
-            return -1;
+        $organizationToCheck = $this->organizationRepository->getFilteredByName($organization->getName());
+        if ($organizationToCheck != null){
+            if ($organization->getId() != $organizationToCheck->getId()) {
+                return -1;
+            }
         }
 
         $this->organizationRepository->update($organization);

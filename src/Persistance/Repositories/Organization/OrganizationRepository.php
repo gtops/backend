@@ -97,7 +97,7 @@ class OrganizationRepository implements IRepository
 
     }
 
-    public function getFilteredByName(string $name):IModel
+    public function getFilteredByName(string $name):?IModel
     {
         $organizations = OrgPDO::query()->where('name', '=', $name)->get();
 

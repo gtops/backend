@@ -62,7 +62,7 @@ class OrganizationAction extends Action
 
         if ($id == -1){
             $error = new ActionError(ActionError::BAD_REQUEST, 'организация с таким названием существует');
-            $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
+            return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
         }
 
         return $this->respond(200, ['id' => $id], $response);
@@ -204,7 +204,7 @@ class OrganizationAction extends Action
 
         if ($result == -1){
             $error = new ActionError(ActionError::BAD_REQUEST, 'организация с таким названием существует');
-            $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
+            return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
         }
 
         return $response;
