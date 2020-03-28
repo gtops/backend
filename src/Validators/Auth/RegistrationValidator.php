@@ -15,12 +15,13 @@ class RegistrationValidator extends BaseValidator
 {
     protected function addSpecificRules(array &$params, array $options = null)
     {
+        $params = $this->getInitedParams($params);
         $this->addNotNullNotBlankRules(['password']);
         $this->addLengthRule(['password'], 6);
         $this->addStringRule(['password']);
     }
 
-    private function initParams(array $params)
+    private function getInitedParams(array $params)
     {
         return [
             'password' => $params['password'] ?? null

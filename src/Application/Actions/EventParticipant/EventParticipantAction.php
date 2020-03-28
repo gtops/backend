@@ -196,7 +196,7 @@ class EventParticipantAction extends Action
 
         $participantId = (int)$args['participantId'];
 
-        //todo доделать принятие заявки в плане разрешений
+        //todo сделать отдельную функцию под это, так как удаление у тренера тоже может быть
         $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $participantId, $userRole);
 
         if ($access === false){

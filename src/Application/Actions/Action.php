@@ -25,7 +25,9 @@ abstract class Action
     {
         $errors = $request->getHeader('error');
         if (count($errors) != 0) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, $errors[0]))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, $errors[0]);
+            $error->jsonSerialize();
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return true;
         }
 

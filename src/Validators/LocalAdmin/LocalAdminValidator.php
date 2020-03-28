@@ -7,7 +7,7 @@ class LocalAdminValidator extends BaseValidator
 {
     protected function addSpecificRules(array &$params, array $options = null)
     {
-        $params = $this->initParams($params);
+        $params = $this->getInitedParams($params);
         $this->addNotNullNotBlankRules(['organizationId', 'localAdminId', 'email', 'password', 'name', 'dateOfBirth', 'gender']);
         $this->addIntTypeRule(['organizationId', 'localAdminId', 'gender']);
         $this->addStringRule([ 'email', 'password', 'name']);
@@ -16,7 +16,7 @@ class LocalAdminValidator extends BaseValidator
         $this->addInChoiceRule(['gender'], [0, 1]);
     }
 
-    private function initParams(array $params)
+    private function getInitedParams(array $params)
     {
         $params['organizationId'] = $params['organizationId'] ?? null;
         $params['name'] = $params['name'] ?? null;

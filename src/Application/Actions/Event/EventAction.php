@@ -287,7 +287,7 @@ class EventAction extends Action
         }
 
         if ($results == null){
-            return $response->withStatus(404);
+            return $this->respond(200, [], $response);
         }
 
         return $this->respond(200, $results, $response);

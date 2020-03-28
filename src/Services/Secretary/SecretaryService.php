@@ -15,6 +15,7 @@ use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\Token\Token;
+use DateTime;
 use Psr\Http\Message\ResponseInterface;
 
 class SecretaryService
@@ -56,21 +57,25 @@ class SecretaryService
         $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SECRETARY, $roles);
 
         if ($user == null) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(404);
         }else{
             if ($user->getRoleId() != $this->roleRepository->getByName(AuthorizeMiddleware::SIMPLE_USER)->getId() && $user->getRoleId() != $this->roleRepository->getByName(AuthorizeMiddleware::SECRETARY)->getId()){
-                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этому пользователю уже присуще другая роль'))]));
+                $error = new ActionError(ActionError::BAD_REQUEST, 'этому пользователю уже присуще другая роль');
+                $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
                 return $response->withStatus(400);
             }
 
             if ($this->secretaryInOtherOrganization($user, $organizationId)){
-                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этот пользователь является секретарем в другой организации'))]));
+                $error = new ActionError(ActionError::BAD_REQUEST, 'этот пользователь является секретарем в другой организации');
+                $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
                 return $response->withStatus(400);
             }
 
             if ($this->secretaryIsSetOnThisEvent($user, $eventId)){
-                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этот пользователь уже является секретарем в данном мероприятии'))]));
+                $error = new ActionError(ActionError::BAD_REQUEST, 'этот пользователь уже является секретарем в данном мероприятии');
+                $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
                 return $response->withStatus(400);
             }
 
@@ -145,12 +150,14 @@ class SecretaryService
 
         $secretary = $this->secretaryRepository->get($secretaryId);
         if ($secretary == null){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данного секретаря не сущесвует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'данного секретаря не сущесвует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
         if ($secretary->getEventId() != $eventId){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данный секретарь не относится к этому мероприятию'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'данный секретарь не относится к этому мероприятию');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
@@ -167,7 +174,7 @@ class SecretaryService
         $this->secretaryRepository->delete($secretaryId);
     }
 
-    public function add(int $eventId, int $organizationId, string $name, string $password,  \DateTime $dateOfBirth, string $email, int $gender, $localAdminEmail, ResponseInterface $response)
+    public function add(int $eventId, int $organizationId, string $name, string $password,  DateTime $dateOfBirth, string $email, int $gender, $localAdminEmail, ResponseInterface $response)
     {
         $response = $this->getInitedResponseWitStatus($organizationId, $localAdminEmail, $eventId, $response);
         if ($response->getStatusCode() != 200){
@@ -186,7 +193,7 @@ class SecretaryService
                 'email' => $email,
                 'roleId' => $roleId,
                 'isActivity' => 1,
-                'dateTime' => new \DateTime(),
+                'dateTime' => new DateTime(),
                 'dateOfBirth' => $dateOfBirth,
                 'gender' => $gender
             ]);
@@ -194,7 +201,8 @@ class SecretaryService
             $userId = $this->userRepository->add($user);
             $user->setId($userId);
         }else{
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой пользователь уже существует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'такой пользователь уже существует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
@@ -205,24 +213,28 @@ class SecretaryService
     private function getInitedResponseWitStatus(int $organizationId, string $localAdminEmail, int $eventId, ResponseInterface $response)
     {
         if (!$this->localAdminRepository->localAdminIsSetOnDB($localAdminEmail, $organizationId)) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данный локальный администратор не может работать с мероприятиями этой организации'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'данный локальный администратор не может работать с мероприятиями этой организации');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(403);
         }
 
         if ($this->organizationRepository->get($organizationId) == null) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
         /**@var $event Event*/
         $event = $this->eventRepository->get($eventId);
         if ($event == null){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'данного мероприятия не существует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'данного мероприятия не существует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
         if ($event->getIdOrganization() != $organizationId){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'мероприятие не относится к данной организации'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'мероприятие не относится к данной организации');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(403);
         }
 

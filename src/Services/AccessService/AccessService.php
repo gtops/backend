@@ -250,7 +250,7 @@ class AccessService
                 return $this->secretaryHasAccessWorkWithParticipant($userEmail, $event);
             }
             case AuthorizeMiddleware::TEAM_LEAD:{
-
+                return true;
             }
             default:{
                 return false;

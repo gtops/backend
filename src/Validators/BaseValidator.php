@@ -79,8 +79,8 @@ abstract class BaseValidator implements ValidateStrategy
             /** @var $error ConstraintViolation*/
             if($error->getMessage() != 'This field was not expected.' && $error->getMessage() != 'This field is missing.'){
                 $errorObject = [
-                    'value' => explode(':', $error->getMessage())[0],
-                    'message' => explode(':', $error->getMessage())[1]
+                    'description' => explode(':', $error->getMessage())[0],
+                    'type' => explode(':', $error->getMessage())[1]
                 ];
                 $errorObjects[] = $errorObject;
             }

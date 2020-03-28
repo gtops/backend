@@ -13,6 +13,7 @@ use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\Token\Token;
+use DateTime;
 use http\Client\Curl\User;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Response;
@@ -32,7 +33,7 @@ class LocalAdminService
         $this->organizationRepository = $organizationRepository;
     }
 
-    public function add(string $name, string $password, string $email, $gender, \DateTime $dateOfBirth, int $organizationId, ResponseInterface $response)
+    public function add(string $name, string $password, string $email, $gender, DateTime $dateOfBirth, int $organizationId, ResponseInterface $response)
     {
         $response = $this->getInitedResponseWitStatus($organizationId, $email, $response);
         if ($response->getStatusCode() != 200){
@@ -52,7 +53,7 @@ class LocalAdminService
                 'email' => $email,
                 'roleId' => $roleId,
                 'isActivity' => 1,
-                'dateTime' => new \DateTime(),
+                'dateTime' => new DateTime(),
                 'gender'=> $gender,
                 'dateOfBirth' => $dateOfBirth
             ];
@@ -152,11 +153,13 @@ class LocalAdminService
         $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::LOCAL_ADMIN, $roles);
 
         if ($user == null) {
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'такого пользователя не существует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(404);
         }else{
             if ($user->getRoleId() != $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles)){
-                $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'этому пользователю уже присуще другая роль'))]));
+                $error = new ActionError(ActionError::BAD_REQUEST, 'этому пользователю уже присуще другая роль');
+                $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
                 return $response->withStatus(400);
             }
 
@@ -171,12 +174,14 @@ class LocalAdminService
    private function getInitedResponseWitStatus(int $organizationId, string $email, ResponseInterface $response)
    {
        if ($this->organizationRepository->get($organizationId) == null) {
-           $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'))]));
+           $error = new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует');
+           $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
            return $response->withStatus(400);
        }
 
        if ($this->localAdminRepository->localAdminIsSetOnDB($email, $organizationId)) {
-           $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой локальный администратор в данной организации существует'))]));
+           $error = new ActionError(ActionError::BAD_REQUEST, 'такой локальный администратор в данной организации существует');
+           $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
            return $response->withStatus(400);
        }
 
