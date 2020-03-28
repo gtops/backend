@@ -3,6 +3,7 @@
 namespace App\Application\Actions\Organization;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\Presenters\OrganizationsToResponsePresenter;
 use App\Validators\Organization\OrganizationObjectValidator;
@@ -58,6 +59,12 @@ class OrganizationAction extends Action
         }
 
         $id = $this->organizationService->addOrganization(OrganizationCreater::createModel($rowParams));
+
+        if ($id == -1){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'организация с таким названием существует');
+            $this->respond(400, ['errors' => array($error)], $response);
+        }
+
         return $this->respond(200, ['id' => $id], $response);
     }
     /**
@@ -193,7 +200,13 @@ class OrganizationAction extends Action
         }
 
         $organization = OrganizationCreater::createModel($rowParams);
-        $this->organizationService->update($organization);
+        $result = $this->organizationService->update($organization);
+
+        if ($result == -1){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'организация с таким названием существует');
+            $this->respond(400, ['errors' => array($error)], $response);
+        }
+
         return $response;
     }
 }

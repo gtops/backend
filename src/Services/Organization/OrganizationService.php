@@ -11,6 +11,7 @@ use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use Psr\Http\Message\ResponseInterface;
 
 class OrganizationService
 {
@@ -31,6 +32,11 @@ class OrganizationService
 
     public function addOrganization(Organization $organization)
     {
+        $organization = $this->organizationRepository->getFilteredByName($organization->getName());
+        if ($organization != null){
+            return -1;
+        }
+
         return $this->organizationRepository->add($organization);
     }
 
@@ -74,6 +80,12 @@ class OrganizationService
 
     public function update(Organization $organization)
     {
+        $organization = $this->organizationRepository->getFilteredByName($organization->getName());
+        if ($organization != null){
+            return -1;
+        }
+
         $this->organizationRepository->update($organization);
+        return 0;
     }
 }
