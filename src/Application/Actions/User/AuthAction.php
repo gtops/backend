@@ -82,6 +82,7 @@ class AuthAction extends Action
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(
      *              @SWG\Property(property="accessToken", type="string"),
      *              @SWG\Property(property="refreshToken", type="string"),
+     *              @SWG\Property(property="userId", type="integer"),
      *              @SWG\Property(property="role", type="string"),
      *              @SWG\Property(property="organizationId", type="integer")
      *          )),

@@ -43,6 +43,7 @@ class Auth
             return $response->withStatus(400);
         }
         $role = $this->userRepository->getRoleOfUser($params['email']);
+        $user = $this->userRepository->getByEmail($params['email']);
         $refreshToken = Token::getEncodedToken([
             'email' => $params['email'],
             'role' => $role,
@@ -63,6 +64,7 @@ class Auth
         $responseData = [
             'accessToken' => $accessToken,
             'refreshToken' => $refreshToken,
+            'userId' => $user->getId(),
             'role' => $role
         ];
 
