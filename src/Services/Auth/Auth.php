@@ -53,21 +53,8 @@ class Auth
                 ->format('Y-m-d H:i:s')
         ]);
 
-        $user = $this->userRepository->getByEmail($params['email']);
 
-        $accessToken = Token::getEncodedToken([
-            'gender' => $user->getGender(),
-            'dateOfBirth' => $user->getDateOfBirth(),
-            'name' => $user->getName(),
-            'userId' => $user->getId(),
-            'email' => $params['email'],
-            'role' => $role,
-            'type' => 'acess token',
-            'liveTime' => 600,
-            'addedTime' => (new DateTime())
-                ->setTimezone(new DateTimeZone('europe/moscow'))
-                ->format('Y-m-d H:i:s')
-        ]);
+        $accessToken = $this->getAccessToken($params['email']);
 
         $rToken = new RefreshTokenRepository();
         $rToken->deleteRefreshTokenWithEmail($params['email']);
@@ -116,16 +103,7 @@ class Auth
                 ->format('Y-m-d H:i:s')
         ]);
 
-        $accessToken = Token::getEncodedToken([
-            'email' => $decodedToken['email'],
-            'role' => $decodedToken['role'],
-            'type' => 'acess token',
-            'liveTime' => 120,
-            'addedTime' => (new DateTime())
-                ->setTimezone(new DateTimeZone('europe/moscow'))
-                ->format('Y-m-d H:i:s')
-        ]);
-
+        $accessToken = $this->getAccessToken($params['email']);
         $this->refTokenRep->updateRefreshTokenWithEmail($decodedToken['email'], $refreshToken);
 
         $response->getBody()->write(json_encode([
@@ -134,6 +112,26 @@ class Auth
         ]));
 
         return $response;
+    }
+
+    private function getAccessToken($email)
+    {
+        $role = $this->userRepository->getRoleOfUser($email);
+        $user = $this->userRepository->getByEmail($email);
+
+        return Token::getEncodedToken([
+            'gender' => $user->getGender(),
+            'dateOfBirth' => $user->getDateOfBirth(),
+            'name' => $user->getName(),
+            'userId' => $user->getId(),
+            'email' => $email,
+            'role' => $role,
+            'type' => 'acess token',
+            'liveTime' => 600,
+            'addedTime' => (new DateTime())
+                ->setTimezone(new DateTimeZone('europe/moscow'))
+                ->format('Y-m-d H:i:s')
+        ]);
     }
 
     public function confirmAccount(array $params, Response $response):Response
