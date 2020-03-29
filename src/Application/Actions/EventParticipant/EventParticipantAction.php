@@ -4,6 +4,7 @@ namespace App\Application\Actions\EventParticipant;
 
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use Psr\Http\Message\RequestInterface as Request;
@@ -88,7 +89,7 @@ class EventParticipantAction extends Action
         if ($access === false){
             return $response->withStatus(403);
         }else if ($access !== true){
-            return $this->respond(400, $access, $response);
+            return $this->respond(400, ['errors' => $access], $response);
         }
 
         $id = $this->eventParticipantService->addToTeam($emailOfUserToAdd, false, $teamId);
@@ -152,14 +153,17 @@ class EventParticipantAction extends Action
 
         $participantId = (int)$args['participantId'];
 
-        //todo доделать принятие заявки в плане разрешений
+        if ($userRole == AuthorizeMiddleware::TEAM_LEAD){
+            return $response->withStatus(403);
+        }
+
         $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $participantId, $userRole);
 
         if ($access === false){
             return $response->withStatus(403);
         }else if ($access !== true){
             /**@var $access array*/
-            return $this->respond(400, $access, $response);
+            return $this->respond(400, ['errors' => $access], $response);
         }
 
         $this->eventParticipantService->confirmApply($participantId);
@@ -203,7 +207,7 @@ class EventParticipantAction extends Action
             return $response->withStatus(403);
         }else if ($access !== true){
             /**@var $access array*/
-            return $this->respond(400, $access, $response);
+            return $this->respond(400, ['errors' => $access], $response);
         }
 
         $this->eventParticipantService->delete($participantId);

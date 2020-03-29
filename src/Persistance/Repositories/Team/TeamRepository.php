@@ -6,7 +6,8 @@ use App\Domain\Models\IRepository;
 use App\Domain\Models\Team\Team;
 use App\Persistance\ModelsEloquant\Team\Team as TeamPdo;
 use App\Persistance\ModelsEloquant\TeamLead\TeamLead;
-
+use App\Persistance\ModelsEloquant\Secretary\Secretary as SecretaryPDO;
+use App\Persistance\ModelsEloquant\Event\Event as EventPDO;
 class TeamRepository implements IRepository
 {
     public function get(int $id): ?IModel
@@ -100,6 +101,26 @@ class TeamRepository implements IRepository
         $results = TeamLead::query()
             ->join('team', 'team_lead.team_id', '=', 'team.team_id')
             ->where('team_lead.user_id', '=', $userId)
+            ->get();
+
+        return $this->getTeams($results);
+    }
+
+    public function getAllForSecretaryWithUserId(int $userId)
+    {
+        $results = SecretaryPDO::query()
+            ->join('team', 'team.event_id', '=', 'secretary.event_id')
+            ->where('secretary.user_id', '=', $userId)
+            ->get();
+
+        return $this->getTeams($results);
+    }
+
+    public function getAllForOrganizationId(int $organizationId)
+    {
+        $results = EventPDO::query()
+            ->join('team', 'team.event_id', '=', 'event.event_id')
+            ->where('event.organization_id', '=', $organizationId)
             ->get();
 
         return $this->getTeams($results);

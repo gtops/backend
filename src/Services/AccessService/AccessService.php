@@ -110,10 +110,9 @@ class AccessService
             case AuthorizeMiddleware::TEAM_LEAD:{
                 return $this->teamLeadHasAccessWorkWithParticipantOnTeam($teamId, $userEmail, $event);
             }
-            default:{
-                return false;
-            }
         }
+
+        return $this->getResponse();
     }
 
     private function teamLeadHasAccessWorkWithParticipantOnTeam(int $teamId, string $email, ?IModel $event)
@@ -146,10 +145,9 @@ class AccessService
             case AuthorizeMiddleware::SECRETARY:{
                 return $this->secretaryHasAccessWorkWithTeam($event, $email);
             }
-            default:{
-                return false;
-            }
         }
+
+        return $this->getResponse();
     }
 
     private function getResponse()
@@ -241,7 +239,6 @@ class AccessService
         $participant = $this->eventParticipantRepository->get($participantId);
         $this->addErrorIfParticipantNotExists($participant);
         $event = $this->eventRepository->get($participant->getEventId() ?? -1);
-
         switch ($userRole){
             case AuthorizeMiddleware::LOCAL_ADMIN:{
                 return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
@@ -250,12 +247,11 @@ class AccessService
                 return $this->secretaryHasAccessWorkWithParticipant($userEmail, $event);
             }
             case AuthorizeMiddleware::TEAM_LEAD:{
-                return true;
-            }
-            default:{
-                return false;
+                return $this->teamLeadHasAccessWorkWithParticipantOnTeam($participant->getTeamId(), $userEmail, $event);
             }
         }
+
+        return $this->getResponse();
     }
 
     /**@var $event Event*/

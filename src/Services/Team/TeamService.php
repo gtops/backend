@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Services\Team;
+use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\Team\Team;
 use App\Persistance\Repositories\Event\EventRepository;
+use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\User\UserRepository;
@@ -13,12 +15,13 @@ class TeamService
     private $teamRepository;
     private $teamLeadRepisotory;
     private $eventRepository;
-
-    public function __construct(UserRepository $userRepository, TeamRepository $teamRepository, EventRepository $eventRepository)
+    private $localAdminRepository;
+    public function __construct(UserRepository $userRepository, TeamRepository $teamRepository, EventRepository $eventRepository, LocalAdminRepository $localAdminRepository)
     {
         $this->teamRepository = $teamRepository;
         $this->userRepository = $userRepository;
         $this->eventRepository = $eventRepository;
+        $this->localAdminRepository = $localAdminRepository;
     }
 
     public function add($name, int $eventId)
@@ -38,10 +41,26 @@ class TeamService
     }
 
     /**@return Team[]*/
-    public function getListForTeamLead(string $email):array
+    public function getListForUser(string $email, string $role):array
     {
         $user = $this->userRepository->getByEmail($email);
-        $teams = $this->teamRepository->getAllForTeamLeadWithUserId($user->getId());
+        $teams = [];
+        switch ($role){
+            case AuthorizeMiddleware::TEAM_LEAD:{
+                $teams = $this->teamRepository->getAllForTeamLeadWithUserId($user->getId());
+                break;
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                $teams = $this->teamRepository->getAllForSecretaryWithUserId($user->getId());
+                break;
+            }
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                $organizationId = $this->localAdminRepository->getOrganizationIdFilteredByEmail($user->getEmail());
+                $teams = $this->teamRepository->getAllForOrganizationId($organizationId);
+                break;
+            }
+        }
+
         $response = [];
         foreach ($teams as $team){
             $teamArray = $team->toArray();
