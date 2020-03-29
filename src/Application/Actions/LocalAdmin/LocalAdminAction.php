@@ -54,13 +54,13 @@ class LocalAdminAction extends Action
         $rowParams = json_decode($request->getBody()->getContents(), true);
 
         if (!isset($rowParams['email'])){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'поле email обязателен');
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Поле email обязательно');
             $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
         if(!filter_var($rowParams['email'], FILTER_VALIDATE_EMAIL)){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'email не соответвует формату почты');
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Email не соответствует формату почты');
             $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }

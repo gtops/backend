@@ -77,7 +77,7 @@ class EventParticipantAction extends Action
         $emailOfUserToAdd = $params['email'];
 
         if (!filter_var($emailOfUserToAdd, FILTER_VALIDATE_EMAIL)){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'email не соответвует формату почты');
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Email не соответвует формату почты');
             $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }

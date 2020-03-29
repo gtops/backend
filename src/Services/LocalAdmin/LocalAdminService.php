@@ -180,7 +180,7 @@ class LocalAdminService
        }
 
        if ($this->localAdminRepository->localAdminIsSetOnDB($email, $organizationId)) {
-           $error = new ActionError(ActionError::BAD_REQUEST, 'такой локальный администратор в данной организации существует');
+           $error = new ActionError(ActionError::BAD_REQUEST, 'такой локальный администратор в данной организации уще существует');
            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
            return $response->withStatus(400);
        }

@@ -61,7 +61,7 @@ class OrganizationAction extends Action
         $id = $this->organizationService->addOrganization(OrganizationCreater::createModel($rowParams));
 
         if ($id == -1){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'организация с таким названием существует');
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Организация с таким названием существует');
             return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
         }
 
@@ -203,7 +203,7 @@ class OrganizationAction extends Action
         $result = $this->organizationService->update($organization);
 
         if ($result == -1){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'организация с таким названием существует');
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Организация с таким названием существует');
             return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
         }
 

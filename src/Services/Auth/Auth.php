@@ -39,7 +39,8 @@ class Auth
     public function login(array $params, Response $response):Response
     {
         if (!$this->userRepository->userIsSetOnDB($params['email'], Token::getEncodedPassword($params['password']))){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::VERIFICATION_ERROR, 'wrong login or password'))]));
+            $error = new ActionError(ActionError::VERIFICATION_ERROR, 'Неверный логин или пароль');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
         $role = $this->userRepository->getRoleOfUser($params['email']);
@@ -105,7 +106,7 @@ class Auth
                 ->format('Y-m-d H:i:s')
         ]);
 
-        $accessToken = $this->getAccessToken($params['email']);
+        $accessToken = $this->getAccessToken($decodedToken['email']);
         $this->refTokenRep->updateRefreshTokenWithEmail($decodedToken['email'], $refreshToken);
 
         $response->getBody()->write(json_encode([
@@ -140,7 +141,8 @@ class Auth
     {
         $tokenDataFromDb = $this->regTokenRep->getByTokenValue($params['token']);
         if ($tokenDataFromDb->getToken() == null){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'Невалидный токен'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Невалидный токен');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 

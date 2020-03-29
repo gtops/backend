@@ -16,6 +16,9 @@ use App\Persistance\Repositories\User\RegistrationTokenRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\EmailSendler\EmailSendler;
 use App\Services\Token\Token;
+use DateTime;
+use DateTimeZone;
+use Exception;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class Invite
@@ -37,7 +40,8 @@ class Invite
     public function sendInviteToRegistration(IModel $user, Response $response):Response
     {
         if ($this->userRepository->getByEmail($user->getEmail()) != null){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой пользователь сушествует'))]));
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Такой пользователь существует');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
             return $response->withStatus(400);
         }
 
@@ -46,15 +50,16 @@ class Invite
             'type' => 'access token',
             'liveTime' => 24 * 7 * 3600,
             'role' => '',
-            'addedTime' => (new \DateTime)
-                ->setTimezone(new \DateTimeZone('europe/moscow'))
+            'addedTime' => (new DateTime)
+                ->setTimezone(new DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
         ]);
 
         try {
             $this->emailSendler->sendInvite($user->getEmail(), $token);
-        }catch (\Exception $err){
-            $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой почты не сушествует'))]));
+        }catch (Exception $err){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Такой почты не существует');
+            $response->getBody()->write(json_encode(['errors' => array()]));
             return $response->withStatus(400);
         }
 

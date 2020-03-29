@@ -89,7 +89,7 @@ class AccessService
     private function addErrorIfParticipantExistOnEvent(?EventParticipant $eventParticipant)
     {
         if ($eventParticipant != null){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'вы уже подавали заявку на участие'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Вы уже подавали заявку на участие'));
         }
     }
 
@@ -124,7 +124,7 @@ class AccessService
         }
 
         if ($event->getStatus() != Event::LEAD_UP){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
         }
 
         return $this->getResponse();
@@ -190,7 +190,7 @@ class AccessService
     private function addErrorIfOrganizationNotExist(?IModel $organization)
     {
         if ($organization == null){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такой организации не существует'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой организации не существует'));
         }
     }
 
@@ -198,7 +198,7 @@ class AccessService
     {
         /**@var $event Event*/
         if ($event == null){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такого мероприятия не существует'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такого мероприятия не существует'));
         }
     }
 
@@ -210,7 +210,7 @@ class AccessService
         }
         
         if ($event->getStatus() != Event::LEAD_UP){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
         }
     }
 
@@ -225,7 +225,7 @@ class AccessService
         }
 
         if ($event->getIdOrganization() != $organization->getId()){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такого мероприятия не существует в рамках данной организации'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такого мероприятия не существует в рамках данной организации'));
         }
     }
 
@@ -285,7 +285,7 @@ class AccessService
     private function addErrorIfParticipantNotExists(?IModel $participant)
     {
         if ($participant == null){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'переданный участник не существует'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Переданный участник не существует'));
         }
     }
 
@@ -351,7 +351,7 @@ class AccessService
         }
 
         if ($event->getId() !== $participant->getEventId()){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'переданный участник не относится к данному мероприятию'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Переданный участник не относится к данному мероприятию'));
         }
     }
 
@@ -362,14 +362,14 @@ class AccessService
         }
 
         if ($this->eventParticipantRepository->getByEmailAndEvent($emailParticipant, $event->getId()) != null){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такой участник уже есть в мероприятии'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой участник уже есть в мероприятии'));
         }
     }
 
     private function addErrorIfTeamNotExists(?IModel $team)
     {
         if ($team == null){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'такой команды не существует'));
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой команды не существует'));
         }
     }
 }
