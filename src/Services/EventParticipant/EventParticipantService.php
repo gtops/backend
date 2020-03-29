@@ -38,7 +38,7 @@ class EventParticipantService
         $this->eventParticipantRepository->delete($participantId);
     }
 
-    public function addToTeam(string $userEmail, bool $confirmed, $teamId = null)
+    public function addToTeam(string $userEmail, bool $confirmed, $teamId)
     {
         $team = $this->teamRepository->get($teamId);
         $user = $this->userRepository->getByEmail($userEmail);
@@ -49,6 +49,13 @@ class EventParticipantService
     public function getAllForTeam(int $teamId)
     {
         return $this->eventParticipantRepository->getAllFilteredByTeamId($teamId);
+    }
+
+    public function addToEvent($emailOfUserToAdd, bool $false, int $eventId)
+    {
+        $user = $this->userRepository->getByEmail($emailOfUserToAdd);
+        $eventParticipant = new EventParticipant(-1, $eventId, $user->getId(), false, $user, null);
+        return $this->eventParticipantRepository->add($eventParticipant);
     }
 
 }

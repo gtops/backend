@@ -98,6 +98,55 @@ class EventParticipantAction extends Action
 
     /**
      *
+     * @SWG\Post(
+     *   path="/api/v1/event/{eventId}/participant",
+     *   summary="добавление участника в мероприятие без команды(локальный админ и секретарь данного мероприятия)",
+     *   tags={"ParticipantEvent"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id команды, к которой добавляем участника"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="email", type="string"))),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function addParticipantWithoutTeam(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+        $params = json_decode($request->getBody()->getContents(), true);
+        $emailOfUserToAdd = $params['email'];
+
+        if (!filter_var($emailOfUserToAdd, FILTER_VALIDATE_EMAIL)){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Email не соответвует формату почты');
+            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
+            return $response->withStatus(400);
+        }
+
+        $eventId = (int)$args['eventId'];
+        $access = $this->accessService->hasAccessAddParticipantToEvent($userEmail, $userRole, $eventId, $emailOfUserToAdd);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $id = $this->eventParticipantService->addToEvent($emailOfUserToAdd, false, $eventId);
+        return $this->respond(200, ['id' => $id], $response);
+    }
+
+    /**
+     *
      * * @SWG\Get(
      *   path="/api/v1/event/{eventId}/participant",
      *   summary="получение участников мероприятия",

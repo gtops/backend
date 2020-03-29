@@ -88,7 +88,7 @@ class TeamAction extends Action
      *
      * @SWG\Get(
      *   path="/api/v1/team",
-     *   summary="получает те команды, которые относятся к данному тренеру(тренер)",
+     *   summary="получает те команды, которые относятся к определенному пользователю, который передан",
      *   tags={"Team"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(ref="#/definitions/teamResponse")),

@@ -112,7 +112,24 @@ class AccessService
             }
         }
 
-        return $this->getResponse();
+        return false;
+    }
+
+
+    public function hasAccessAddParticipantToEvent(string $userEmail, string $userRole, int $eventId, $emailParticipant)
+    {
+        $event = $this->eventRepository->get($eventId);
+        $this->addErrorIfParticipantExistOnThisEvent($emailParticipant, $event);
+        switch ($userRole){
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                return $this->secretaryHasAccessWorkWithParticipant($userEmail, $event);
+            }
+        }
+
+        return false;
     }
 
     private function teamLeadHasAccessWorkWithParticipantOnTeam(int $teamId, string $email, ?IModel $event)
@@ -147,7 +164,7 @@ class AccessService
             }
         }
 
-        return $this->getResponse();
+        return false;
     }
 
     private function getResponse()
@@ -251,7 +268,7 @@ class AccessService
             }
         }
 
-        return $this->getResponse();
+        return false;
     }
 
     /**@var $event Event*/
