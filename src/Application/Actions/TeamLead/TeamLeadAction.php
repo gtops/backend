@@ -74,11 +74,20 @@ class TeamLeadAction extends Action
 
         $id = $this->teamLeadService->add($rowParams['email'], $teamId);
 
-        if ($id == 1){
+        if ($id == -1){
             $error = new ActionError(ActionError::BAD_REQUEST, 'Данный пользователь уже имеет другую роль');
-            $this->respond(200, ['errors' => array($error->jsonSerialize())], $response);
+            return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
         }
 
+        if ($id == -2){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Данный тренер уже присутствует в этой команде');
+            return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
+        }
+
+        if ($id == -3){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Данного пользователя не существует');
+            return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
+        }
         return $this->respond(200, ['id' => $id], $response);
     }
 
@@ -100,9 +109,35 @@ class TeamLeadAction extends Action
      * )
      *
      */
-    public function delete()
+    public function delete(Request $request, Response $response, $args):Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        if ($userRole == AuthorizeMiddleware::TEAM_LEAD){
+            return $response->withStatus(403);
+        }
+
+        $teamLeadId = (int)$args['teamLeadId'];
+        $teamLead = $this->teamLeadService->get($teamLeadId);
+        if ($teamLead == null){
+            return $response;
+        }
+
+        $access = $this->accessService->hasAccessWorkWithTeamWithId($userRole, $userEmail, $teamLead->getTeamId());
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->teamLeadService->delete($teamLeadId);
+        return $response;
     }
 
     /**

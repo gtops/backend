@@ -181,7 +181,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new TeamLeadAction($c->get(TeamLeadService::class), $c->get(AccessService::class));
         },
         TeamLeadService::class => function(ContainerInterface $c){
-            return new TeamLeadService($c->get(TeamLeadRepository::class), $c->get(UserRepository::class), $c->get(RoleRepository::class));
+            return new TeamLeadService($c->get(TeamLeadRepository::class), $c->get(UserRepository::class), $c->get(RoleRepository::class), $c->get(TeamRepository::class));
         },
         RefreshTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Persistance\Repositories\Team;
+use App\Domain\Models\Event\Event as EventModel;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\Team\Team;
+use App\Persistance\ModelsEloquant\Event\Event;
 use App\Persistance\ModelsEloquant\EventParticipant\EventParticipant;
 use App\Persistance\ModelsEloquant\Team\Team as TeamPdo;
 use App\Persistance\ModelsEloquant\TeamLead\TeamLead;
@@ -107,7 +109,9 @@ class TeamRepository implements IRepository
     {
         $results = TeamLead::query()
             ->join('team', 'team_lead.team_id', '=', 'team.team_id')
+            ->join('event', 'event.event_id', '=', 'team.event_id')
             ->where('team_lead.user_id', '=', $userId)
+            ->where('event.status', '!=', EventModel::COMPLETED)
             ->get();
 
         return $this->getTeams($results);
