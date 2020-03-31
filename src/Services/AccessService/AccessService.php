@@ -77,6 +77,7 @@ class AccessService
 
     public function hasAccessApplyToEvent(int $eventId, string $email)
     {
+        $email = mb_strtolower($email);
         $user = $this->userRepository->getByEmail($email);
         $event = $this->eventRepository->get($eventId);
         $participant = $this->eventParticipantRepository->getByEmailAndEvent($email, $eventId);
@@ -95,6 +96,7 @@ class AccessService
 
     public function hasAccessAddParticipantToTeam(string $userEmail, string $userRole, int $teamId, string $emailParticipant)
     {
+        $userEmail = mb_strtolower($userEmail);
         $team = $this->teamRepository->get($teamId);
         $event = $this->eventRepository->get($team->getEventId());
         $this->addErrorIfTeamNotExists($team);
@@ -118,8 +120,13 @@ class AccessService
 
     public function hasAccessAddParticipantToEvent(string $userEmail, string $userRole, int $eventId, $emailParticipant)
     {
+        $emailParticipant = mb_strtolower($emailParticipant);
+        $userEmail = mb_strtolower($userEmail);
         $event = $this->eventRepository->get($eventId);
+        $this->userRepository->getByEmail($emailParticipant);
+        $user = $this->userRepository->getByEmail($emailParticipant);
         $this->addErrorIfParticipantExistOnThisEvent($emailParticipant, $event);
+        $this->addErrorIfUserNotExists($user);
         switch ($userRole){
             case AuthorizeMiddleware::LOCAL_ADMIN:{
                 return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
@@ -148,6 +155,7 @@ class AccessService
 
     public function hasAccessWorkWithTeam(string $role, int $organizationId, int $eventId, string $email)
     {
+        $email = mb_strtolower($email);
         $event = $this->eventRepository->get($eventId);
         $organization = $this->organizationRepository->get($organizationId);
 
@@ -161,6 +169,30 @@ class AccessService
             }
             case AuthorizeMiddleware::SECRETARY:{
                 return $this->secretaryHasAccessWorkWithTeam($event, $email);
+            }
+        }
+
+        return false;
+    }
+
+    public function hasAccessWorkWithTeamWithId(string $userRole, string $userEmail, int $teamId)
+    {
+        $userEmail = mb_strtolower($userEmail);
+        $team = $this->teamRepository->get($teamId);
+        $event = $this->eventRepository->get($team->getEventId() ?? -1);
+        $organization = $this->organizationRepository->get($event->getIdOrganization() ?? -1);
+
+        $this->addErrorIfTeamNotExists($team);
+
+        switch ($userRole){
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                return $this->localAdminHasAccessWorkWithTeam($organization, $userEmail);
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                return $this->secretaryHasAccessWorkWithTeam($event, $userEmail);
+            }
+            case AuthorizeMiddleware::TEAM_LEAD:{
+                return $this->teamLeadHasAccessWorkWithTeam($userEmail, $teamId);
             }
         }
 
@@ -184,6 +216,7 @@ class AccessService
      */
     private function localAdminHasAccessWorkWithTeam(?IModel $organization, string $email)
     {
+        $email = mb_strtolower($email);
         if ($organization == null){
             return $this->getResponse();
         }
@@ -193,6 +226,7 @@ class AccessService
 
     private function secretaryHasAccessWorkWithTeam(?IModel $event, string $email)
     {
+        $email = mb_strtolower($email);
         if ($event == null){
             return $this->getResponse();
         }
@@ -253,6 +287,7 @@ class AccessService
 
     public function hasAccessWorkWithParticipant(string $userEmail, int $participantId, string $userRole)
     {
+        $userEmail = mb_strtolower($userEmail);
         $participant = $this->eventParticipantRepository->get($participantId);
         $this->addErrorIfParticipantNotExists($participant);
         $event = $this->eventRepository->get($participant->getEventId() ?? -1);
@@ -304,6 +339,7 @@ class AccessService
 
     /**@var $event Event*/
     private function localAdminHasAccessWorkWithParticipant(string $email, ?IModel $event){
+        $email = mb_strtolower($email);
         if ($event == null){
             return $this->getResponse();
         }
@@ -315,6 +351,30 @@ class AccessService
 
         return $this->getResponse();
     }
+
+    public function hasAccessWorkWithEvent(int $eventId, int $organizationId, string $userEmail, $role)
+    {
+        $userEmail = mb_strtolower($userEmail);
+        $user = $this->userRepository->getByEmail($userEmail);
+        $event = $this->eventRepository->get($eventId);
+        $organization = $this->organizationRepository->get($organizationId);
+        $this->addErrorIfEventNoInLeadUpStatus($event);
+        $this->addErrorIfEventNotExists($event);
+        $this->addErrorIfOrganizationNotExist($organization);
+        $this->addErrorIfEventNotExistOnOrganization($event, $organization);
+
+        switch ($role){
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                return $this->localAdminHasAccessWorkWithOrganization($userEmail, $organizationId);
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                return $this->secretaryHasAccessWorkWithEvent($userEmail, $eventId);
+            }
+        }
+        $this->response = false;
+        return $this->getResponse();
+    }
+
 
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
@@ -384,5 +444,47 @@ class AccessService
         if ($team == null){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой команды не существует'));
         }
+    }
+
+    private function localAdminHasAccessWorkWithOrganization(string $userEmail, int $organizationId)
+    {
+        $userEmail = mb_strtolower($userEmail);
+        $organizationIdOfLocalAdmin = $this->localAdminRepository->getOrganizationIdFilteredByEmail($userEmail);
+        if ($organizationId != $organizationIdOfLocalAdmin){
+            $this->response = false;
+        }
+
+        return $this->getResponse();
+    }
+
+    private function secretaryHasAccessWorkWithEvent(string $userEmail, int $eventId)
+    {
+        $userEmail = mb_strtolower($userEmail);
+        $secretaries = $this->secretaryRepository->getFilteredByEventId($eventId);
+        foreach ($secretaries as $secretary){
+            if ($secretary->getUser()->getEmail() == $userEmail){
+                return $this->getResponse();
+            }
+        }
+
+        $this->response = false;
+
+        return $this->getResponse();
+    }
+
+    private function addErrorIfUserNotExists(?User $user)
+    {
+        if ($user == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такого пользователя не существует'));
+        }
+    }
+
+    private function teamLeadHasAccessWorkWithTeam(string $userEmail, int $teamId)
+    {
+        if($this->teamLeadRepository->getByEmailAndTeamId($userEmail, $teamId) == null){
+            $this->response = false;
+        }
+
+        return $this->getResponse();
     }
 }

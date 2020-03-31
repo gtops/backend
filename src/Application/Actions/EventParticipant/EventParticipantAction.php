@@ -7,6 +7,7 @@ use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
+use App\Validators\Auth\EmailValidator;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -75,16 +76,14 @@ class EventParticipantAction extends Action
         $userRole = $request->getHeader('userRole')[0];
         $userEmail = $request->getHeader('userEmail')[0];
         $params = json_decode($request->getBody()->getContents(), true);
-        $emailOfUserToAdd = $params['email'];
 
-        if (!filter_var($emailOfUserToAdd, FILTER_VALIDATE_EMAIL)){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'Email не соответвует формату почты');
-            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
-            return $response->withStatus(400);
+        $errors = (new EmailValidator())->validate($params);
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
         }
 
         $teamId = (int)$args['teamId'];
-        $access = $this->accessService->hasAccessAddParticipantToTeam($userEmail, $userRole, $teamId, $emailOfUserToAdd);
+        $access = $this->accessService->hasAccessAddParticipantToTeam($userEmail, $userRole, $teamId, $params['email']);
 
         if ($access === false){
             return $response->withStatus(403);
@@ -92,7 +91,7 @@ class EventParticipantAction extends Action
             return $this->respond(400, ['errors' => $access], $response);
         }
 
-        $id = $this->eventParticipantService->addToTeam($emailOfUserToAdd, false, $teamId);
+        $id = $this->eventParticipantService->addToTeam($params['email'], false, $teamId);
         return $this->respond(200, ['id' => $id], $response);
     }
 

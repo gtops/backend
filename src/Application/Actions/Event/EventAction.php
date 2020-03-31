@@ -322,8 +322,15 @@ class EventAction extends Action
         $userRole = $request->getHeader('userRole')[0];
         $userEmail = $request->getHeader('userEmail')[0];
 
-        if (!in_array($userRole, [AuthorizeMiddleware::LOCAL_ADMIN])) {
+        $eventId = (int)$args['eventId'];
+        $organizationId = (int)$args['id'];
+        $access = $this->accessService->hasAccessWorkWithEvent($eventId, $organizationId, $userEmail, $userRole);
+
+        if ($access === false){
             return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
         }
 
         $rowParams = json_decode($request->getBody()->getContents(), true);

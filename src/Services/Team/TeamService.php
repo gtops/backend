@@ -72,4 +72,21 @@ class TeamService
 
         return $response;
     }
+
+    public function confirm(int $teamId)
+    {
+        $this->teamRepository->confirm($teamId);
+    }
+
+    public function get(int $teamId)
+    {
+        return $this->teamRepository->get($teamId);
+    }
+
+    public function update(string $name, int $teamId)
+    {
+        $team = $this->teamRepository->get($teamId);
+        $newTeam = new Team($team->getId(), $team->getEventId(), $name, $team->getCountOfPlayers());
+        $this->teamRepository->update($newTeam);
+    }
 }

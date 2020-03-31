@@ -7,6 +7,7 @@ use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\User\UserCreater;
 use App\Services\Secretary\SecretaryService;
 use App\Services\Token\Token;
+use App\Validators\Auth\EmailValidator;
 use App\Validators\Secretary\SecretaryValidator;
 use Illuminate\Support\Facades\Date;
 use Psr\Http\Message\RequestInterface as Request;
@@ -63,16 +64,9 @@ class SecretaryAction extends Action
 
         $rowParams = json_decode($request->getBody()->getContents(), true);
 
-        if (!isset($rowParams['email'])){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'Поле email обязательно');
-            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
-            return $response->withStatus(400);
-        }
-
-        if(!filter_var($rowParams['email'], FILTER_VALIDATE_EMAIL)){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'Email не соответвует формату почты');
-            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
-            return $response->withStatus(400);
+        $errors = (new EmailValidator())->validate($rowParams);
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
         }
 
         $secretaryId = $this->secretaryService->addFromExistingAccount($localAdminEmail, $rowParams['email'], (int)$args['id'], (int)$args['eventId'], $response);

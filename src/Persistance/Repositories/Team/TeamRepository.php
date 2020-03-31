@@ -4,6 +4,7 @@ namespace App\Persistance\Repositories\Team;
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
 use App\Domain\Models\Team\Team;
+use App\Persistance\ModelsEloquant\EventParticipant\EventParticipant;
 use App\Persistance\ModelsEloquant\Team\Team as TeamPdo;
 use App\Persistance\ModelsEloquant\TeamLead\TeamLead;
 use App\Persistance\ModelsEloquant\Secretary\Secretary as SecretaryPDO;
@@ -16,8 +17,12 @@ class TeamRepository implements IRepository
         if (count($results) == 0){
             return null;
         }
+        $teams = $this->getTeams($results);
+        if ($teams != null){
+            return $teams[0];
+        }
 
-        return new Team($results[0]['team_id'],$results[0][ 'event_id'], $results[0]['name']);
+        return null;
     }
 
     /**
@@ -90,7 +95,9 @@ class TeamRepository implements IRepository
         $teams = [];
 
         foreach ($teamsInObject as $item) {
-            $teams[] = new Team($item['team_id'], $item['event_id'], $item['name']);
+            $team = new Team($item['team_id'], $item['event_id'], $item['name']);
+            $team->setCountOfPlayers($this->getCountOfPlayers($team->getId()));
+            $teams[] = $team;
         }
 
         return $teams;
@@ -124,5 +131,21 @@ class TeamRepository implements IRepository
             ->get();
 
         return $this->getTeams($results);
+    }
+
+    public function confirm(int $teamId)
+    {
+        EventParticipant::query()
+            ->where('team_id', '=', $teamId)
+            ->update([
+                'confirmed' => true
+            ]);
+    }
+
+    private function getCountOfPlayers(int $teamId)
+    {
+        return EventParticipant::query()
+            ->where('team_id', '=', $teamId)
+            ->count();
     }
 }

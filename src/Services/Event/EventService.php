@@ -108,11 +108,6 @@ class EventService
 
     public function update(Event $event, string $userEmail, ResponseInterface $response)
     {
-        $response = $this->getInitedResponseWithStatusIfErrorOfAccess($response, $userEmail, $event->getIdOrganization(), $event->getId());
-        if ($response->getStatusCode() != 200){
-            return $response;
-        }
-
         $this->eventRepository->update($event);
 
         return $response;

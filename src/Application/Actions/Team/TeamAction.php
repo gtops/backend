@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Team;
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\AccessService\AccessService;
 use App\Services\Team\TeamService;
@@ -53,7 +54,7 @@ class TeamAction extends Action
             return $response->withStatus(403);
         }else if ($access !== true){
             /**@var $access array*/
-            return $this->respond(400, $access, $response);
+            return $this->respond(400, ['errors' => $access], $response);
         }
 
         $rowParams = json_decode($request->getBody()->getContents(), true);
@@ -79,9 +80,32 @@ class TeamAction extends Action
      * )
      *
      */
-    public function confirm()
+    public function confirm(Request $request, Response $response, $args): Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+
+        if ($userRole == AuthorizeMiddleware::TEAM_LEAD){
+            return $response->withStatus(403);
+        }
+
+        $userEmail = $request->getHeader('userEmail')[0];
+        $teamId = (int)$args['teamId'];
+
+        $access = $this->accessService->hasAccessWorkWithTeamWithId($userRole, $userEmail, $teamId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->temaService->confirm($teamId);
+        return $response;
     }
 
     /**
@@ -117,27 +141,25 @@ class TeamAction extends Action
     /**
      *
      * @SWG\Get(
-     *   path="/api/v1/organization/{id}/event/{eventId}/team/{teamId}",
+     *   path="/api/v1/team/{teamId}",
      *   summary="получает данные определенной команды, относящейся к определенному мероприятию",
      *   tags={"Team"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
-     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
      *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id мероприятия"),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(ref="#/definitions/teamResponse")),
-     *   @SWG\Response(response=404, description="Not found"),
-     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
-     *          @SWG\Property(property="errors", type="array", @SWG\Items(
-     *              @SWG\Property(property="type", type="string"),
-     *              @SWG\Property(property="description", type="string")
-     *          ))
-     *     )))
+     *   @SWG\Response(response=404, description="Not found")
      * )
      *
      */
     public function get(Request $request, Response $response, $args): Response
     {
-
+        $teamId = (int)$args['teamId'];
+        $team = $this->temaService->get($teamId);
+        if ($team == null){
+            return $response->withStatus(404);
+        }
+        return $this->respond(200, $team->toArray(), $response);
     }
 
     /**
@@ -218,6 +240,30 @@ class TeamAction extends Action
      */
     public function update(Request $request, Response $response, $args): Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+        $teamId = (int)$args['teamId'];
+
+        $access = $this->accessService->hasAccessWorkWithTeamWithId($userRole, $userEmail, $teamId);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $name = $rowParams['name'] ?? '';
+        if ($name == ''){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Название не может быть пустым');
+            return $this->respond(400, ['errors' => array($error->jsonSerialize())], $response);
+        }
+
+        $this->temaService->update($name, $teamId);
+        return $response;
     }
 }

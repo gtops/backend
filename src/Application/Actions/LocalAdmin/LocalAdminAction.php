@@ -5,6 +5,7 @@ use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\LocalAdmin\LocalAdminService;
+use App\Validators\Auth\EmailValidator;
 use App\Validators\LocalAdmin\LocalAdminValidator;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface;
@@ -53,16 +54,9 @@ class LocalAdminAction extends Action
 
         $rowParams = json_decode($request->getBody()->getContents(), true);
 
-        if (!isset($rowParams['email'])){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'Поле email обязательно');
-            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
-            return $response->withStatus(400);
-        }
-
-        if(!filter_var($rowParams['email'], FILTER_VALIDATE_EMAIL)){
-            $error = new ActionError(ActionError::BAD_REQUEST, 'Email не соответствует формату почты');
-            $response->getBody()->write(json_encode(['errors' => array($error->jsonSerialize())]));
-            return $response->withStatus(400);
+        $errors = (new EmailValidator())->validate($rowParams);
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
         }
 
         $localAdminId = $this->localAdminService->addFromExistingAccount($rowParams['email'], (int)$args['id'], $response);

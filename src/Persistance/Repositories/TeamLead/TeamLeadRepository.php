@@ -47,9 +47,16 @@ class TeamLeadRepository implements IRepository
         // TODO: Implement getAll() method.
     }
 
+    /**@var $model TeamLead*/
     public function add(IModel $model): int
     {
-        // TODO: Implement add() method.
+        $result = TeamLeadPDO::query()
+            ->create([
+                'team_id' => $model->getTeamId(),
+                'user_id' => $model->getUserId()
+            ]);
+
+        return $result->getAttribute('team_lead_id');
     }
 
     public function delete(int $id)

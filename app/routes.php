@@ -63,10 +63,11 @@ return function (App $app) {
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':getAll');
-    $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':get');
+    $app->get('/api/v1/team/{teamId:[0-9]+}', TeamAction::class.':get');
     $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':delete');
-    $app->put('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':update');
+    $app->put('/api/v1/team/{teamId:[0-9]+}', TeamAction::class.':update');
     $app->get('/api/v1/team', TeamAction::class.':getListForUser');
+    $app->post('/api/v1/team/{teamId:[0-9]+}/confirm', TeamAction::class.':confirm');
 
     //Secretary
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':add');
@@ -77,6 +78,7 @@ return function (App $app) {
     //eventParticipant
     $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');
     $app->post('/api/v1/team/{teamId:[0-9]+}/participant', EventParticipantAction::class.':add');
+    $app->post('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':addParticipantWithoutTeam');
     $app->get('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':getAllForEvent');
     $app->post('/api/v1/participant/{participantId:[0-9]+}', EventParticipantAction::class.':confirmApply');
     $app->delete('/api/v1/participant/{participantId:[0-9]+}', EventParticipantAction::class.':deleteParticipant');

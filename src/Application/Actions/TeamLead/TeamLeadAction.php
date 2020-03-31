@@ -3,13 +3,27 @@
 namespace App\Application\Actions\TeamLead;
 
 use App\Application\Actions\Action;
+use App\Application\Actions\ActionError;
+use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\TeamLead\TeamLead;
+use App\Services\AccessService\AccessService;
 use App\Services\TeamLead\TeamLeadService;
+use App\Validators\Auth\EmailValidator;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class TeamLeadAction extends Action
 {
+    private $teamLeadService;
+    private $accessService;
+
+    public function __construct(TeamLeadService $teamLeadService, AccessService $accessService)
+    {
+        $this->teamLeadService = $teamLeadService;
+        $this->accessService = $accessService;
+    }
+
+
     /**
      *
      * @SWG\Post(
@@ -29,17 +43,43 @@ class TeamLeadAction extends Action
      * )
      *
      */
-
-    private $teamLeadService;
-
-    public function __construct(TeamLeadService $teamLeadService)
+    public function add(Request $request, Response $response, $args):Response
     {
-        $this->teamLeadService = $teamLeadService;
-    }
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
-    public function add()
-    {
+        $userRole = $request->getHeader('userRole')[0];
 
+        if ($userRole == AuthorizeMiddleware::TEAM_LEAD){
+            return $response->withStatus(403);
+        }
+
+        $userEmail = $request->getHeader('userEmail')[0];
+        $teamId = (int)$args['teamId'];
+        $access = $this->accessService->hasAccessWorkWithTeamWithId($userRole, $userEmail, $teamId);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+
+        $errors = (new EmailValidator())->validate($rowParams);
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $id = $this->teamLeadService->add($rowParams['email'], $teamId);
+
+        if ($id == 1){
+            $error = new ActionError(ActionError::BAD_REQUEST, 'Данный пользователь уже имеет другую роль');
+            $this->respond(200, ['errors' => array($error->jsonSerialize())], $response);
+        }
+
+        return $this->respond(200, ['id' => $id], $response);
     }
 
     /**
