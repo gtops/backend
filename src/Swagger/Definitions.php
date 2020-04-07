@@ -164,3 +164,16 @@
  *    @SWG\Property(property="secretaryId", type="integer")
  * )
  */
+
+/**
+ * @SWG\Definition(
+ *    definition="secretaryOnOrganizationResponse",
+ *    type="object",
+ *    @SWG\Property(property="secretaryOnOrganizationId", type="integer"),
+ *    @SWG\Property(property="organizationId", type="integer"),
+ *    @SWG\Property(property="userId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="gender", type="integer"),
+ *    @SWG\Property(property="dateOfBirth", type="string")
+ * )
+ */

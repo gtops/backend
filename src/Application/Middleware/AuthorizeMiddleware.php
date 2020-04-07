@@ -41,7 +41,7 @@ class AuthorizeMiddleware implements Middleware
             $request = $request->withHeader('userRole', $tokenInArray['role']  ?? '');
 
         }catch (Exception $err){
-            $request = $request->withHeader('error', 'невалидный токен');
+            $request = $request->withHeader('error', 'не валидный токен');
             $request = $request->withHeader('userRole', self::UNAUTHORIZED_USER);
         }
 

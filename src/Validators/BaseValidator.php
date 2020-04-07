@@ -93,7 +93,7 @@ abstract class BaseValidator implements ValidateStrategy
     {
         foreach ($paramNames as $paramName) {
             $this->addRuleToParam($paramName, new Assert\Email([
-                'message' => '{{' . $paramName . '}} невалидный email :' . BaseValidator::IVALID_EMAIL
+                'message' => '{{' . $paramName . '}} не валидный email :' . BaseValidator::IVALID_EMAIL
             ]));
         }
     }

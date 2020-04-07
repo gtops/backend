@@ -9,12 +9,14 @@ use App\Domain\Models\IModel;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\Organization;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\Secretary\SecretaryOnOrganization;
 use App\Domain\Models\User\User;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
+use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
@@ -34,6 +36,8 @@ class AccessService
     private $eventParticipantRepository;
     private $teamRepository;
     private $teamLeadRepository;
+    private $secretaryOnOrganizationRepository;
+
     public function __construct
     (
         UserRepository $userRepository,
@@ -44,7 +48,8 @@ class AccessService
         EventRepository $eventRepository,
         EventParticipantRepository $eventParticipantRepository,
         TeamRepository $teamRepository,
-        TeamLeadRepository $teamLeadRepository
+        TeamLeadRepository $teamLeadRepository,
+        SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -56,6 +61,7 @@ class AccessService
         $this->eventParticipantRepository = $eventParticipantRepository;
         $this->teamRepository = $teamRepository;
         $this->teamLeadRepository = $teamLeadRepository;
+        $this->secretaryOnOrganizationRepository = $secretaryOnOrganizationRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -96,12 +102,13 @@ class AccessService
 
     public function hasAccessAddParticipantToTeam(string $userEmail, string $userRole, int $teamId, string $emailParticipant)
     {
+        $user = $this->userRepository->getByEmail($emailParticipant);
         $userEmail = mb_strtolower($userEmail);
         $team = $this->teamRepository->get($teamId);
         $event = $this->eventRepository->get($team->getEventId());
         $this->addErrorIfTeamNotExists($team);
         $this->addErrorIfParticipantExistOnThisEvent($emailParticipant, $event);
-
+        $this->addErrorIfParticipantNotExists($user);
         switch ($userRole){
             case AuthorizeMiddleware::LOCAL_ADMIN:{
                 return $this->localAdminHasAccessWorkWithParticipant($userEmail, $event);
@@ -375,6 +382,45 @@ class AccessService
         return $this->getResponse();
     }
 
+    public function hasAccessAddSecretaryToOrganization(string $userRole, string $localAdminEmail, int $organizationId, $secretaryEmail)
+    {
+        $organization = $this->organizationRepository->get($organizationId);
+        $this->addErrorIfOrganizationNotExist($organization);
+        $secretaryOnOrganization = $this->secretaryOnOrganizationRepository->getByEmailAndOrgId($secretaryEmail, $organizationId);
+        $this->addErrorIfSecretaryFoundOnOrganization($secretaryOnOrganization);
+        $user = $this->userRepository->getByEmail($secretaryEmail);
+        $this->addErrorIfUserNotExists($user);
+        $this->addErrorIfRoleOfUserNotEqual($user, [AuthorizeMiddleware::SIMPLE_USER, AuthorizeMiddleware::SECRETARY]);
+        if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
+            return $this->localAdminHasAccessWorkWithOrganization($localAdminEmail, $organizationId);
+        }
+
+        return false;
+    }
+
+    public function hasAccessDeleteSecretaryFromOrganization(string $userRole, string $localAdminEmail, int $organizationId, int $secretaryId)
+    {
+        $organization = $this->organizationRepository->get($organizationId);
+        $this->addErrorIfOrganizationNotExist($organization);
+        $secretary = $this->secretaryOnOrganizationRepository->get($secretaryId);
+        $this->addErrorIfSecretaryNotFoundOnOrganization($secretary, $organizationId);
+        if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
+            return $this->localAdminHasAccessWorkWithOrganization($localAdminEmail, $organizationId);
+        }
+
+        return false;
+    }
+
+    private function addErrorIfRoleOfUserNotEqual(?User $user, array $roles){
+        if ($user == null){
+            return;
+        }
+
+        $nameOfRole = $this->rolRepository->get($user->getRoleId())->getName();
+        if (!(in_array($nameOfRole, $roles))){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Этот пользователь уже имеет другую роль'));
+        }
+    }
 
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
@@ -486,5 +532,25 @@ class AccessService
         }
 
         return $this->getResponse();
+    }
+
+    private function addErrorIfSecretaryFoundOnOrganization(?SecretaryOnOrganization $secretaryOnOrganization)
+    {
+        if ($secretaryOnOrganization !== null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой секретарь уже есть в справочнике этой организации'));
+        }
+    }
+
+
+    /**@var $secretary SecretaryOnOrganization*/
+    private function addErrorIfSecretaryNotFoundOnOrganization(?IModel $secretary, int $organizationId)
+    {
+        if ($secretary == null){
+            return;
+        }
+
+        if ($secretary->getOrganizationId() !== $organizationId){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данный секретарь не относится к этой организации'));
+        }
     }
 }

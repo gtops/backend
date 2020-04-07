@@ -4,6 +4,7 @@ declare(strict_types=1);
 use App\Application\Actions\EventParticipant\EventParticipantAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
+use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
@@ -56,7 +57,7 @@ use App\Application\Actions\Secretary\SecretaryAction;
 return function (ContainerBuilder $containerBuilder) {
     $containerBuilder->addDefinitions([
         SecretaryAction::class => function(ContainerInterface $c){
-            return new SecretaryAction($c->get(SecretaryService::class));
+            return new SecretaryAction($c->get(SecretaryService::class), $c->get(AccessService::class));
         },
         EventParticipantAction::class => function(ContainerInterface $c){
             return new EventParticipantAction($c->get(AccessService::class), $c->get(EventParticipantService::class));
@@ -71,8 +72,13 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(OrganizationRepository::class),
                 $c->get(LocalAdminRepository::class),
                 $c->get(EventRepository::class),
-                $c->get(RoleRepository::class)
+                $c->get(RoleRepository::class),
+                $c->get(SecretaryOnOrganizationRepository::class)
             );
+        },
+        SecretaryOnOrganizationRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new SecretaryOnOrganizationRepository();
         },
         SecretaryRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
@@ -123,7 +129,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(EventRepository::class),
                 $c->get(EventParticipantRepository::class),
                 $c->get(TeamRepository::class),
-                $c->get(TeamLeadRepository::class)
+                $c->get(TeamLeadRepository::class),
+                $c->get(SecretaryOnOrganizationRepository::class)
             );
         },
         TeamService::class => function(ContainerInterface $c){

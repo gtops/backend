@@ -70,7 +70,10 @@ return function (App $app) {
     $app->post('/api/v1/team/{teamId:[0-9]+}/confirm', TeamAction::class.':confirm');
 
     //Secretary
-    $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':add');
+    $app->post('/api/v1/organization/{id:[0-9]+}/secretary', SecretaryAction::class.':addToOrganization');
+    $app->get('/api/v1/organization/{id:[0-9]+}/secretary/{secretaryId:[0-9]+}', SecretaryAction::class.':getSecretaryOnOrganization');
+    $app->get('/api/v1/organization/{id:[0-9]+}/secretary', SecretaryAction::class.':getSecretariesOnOrganization');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/secretary/{secretaryId:[0-9]+}', SecretaryAction::class.':deleteFromOrganization');
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/existingAccount', SecretaryAction::class.':addExistingAccount');
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':get');
     $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/{secretaryId:[0-9]+}', SecretaryAction::class.':delete');

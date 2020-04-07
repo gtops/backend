@@ -42,6 +42,10 @@ class EventParticipantService
     {
         $team = $this->teamRepository->get($teamId);
         $user = $this->userRepository->getByEmail($userEmail);
+        if ($user == null){
+            return -1;
+        }
+
         $eventParticipant = new EventParticipant(-1, $team->getEventId(), $user->getId(), $confirmed, $user, $teamId);
         return $this->eventParticipantRepository->add($eventParticipant);
     }
@@ -54,6 +58,10 @@ class EventParticipantService
     public function addToEvent($emailOfUserToAdd, bool $false, int $eventId)
     {
         $user = $this->userRepository->getByEmail($emailOfUserToAdd);
+        if ($user == null){
+            return -1;
+        }
+
         $eventParticipant = new EventParticipant(-1, $eventId, $user->getId(), false, $user, null);
         return $this->eventParticipantRepository->add($eventParticipant);
     }

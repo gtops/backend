@@ -112,7 +112,9 @@ class TeamRepository implements IRepository
             ->join('event', 'event.event_id', '=', 'team.event_id')
             ->where('team_lead.user_id', '=', $userId)
             ->where('event.status', '!=', EventModel::COMPLETED)
-            ->get();
+            ->get([
+                'team.team_id', 'team.event_id', 'team.name'
+            ]);
 
         return $this->getTeams($results);
     }

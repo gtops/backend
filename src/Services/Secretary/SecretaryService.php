@@ -6,12 +6,14 @@ use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\Event\Event;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\Secretary\SecretaryOnOrganization;
 use App\Domain\Models\User\User;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
+use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\Token\Token;
@@ -26,7 +28,7 @@ class SecretaryService
     private $localAdminRepository;
     private $eventRepository;
     private $roleRepository;
-
+    private $secretaryOnOrganizationRepository;
 
     public function __construct(
         SecretaryRepository $secretaryRepository,
@@ -34,7 +36,8 @@ class SecretaryService
         OrganizationRepository $organizationRepository,
         LocalAdminRepository $localAdminRepository,
         EventRepository $eventRepository,
-        RoleRepository $roleRepository
+        RoleRepository $roleRepository,
+        SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository
     )
     {
         $this->secretaryRepository = $secretaryRepository;
@@ -43,6 +46,7 @@ class SecretaryService
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
         $this->roleRepository = $roleRepository;
+        $this->secretaryOnOrganizationRepository = $secretaryOnOrganizationRepository;
     }
 
     public function addFromExistingAccount($localAdminEmail,  $secretaryEmail, int $organizationId, int $eventId, ResponseInterface $response)
@@ -239,5 +243,40 @@ class SecretaryService
         }
 
         return $response;
+    }
+
+    public function addToOrganization(int $organizationId, $secretaryEmail)
+    {
+        $user = $this->userRepository->getByEmail($secretaryEmail);
+        $secretaryOnOrganization = new SecretaryOnOrganization(-1, $user->getId(), $organizationId, $user);
+        $user = $this->userRepository->getByEmail($secretaryEmail);
+        $roles = $this->roleRepository->getAll();
+        $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SECRETARY, $roles);
+        $user->setRoleId($roleId);
+        $this->userRepository->update($user);
+        return $this->secretaryOnOrganizationRepository->add($secretaryOnOrganization);
+    }
+
+    public function deleteFromOrganization(int $secretaryId)
+    {
+        $secretary = $this->secretaryOnOrganizationRepository->get($secretaryId);
+        if ($secretary == null){
+            return;
+        }
+
+        $secretaries = $this->secretaryOnOrganizationRepository->getByUserId($secretary->getUserId());
+
+        if (count($secretaries) == 1){
+            $user = $secretary->getUser();
+            $user->setRoleId($this->roleRepository->getByName(AuthorizeMiddleware::SIMPLE_USER)->getId());
+            $this->userRepository->update($user);
+        }
+
+        $this->secretaryOnOrganizationRepository->delete($secretaryId);
+    }
+
+    public function getSecretariesOnOrganization(int $organizationId)
+    {
+        return $this->secretaryOnOrganizationRepository->getByOrgId($organizationId);
     }
 }

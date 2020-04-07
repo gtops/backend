@@ -4,7 +4,9 @@ namespace App\Application\Actions\Secretary;
 use App\Application\Actions\Action;
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
+use App\Domain\Models\Secretary\SecretaryOnOrganization;
 use App\Domain\Models\User\UserCreater;
+use App\Services\AccessService\AccessService;
 use App\Services\Secretary\SecretaryService;
 use App\Services\Token\Token;
 use App\Validators\Auth\EmailValidator;
@@ -17,10 +19,141 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class SecretaryAction extends Action
 {
     private $secretaryService;
+    private $accessService;
 
-    public function __construct(SecretaryService $secretaryService)
+    public function __construct(SecretaryService $secretaryService, AccessService $accessService)
     {
         $this->secretaryService = $secretaryService;
+        $this->accessService = $accessService;
+    }
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/organization/{id}/secretary",
+     *   summary="добавляет секретаря, из ранее существующих аккаунтов в справочник организации(локальный админ)",
+     *   tags={"Secretary"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="email", type="string"))),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *   @SWG\Response(response=403, description=""),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+
+
+    public function addToOrganization(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
+        $organizationId = (int)$args['id'];
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $errors = (new EmailValidator())->validate($rowParams);
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $secretaryEmail = $rowParams['email'];
+
+        $access = $this->accessService->hasAccessAddSecretaryToOrganization($userRole, $localAdminEmail, $organizationId, $secretaryEmail);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $id = $this->secretaryService->addToOrganization($organizationId, $secretaryEmail);
+        return $this->respond(200, ['id' => $id], $response);
+    }
+
+    /**
+     *
+     * @SWG\Delete(
+     *   path="/api/v1/organization/{id}/secretary/{secretaryId}",
+     *   summary="удаляет секретаря из справочника своей организации(локальный админ)",
+     *   tags={"Secretary"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Parameter(in="query", name="secretaryId", type="integer", description="id секретаря"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="email", type="string"))),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *   @SWG\Response(response=403, description=""),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function deleteFromOrganization(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
+        $organizationId = (int)$args['id'];
+        $secretaryId = (int)$args['secretaryId'];
+        $access = $this->accessService->hasAccessDeleteSecretaryFromOrganization($userRole, $localAdminEmail, $organizationId, $secretaryId);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->secretaryService->deleteFromOrganization($secretaryId);
+        return  $response->withStatus(200);
+    }
+
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/api/v1/organization/{id}/secretary",
+     *   summary="получение секретайрей, относящихся к определенной организации",
+     *   tags={"Secretary"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Schema(ref="#/definitions/secretaryOnOrganizationResponse")
+     *   ),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     */
+    public function getSecretariesOnOrganization(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
+        $organizationId = (int)$args['id'];
+        /**@var $secretaries SecretaryOnOrganization[]*/
+        $secretaries = $this->secretaryService->getSecretariesOnOrganization($organizationId);
+        $secretariesOnArray = [];
+        foreach ($secretaries as $secretary) {
+            $secretariesOnArray = $secretary->toArray();
+        }
+
+        return $this->respond(200, $secretariesOnArray, $response);
     }
 
     /**
