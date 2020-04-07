@@ -10,6 +10,7 @@ use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Domain\Models\Event\Event;
 use App\Persistance\Repositories\Role\RoleRepository;
+use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use Psr\Http\Message\ResponseInterface;
@@ -22,8 +23,9 @@ class EventService
     private $secretaryRepository;
     private $userRepository;
     private $eventParticipantRepository;
+    private $secretaryOnOrgRepository;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository)
+    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository, SecretaryOnOrganizationRepository $secretaryOnOrgRepository)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
@@ -31,6 +33,7 @@ class EventService
         $this->secretaryRepository = $secretaryRepository;
         $this->userRepository = $userRepository;
         $this->eventParticipantRepository = $eventParticipantRepository;
+        $this->secretaryOnOrgRepository = $secretaryOnOrgRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -126,7 +129,10 @@ class EventService
         $events = [];
 
         foreach ($secretaries as $secretary){
-            $events[] = $this->eventRepository->get($secretary->getEventId());
+            $secretaryInOrg = $this->secretaryOnOrgRepository->getByEmailAndOrgId($secretary->getUser()->getEmail(), $secretary->getOrganizationId());
+            if ($secretaryInOrg != null) {
+                $events[] = $this->eventRepository->get($secretary->getEventId());
+            }
         }
 
         return $events;

@@ -144,7 +144,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(SecretaryRepository::class),
                 $c->get(RoleRepository::class),
                 $c->get(UserRepository::class),
-                $c->get(EventParticipantRepository::class)
+                $c->get(EventParticipantRepository::class),
+                $c->get(SecretaryOnOrganizationRepository::class)
             );
         },
         EventAction::class => function(ContainerInterface $c)

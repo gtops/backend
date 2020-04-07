@@ -62,7 +62,8 @@ class SecretaryOnOrganization implements IModel
             'userId' => $this->getUserId(),
             'name' => $this->getUser()->getName(),
             'gender' => $this->getUser()->getGender(),
-            'dateOfBirth' => $this->getUser()->getDateOfBirth()
+            'dateOfBirth' => $this->getUser()->getDateOfBirth(),
+            'email' => $this->getUser()->getEmail()
         ];
     }
 }

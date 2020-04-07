@@ -174,6 +174,7 @@
  *    @SWG\Property(property="userId", type="integer"),
  *    @SWG\Property(property="name", type="string"),
  *    @SWG\Property(property="gender", type="integer"),
- *    @SWG\Property(property="dateOfBirth", type="string")
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="email", type="string")
  * )
  */

@@ -9,8 +9,9 @@ use App\Persistance\ModelsEloquant\Event\Event;
 use App\Persistance\ModelsEloquant\EventParticipant\EventParticipant;
 use App\Persistance\ModelsEloquant\Team\Team as TeamPdo;
 use App\Persistance\ModelsEloquant\TeamLead\TeamLead;
-use App\Persistance\ModelsEloquant\Secretary\Secretary as SecretaryPDO;
+use App\Persistance\ModelsEloquant\Secretary\SecretaryOnOrganization as SecretaryOnOrgPDO;
 use App\Persistance\ModelsEloquant\Event\Event as EventPDO;
+
 class TeamRepository implements IRepository
 {
     public function get(int $id): ?IModel
@@ -121,7 +122,8 @@ class TeamRepository implements IRepository
 
     public function getAllForSecretaryWithUserId(int $userId)
     {
-        $results = SecretaryPDO::query()
+        $results = SecretaryOnOrgPDO::query()
+            ->join('secretary', 'secretary.user_id', '=', 'secretary_on_organization.user_id')
             ->join('team', 'team.event_id', '=', 'secretary.event_id')
             ->where('secretary.user_id', '=', $userId)
             ->get();

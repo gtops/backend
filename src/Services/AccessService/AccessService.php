@@ -233,6 +233,11 @@ class AccessService
 
     private function secretaryHasAccessWorkWithTeam(?IModel $event, string $email)
     {
+        $secretary = $this->secretaryOnOrganizationRepository->getByEmailAndOrgId($email, $event->getIdOrganization());
+        if ($secretary == null){
+            $this->response = false;
+        }
+
         $email = mb_strtolower($email);
         if ($event == null){
             return $this->getResponse();
@@ -326,6 +331,10 @@ class AccessService
         }
 
         $secretaries = $this->secretaryRepository->getFilteredByEventId($event->getId());
+        $secretary = $this->secretaryOnOrganizationRepository->getByEmailAndOrgId($userEmail, $event->getIdOrganization());
+        if ($secretary == null){
+            $this->response = false;
+        }
 
         foreach ($secretaries as $secretary){
             if ($secretary->getUser()->getEmail() == $userEmail){
@@ -507,6 +516,12 @@ class AccessService
     {
         $userEmail = mb_strtolower($userEmail);
         $secretaries = $this->secretaryRepository->getFilteredByEventId($eventId);
+        $event = $this->eventRepository->get($eventId);
+        $secretary = $this->secretaryOnOrganizationRepository->getByEmailAndOrgId($userEmail, $event->getIdOrganization());
+        if ($secretary == null){
+            $this->response = false;
+        }
+
         foreach ($secretaries as $secretary){
             if ($secretary->getUser()->getEmail() == $userEmail){
                 return $this->getResponse();

@@ -150,7 +150,7 @@ class SecretaryAction extends Action
         $secretaries = $this->secretaryService->getSecretariesOnOrganization($organizationId);
         $secretariesOnArray = [];
         foreach ($secretaries as $secretary) {
-            $secretariesOnArray = $secretary->toArray();
+            $secretariesOnArray[] = $secretary->toArray();
         }
 
         return $this->respond(200, $secretariesOnArray, $response);
@@ -159,13 +159,12 @@ class SecretaryAction extends Action
     /**
      *
      * @SWG\Post(
-     *   path="/api/v1/organization/{id}/event/{eventId}/secretary/existingAccount",
-     *   summary="добавляет секретаря, из ранее существующих аккаунтов(локальный админ)",
+     *   path="/api/v1/organization/{id}/event/{eventId}/secretary/{secretaryOnOrganizationId}",
+     *   summary="добавляет секретаря в мероприятие по его id из справочника(локальный админ)",
      *   tags={"Secretary"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия, право не редактирование которого добавляем"),
-     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="email", type="string"))),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
@@ -183,7 +182,7 @@ class SecretaryAction extends Action
      * @param $args
      * @return Response
      */
-    public function addExistingAccount(Request $request, Response $response, $args):Response
+    public function addToEvent(Request $request, Response $response, $args):Response
     {
         if ($this->tokenWithError($response, $request)){
             return $response->withStatus(401);
@@ -194,15 +193,8 @@ class SecretaryAction extends Action
         if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
             return $response->withStatus(403);
         }
-
-        $rowParams = json_decode($request->getBody()->getContents(), true);
-
-        $errors = (new EmailValidator())->validate($rowParams);
-        if (count($errors) > 0) {
-            return $this->respond(400, ['errors' => $errors], $response);
-        }
-
-        $secretaryId = $this->secretaryService->addFromExistingAccount($localAdminEmail, $rowParams['email'], (int)$args['id'], (int)$args['eventId'], $response);
+        $secretaryInOrgId = (int)$args['secretaryOnOrganizationId'];
+        $secretaryId = $this->secretaryService->addToEvent($localAdminEmail, $secretaryInOrgId, (int)$args['id'], (int)$args['eventId'], $response);
 
         if ($secretaryId instanceof  Response){
             return $secretaryId;
