@@ -2,14 +2,17 @@
 declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Application\Actions\Referee\RefereeAction;
 use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
+use App\Persistance\Repositories\Referee\RefereeRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
+use App\Services\Referee\RefereeService;
 use App\Services\SportObject\SportObjectService;
 use App\Services\TeamLead\TeamLeadService;
 use DI\ContainerBuilder;
@@ -130,11 +133,22 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TeamRepository::class),
                 $c->get(TeamLeadRepository::class),
                 $c->get(SecretaryOnOrganizationRepository::class),
-                $c->get(SportObjectRepository::class)
+                $c->get(SportObjectRepository::class),
+                $c->get(RefereeRepository::class)
             );
         },
         TeamService::class => function(ContainerInterface $c){
             return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class), $c->get(EventRepository::class), $c->get(LocalAdminRepository::class));
+        },
+        RefereeAction::class => function (ContainerInterface $c){
+            return new RefereeAction($c->get(AccessService::class), $c->get(RefereeService::class));
+        },
+        RefereeService::class => function(ContainerInterface $c){
+            return new RefereeService($c->get(RefereeRepository::class), $c->get(UserRepository::class));
+        },
+        RefereeRepository::class =>function(ContainerInterface$c){
+            $c->get(DataBase::class);
+            return new RefereeRepository();
         },
         EventService::class => function(ContainerInterface $c)
         {

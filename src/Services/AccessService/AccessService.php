@@ -8,6 +8,7 @@ use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\IModel;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\Organization;
+use App\Domain\Models\Referee\RefereeOnOrganization;
 use App\Domain\Models\Secretary\Secretary;
 use App\Domain\Models\Secretary\SecretaryOnOrganization;
 use App\Domain\Models\User\User;
@@ -15,6 +16,7 @@ use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
+use App\Persistance\Repositories\Referee\RefereeRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
@@ -22,7 +24,6 @@ use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\User\UserRepository;
-use Illuminate\Database\Eloquent\Model;
 
 class AccessService
 {
@@ -39,6 +40,7 @@ class AccessService
     private $teamLeadRepository;
     private $secretaryOnOrganizationRepository;
     private $sportObjectRepository;
+    private $refereeOnOrganizationRepository;
 
     public function __construct
     (
@@ -52,7 +54,8 @@ class AccessService
         TeamRepository $teamRepository,
         TeamLeadRepository $teamLeadRepository,
         SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository,
-        SportObjectRepository $sportObjectRepository
+        SportObjectRepository $sportObjectRepository,
+        RefereeRepository $refereeRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -66,6 +69,7 @@ class AccessService
         $this->teamLeadRepository = $teamLeadRepository;
         $this->secretaryOnOrganizationRepository = $secretaryOnOrganizationRepository;
         $this->sportObjectRepository = $sportObjectRepository;
+        $this->refereeOnOrganizationRepository = $refereeRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -411,6 +415,21 @@ class AccessService
         return false;
     }
 
+    public function hasAccessAddRefereeToOrganization(string $userRole, string $localAdminEmail, int $organizationId, $refereeEmail)
+    {
+        $organization = $this->organizationRepository->get($organizationId);
+        $this->addErrorIfOrganizationNotExist($organization);
+        $refereeOnOrganization = $this->refereeOnOrganizationRepository->getByEmailAndOrgId($refereeEmail, $organizationId);
+        $this->addErrorIfRefereeExistsOnOrganization($refereeOnOrganization);
+        $user = $this->userRepository->getByEmail($refereeEmail);
+        $this->addErrorIfUserNotExists($user);
+        if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
+            return $this->localAdminHasAccessWorkWithOrganization($localAdminEmail, $organizationId);
+        }
+
+        return false;
+    }
+
     public function hasAccessAddSportObjectToOrganization(string $userRole, string $localAdminEmail, int $organizationId)
     {
         if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
@@ -609,6 +628,13 @@ class AccessService
 
         if ($sportObject->getOrganizationId() !== $organizationId){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данный спортивный объект не относится к этой организации'));
+        }
+    }
+
+    private function addErrorIfRefereeExistsOnOrganization(?RefereeOnOrganization $refereeOnOrganization)
+    {
+        if ($refereeOnOrganization != null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Судья с такой почтой уже существует в справочнике организации'));
         }
     }
 }

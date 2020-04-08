@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Application\Actions\Referee\RefereeAction;
 use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use Slim\App;
@@ -88,7 +89,7 @@ return function (App $app) {
     //referee
     $app->post('/api/v1/organization/{id:[0-9]+}/referee', RefereeAction::class.':create');
     $app->get('/api/v1/organization/{id:[0-9]+}/referee', RefereeAction::class.':get');
-    $app->delete('/api/v1/organization/{id:[0-9]+}/referee', RefereeAction::class.':delete');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/referee/{refereeId:[0-9]+}', RefereeAction::class.':delete');
 
     //eventParticipant
     $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');
