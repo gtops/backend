@@ -2,12 +2,15 @@
 declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
+use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
+use App\Services\SportObject\SportObjectService;
 use App\Services\TeamLead\TeamLeadService;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
@@ -34,9 +37,6 @@ use App\Application\Actions\Invite\InviteAction;
 use App\Services\Invite\Invite;
 use App\Services\Role\Role;
 use App\Services\Auth\Auth;
-use App\Validators;
-use App\Validators\Invite\InviteValidator;
-use App\Validators\Auth\RegistrationValidator;
 use App\Services\Organization\OrganizationService;
 use App\Application\Actions\Organization\OrganizationAction;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
@@ -44,7 +44,6 @@ use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Services\LocalAdmin\LocalAdminService;
 use App\Application\Actions\LocalAdmin\LocalAdminAction;
 use App\Application\Actions\Event\EventAction;
-use App\Services\Event;
 use App\Services\Event\EventService;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
@@ -130,7 +129,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(EventParticipantRepository::class),
                 $c->get(TeamRepository::class),
                 $c->get(TeamLeadRepository::class),
-                $c->get(SecretaryOnOrganizationRepository::class)
+                $c->get(SecretaryOnOrganizationRepository::class),
+                $c->get(SportObjectRepository::class)
             );
         },
         TeamService::class => function(ContainerInterface $c){
@@ -147,6 +147,18 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(EventParticipantRepository::class),
                 $c->get(SecretaryOnOrganizationRepository::class)
             );
+        },
+        SportObjectAction::class => function(ContainerInterface $c)
+        {
+            return new SportObjectAction($c->get(SportObjectService::class), $c->get(AccessService::class));
+        },
+        SportObjectService::class => function(ContainerInterface $c)
+        {
+            return new SportObjectService($c->get(SportObjectRepository::class));
+        },
+        SportObjectRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new SportObjectRepository();
         },
         EventAction::class => function(ContainerInterface $c)
         {

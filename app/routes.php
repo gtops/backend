@@ -2,6 +2,7 @@
 declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
+use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use Slim\App;
 use App\Swagger\SwaggerWatcher;
@@ -77,6 +78,17 @@ return function (App $app) {
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/{secretaryOnOrganizationId:[0-9]+}', SecretaryAction::class.':addToEvent');
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary', SecretaryAction::class.':get');
     $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/secretary/{secretaryId:[0-9]+}', SecretaryAction::class.':delete');
+
+    //SportObjects
+    $app->post('/api/v1/organization/{id:[0-9]+}/sportObject', SportObjectAction::class.':create');
+    $app->get('/api/v1/organization/{id:[0-9]+}/sportObject', SportObjectAction::class.':get');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/sportObject/{sportObjectId:[0-9]+}', SportObjectAction::class.':delete');
+    $app->put('/api/v1/organization/{id:[0-9]+}/sportObject/{sportObjectId:[0-9]+}', SportObjectAction::class.':update');
+
+    //referee
+    $app->post('/api/v1/organization/{id:[0-9]+}/referee', RefereeAction::class.':create');
+    $app->get('/api/v1/organization/{id:[0-9]+}/referee', RefereeAction::class.':get');
+    $app->delete('/api/v1/organization/{id:[0-9]+}/referee', RefereeAction::class.':delete');
 
     //eventParticipant
     $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');

@@ -178,3 +178,25 @@
  *    @SWG\Property(property="email", type="string")
  * )
  */
+
+/**
+ * @SWG\Definition(
+ *    definition="sportObjectRequest",
+ *    type="object",
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="address", type="string"),
+ *    @SWG\Property(property="description", type="string")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="sportObjectResponse",
+ *    type="object",
+ *    @SWG\Property(property="sportObjectId", type="integer"),
+ *    @SWG\Property(property="organizationId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="address", type="string"),
+ *    @SWG\Property(property="description", type="string"),
+ * )
+ */

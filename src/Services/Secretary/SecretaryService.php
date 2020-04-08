@@ -162,16 +162,6 @@ class SecretaryService
             return $response->withStatus(400);
         }
 
-        $roles = $this->roleRepository->getAll();
-        $secretariesInEvent = $this->secretaryRepository->getFilteredByUserEmail($secretary->getUser()->getEmail());
-
-        if (count($secretariesInEvent) == 1){
-            $user = $this->userRepository->getByEmail($secretary->getUser()->getEmail());
-            $roleId = $this->getRoleIdWithName(AuthorizeMiddleware::SIMPLE_USER, $roles);
-            $user->setRoleId($roleId);
-            $this->userRepository->update($user);
-        }
-
         $this->secretaryRepository->delete($secretaryId);
     }
 

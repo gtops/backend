@@ -18,6 +18,7 @@ use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
+use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\User\UserRepository;
@@ -37,6 +38,7 @@ class AccessService
     private $teamRepository;
     private $teamLeadRepository;
     private $secretaryOnOrganizationRepository;
+    private $sportObjectRepository;
 
     public function __construct
     (
@@ -49,7 +51,8 @@ class AccessService
         EventParticipantRepository $eventParticipantRepository,
         TeamRepository $teamRepository,
         TeamLeadRepository $teamLeadRepository,
-        SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository
+        SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository,
+        SportObjectRepository $sportObjectRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -62,6 +65,7 @@ class AccessService
         $this->teamRepository = $teamRepository;
         $this->teamLeadRepository = $teamLeadRepository;
         $this->secretaryOnOrganizationRepository = $secretaryOnOrganizationRepository;
+        $this->sportObjectRepository = $sportObjectRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -407,6 +411,27 @@ class AccessService
         return false;
     }
 
+    public function hasAccessAddSportObjectToOrganization(string $userRole, string $localAdminEmail, int $organizationId)
+    {
+        if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
+            return $this->localAdminHasAccessWorkWithOrganization($localAdminEmail, $organizationId);
+        }
+
+        return false;
+    }
+
+    public function hasAccessWorkWithSportObject(string $userRole, string $localAdminEmail, int $organizationId, $sportObjectId)
+    {
+        $sportObject = $this->sportObjectRepository->get($sportObjectId);
+        $this->addErrorIfSportObjectNotExists($sportObject);
+        $this->addErrorIfSportObjectNotExistsOnOrganization($sportObject, $organizationId);
+        if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
+            return $this->localAdminHasAccessWorkWithOrganization($localAdminEmail, $organizationId);
+        }
+
+        return false;
+    }
+
     public function hasAccessDeleteSecretaryFromOrganization(string $userRole, string $localAdminEmail, int $organizationId, int $secretaryId)
     {
         $organization = $this->organizationRepository->get($organizationId);
@@ -566,6 +591,24 @@ class AccessService
 
         if ($secretary->getOrganizationId() !== $organizationId){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данный секретарь не относится к этой организации'));
+        }
+    }
+
+    private function addErrorIfSportObjectNotExists(?IModel $sportObject)
+    {
+        if ($sportObject == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данного спортивного объекта не существует'));
+        }
+    }
+
+    private function addErrorIfSportObjectNotExistsOnOrganization(?IModel $sportObject, $organizationId)
+    {
+        if ($sportObject == null){
+            return;
+        }
+
+        if ($sportObject->getOrganizationId() !== $organizationId){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данный спортивный объект не относится к этой организации'));
         }
     }
 }
