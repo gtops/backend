@@ -64,6 +64,7 @@ return function (App $app) {
     $app->get('/api/v1/event/{eventId:[0-9]+}/table', EventAction::class.':getTable');
     $app->post('/api/v1/event/{eventId:[0-9]+}/table/{tableId:[0-9]+}', EventAction::class.':addTable');
     $app->get('/api/v1/event/{eventId:[0-9]+}/freeTrials', EventAction::class.':getFreeTrials');
+    $app->post('/api/v1/event/{eventId:[0-9]+}/trial', EventAction::class.':addTrialToEvent');
 
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');

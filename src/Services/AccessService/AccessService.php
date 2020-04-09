@@ -25,6 +25,7 @@ use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TableRepository;
+use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Persistance\Repositories\User\UserRepository;
 
 class AccessService
@@ -45,6 +46,7 @@ class AccessService
     private $refereeOnOrganizationRepository;
     private $tableInEventRepository;
     private $tableRepository;
+    private $trialInEventRepository;
 
     public function __construct
     (
@@ -61,7 +63,8 @@ class AccessService
         SportObjectRepository $sportObjectRepository,
         RefereeRepository $refereeRepository,
         TableInEventRepository $tableInEventRepository,
-        TableRepository $tableRepository
+        TableRepository $tableRepository,
+        TrialInEventRepository $trialInEventRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -78,6 +81,7 @@ class AccessService
         $this->refereeOnOrganizationRepository = $refereeRepository;
         $this->tableInEventRepository = $tableInEventRepository;
         $this->tableRepository = $tableRepository;
+        $this->trialInEventRepository = $trialInEventRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -425,6 +429,28 @@ class AccessService
         return $response;
     }
 
+    public function hasAccessAddTrialToEvent(int $eventId, int $trialId, string $userEmail, string $role, $sportObjectId)
+    {
+        $organizationId = -1;
+        $event = $this->eventRepository->get($eventId);
+        if ($event != null){
+            $organizationId = $event->getIdOrganization();
+        }
+        $response = $this->hasAccessWorkWithEvent($eventId, $organizationId, $userEmail, $role);
+
+        $trialInEvent = $this->trialInEventRepository->getFilteredByTrialId($trialId);
+        $this->addErrorIfTrialExistsOnEvent($trialInEvent);
+        $sportObject = $this->sportObjectRepository->get($sportObjectId);
+        $this->addErrorIfSportObjectNotExists($sportObject);
+        //todo проверка на то, что это испытание есть в таблице
+        //todo проверка, что вообще есть таблица перевода у мероприятия
+        if ($response === true){
+            return $this->getResponse();
+        }
+
+        return $response;
+    }
+
     public function hasAccessAddSecretaryToOrganization(string $userRole, string $localAdminEmail, int $organizationId, $secretaryEmail)
     {
         $organization = $this->organizationRepository->get($organizationId);
@@ -701,6 +727,13 @@ class AccessService
     {
         if ($table == null){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой таблицы не существует'));
+        }
+    }
+
+    private function addErrorIfTrialExistsOnEvent($trialInEvent)
+    {
+        if ($trialInEvent != null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такое испытание уже добавлено в данное мероприятие'));
         }
     }
 }

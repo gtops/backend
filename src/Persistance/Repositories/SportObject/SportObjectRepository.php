@@ -9,6 +9,7 @@ use App\Persistance\ModelsEloquant\SportObject\SportObject AS SportObjectPDO;
 class SportObjectRepository implements IRepository
 {
 
+    /**@return SportObject*/
     public function get(int $id): ?IModel
     {
         $results = SportObjectPDO::query()

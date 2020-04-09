@@ -12,6 +12,7 @@ use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TableRepository;
+use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use App\Services\Referee\RefereeService;
@@ -138,8 +139,14 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(SportObjectRepository::class),
                 $c->get(RefereeRepository::class),
                 $c->get(TableInEventRepository::class),
-                $c->get(TableRepository::class)
+                $c->get(TableRepository::class),
+                $c->get(TrialInEventRepository::class)
             );
+        },
+        TrialInEventRepository::class => function(ContainerInterface $c)
+        {
+            $c->get(DataBase::class);
+            return new TrialInEventRepository();
         },
         TeamService::class => function(ContainerInterface $c){
             return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class), $c->get(EventRepository::class), $c->get(LocalAdminRepository::class));
@@ -166,7 +173,9 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(SecretaryOnOrganizationRepository::class),
                 $c->get(TableInEventRepository::class),
                 $c->get(TableRepository::class),
-                $c->get(TrialRepository::class)
+                $c->get(TrialRepository::class),
+                $c->get(TrialInEventRepository::class),
+                $c->get(SportObjectRepository::class)
             );
         },
         SportObjectAction::class => function(ContainerInterface $c)

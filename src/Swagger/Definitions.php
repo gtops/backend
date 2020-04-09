@@ -246,3 +246,12 @@
  * )
  */
 
+/**
+ * @SWG\Definition(
+ *    definition="trialInEvent",
+ *    type="object",
+ *    @SWG\Property(property="trialId", type="integer"),
+ *    @SWG\Property(property="sportObjectId", type="integer")
+ * )
+ */
+

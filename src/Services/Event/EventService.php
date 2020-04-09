@@ -6,6 +6,7 @@ use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\Secretary\Secretary;
 use App\Domain\Models\Trial\TableInEvent;
+use App\Domain\Models\Trial\TrialInEvent;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
@@ -13,8 +14,10 @@ use App\Domain\Models\Event\Event;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
+use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TableRepository;
+use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use Psr\Http\Message\ResponseInterface;
@@ -31,8 +34,22 @@ class EventService
     private $tableInEventRepository;
     private $tableRepository;
     private $trialRepository;
+    private $trialInEventRepository;
+    private $sportObjectRepository;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository, SecretaryOnOrganizationRepository $secretaryOnOrgRepository, TableInEventRepository $tableInEventRepository, TableRepository $tableRepository, TrialRepository $trialRepository)
+    public function __construct(
+        LocalAdminRepository $localAdminRepository,
+        EventRepository $eventRepository,
+        SecretaryRepository $secretaryRepository,
+        RoleRepository $roleRepository,
+        UserRepository $userRepository,
+        EventParticipantRepository $eventParticipantRepository,
+        SecretaryOnOrganizationRepository $secretaryOnOrgRepository,
+        TableInEventRepository $tableInEventRepository,
+        TableRepository $tableRepository,
+        TrialRepository $trialRepository,
+        TrialInEventRepository $trialInEventRepository,
+        SportObjectRepository $sportObjectRepository)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
@@ -44,6 +61,8 @@ class EventService
         $this->tableInEventRepository = $tableInEventRepository;
         $this->tableRepository = $tableRepository;
         $this->trialRepository = $trialRepository;
+        $this->trialInEventRepository = $trialInEventRepository;
+        $this->sportObjectRepository = $sportObjectRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -188,5 +207,13 @@ class EventService
         }
 
         return $response;
+    }
+
+    public function addTrialToEventFromTable(int $eventId, int $trialId, int $sportObjectId)
+    {
+        $trial = $this->trialRepository->get($trialId);
+        $sportObject = $this->sportObjectRepository->get($sportObjectId);
+        $trialInEvent = new TrialInEvent(-1, $trial, $eventId, $sportObject);
+        return $this->trialInEventRepository->add($trialInEvent);
     }
 }

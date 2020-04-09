@@ -91,9 +91,14 @@ class TrialRepository implements IRepository
         return 0;
     }
 
+    /**@return Trial\Trial*/
     public function get(int $id): IModel
     {
-        // TODO: Implement get() method.
+        $results = TrialPDO::query()
+            ->where('id_trial', '=', $id)
+            ->get();
+
+        return $this->getTrials($results)[0];
     }
 
     /**

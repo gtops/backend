@@ -8,6 +8,7 @@ use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Services\AccessService\AccessService;
 use App\Services\Event\EventService;
 use App\Validators\Event\EventValidator;
+use App\Validators\Trial\TrialInEventValidator;
 use DateTime;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -429,5 +430,58 @@ class EventAction extends Action
         $eventId = (int)$args['eventId'];
         $trials = $this->eventService->getFreeTrials($eventId);
         return $this->respond(200, $trials, $response);
+    }
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/event/{eventId}/trial",
+     *   summary="Добавляет новое испытание в мероприятии (локальный админ)",
+     *   tags={"Event"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять мероприятия"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/trialInEvent")),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function addTrialToEvent(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $eventId = (int)$args['eventId'];
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+
+        $errors = (new TrialInEventValidator())->validate($rowParams);
+
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $trialId = $rowParams['trialId'];
+        $sportObjectId = $rowParams['sportObjectId'];
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        $access = $this->accessService->hasAccessAddTrialToEvent($eventId, $trialId, $userEmail, $userRole, $sportObjectId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $id = $this->eventService->addTrialToEventFromTable($eventId, $trialId, $sportObjectId);
+        return $this->respond(200, ['id' => $id], $response);
     }
 }
