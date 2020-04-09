@@ -29,7 +29,16 @@ class RefereeInTrialOnEventRepository implements IRepository
     ];
     public function get(int $id): ?IModel
     {
-        // TODO: Implement get() method.
+        $results = RefereeOnTrialInEventPDO::query()
+            ->join('user', 'user.user_id', '=', 'referee_on_trial_in_event.user_id')
+            ->where('referee_on_trial_in_event_id', '=', $id)
+            ->get($this->dateForCreateReferee);
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        return $this->getReferies($results)[0];
     }
 
     /**
@@ -92,7 +101,9 @@ class RefereeInTrialOnEventRepository implements IRepository
 
     public function delete(int $id)
     {
-        // TODO: Implement delete() method.
+        RefereeOnTrialInEventPDO::query()
+            ->where('referee_on_trial_in_event_id', '=', $id)
+            ->delete();
     }
 
     public function update(IModel $model)

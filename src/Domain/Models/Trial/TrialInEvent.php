@@ -77,10 +77,10 @@ class TrialInEvent implements IModel
 
     public function toArray(): array
     {
-        $referies = $this->getReferies();
+        $referiesItems = $this->getReferies();
         $referies = [];
 
-        foreach ($referies as $item){
+        foreach ($referiesItems as $item){
             $referies[] = $item->toArray();
         }
 

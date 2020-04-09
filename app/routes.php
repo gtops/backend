@@ -111,7 +111,9 @@ return function (App $app) {
     $app->get('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':getAllForTeam');
     $app->delete('/api/v1/teamLead/{teamLeadId:[0-9]+}', TeamLeadAction::class.':delete');
 
+    //referee
     $app->post('/api/v1/trialInEvent/{trialInEventId:[0-9]+}/refereeInOrganization/{refereeInOrganizationId:[0-9]+}', RefereeAction::class.':addRefereeToTrialInEvent');
+    $app->delete('/api/v1/refereeInTrialOnEvent/{id:[0-9]+}', RefereeAction::class.':deleteRefereeFromTrialInEvent');
 
     //tables
     $app->get('/api/v1/tables', TrialAction::class.':getAllFreeTables');

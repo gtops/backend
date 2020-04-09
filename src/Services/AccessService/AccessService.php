@@ -9,6 +9,7 @@ use App\Domain\Models\IModel;
 use App\Domain\Models\LocalAdmin\LocalAdmin;
 use App\Domain\Models\Organization;
 use App\Domain\Models\Referee\RefereeOnOrganization;
+use App\Domain\Models\Referee\RefereeOnTrialInEvent;
 use App\Domain\Models\Secretary\Secretary;
 use App\Domain\Models\Secretary\SecretaryOnOrganization;
 use App\Domain\Models\User\User;
@@ -580,6 +581,26 @@ class AccessService
         }
     }
 
+    public function hasAccessDeleteRefereeFromTrialOnEvent(string $role, string $email, int $refereeInTrialOnEventId)
+    {
+        /**@var $refereeInTrialOnEvent RefereeOnTrialInEvent*/
+        $refereeInTrialOnEvent = $this->refereeOnTrialInEventRepository->get($refereeInTrialOnEventId);
+        $this->addErrorIfRefereeOnTrialInEventNotExists($refereeInTrialOnEvent);
+        if ($refereeInTrialOnEvent == null){
+            return $this->getResponse();
+        }
+
+        $trialInEvent = $this->trialInEventRepository->get($refereeInTrialOnEvent->getTrialInEventId());
+        $event = $this->eventRepository->get($trialInEvent->getEventId());
+        $response = $this->hasAccessWorkWithEvent($event->getId(), $event->getIdOrganization(), $email, $role);
+
+        if ($response === true){
+            return $this->getResponse();
+        }
+
+        return $response;
+    }
+
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
         if ($organization == null){
@@ -787,6 +808,13 @@ class AccessService
     {
         if ($refereeInTrialOnEvent != null){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Этот судья уже добавлен в данное испытание'));
+        }
+    }
+
+    private function addErrorIfRefereeOnTrialInEventNotExists(?IModel $refereeInTrialOnEvent)
+    {
+        if ($refereeInTrialOnEvent == null){
+            $this->addError(new ActionError(ActionError::class, 'Данной судьи не существует'));
         }
     }
 }

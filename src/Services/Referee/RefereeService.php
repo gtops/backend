@@ -44,4 +44,9 @@ class RefereeService
         $refereeInTrialOnEvent = new RefereeOnTrialInEvent(-1, $trialInEventId, $refereeInOrganization->getUser());
         return $this->refereeOnTrialInEventRepository->add($refereeInTrialOnEvent);
     }
+
+    public function deleteRefereeFromTrialOnEvent(int $refereeInTrialOnEventId)
+    {
+        $this->refereeOnTrialInEventRepository->delete($refereeInTrialOnEventId);
+    }
 }
