@@ -17,6 +17,7 @@ use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
 use App\Persistance\ModelsEloquant\ResultGuide\ResultGuide;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Monolog\Logger;
+use App\Persistance\ModelsEloquant\Trial\Trial AS TrialPDO;
 
 class TrialRepository implements IRepository
 {
@@ -101,6 +102,25 @@ class TrialRepository implements IRepository
     public function getAll(): array
     {
         // TODO: Implement getAll() method.
+    }
+
+    public function getFilteredByTableId(int $tableId)
+    {
+        $results = TrialPDO::query()
+            ->where('id_version_standard', '=', $tableId)
+            ->get();
+
+        return $this->getTrials($results);
+    }
+
+    private function getTrials($results)
+    {
+        $trials = [];
+        foreach ($results as $result){
+            $trials[] = new Trial\Trial($result['id_trial'], $result['trial'], $result['type_time'], $result['id_version_standard']);
+        }
+
+        return $trials;
     }
 
     public function add(IModel $model):int

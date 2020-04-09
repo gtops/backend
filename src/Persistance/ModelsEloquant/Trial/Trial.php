@@ -19,6 +19,7 @@ class Trial extends Model
 
     protected $fillable = array(
         "trial",
-        "type_time"
+        "type_time",
+        "id_version_standard"
     );
 }

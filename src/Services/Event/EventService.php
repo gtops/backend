@@ -5,6 +5,7 @@ use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\Trial\TableInEvent;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
@@ -13,6 +14,8 @@ use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
+use App\Persistance\Repositories\TrialRepository\TableRepository;
+use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use Psr\Http\Message\ResponseInterface;
 
@@ -26,8 +29,10 @@ class EventService
     private $eventParticipantRepository;
     private $secretaryOnOrgRepository;
     private $tableInEventRepository;
+    private $tableRepository;
+    private $trialRepository;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository, SecretaryOnOrganizationRepository $secretaryOnOrgRepository, TableInEventRepository $tableInEventRepository)
+    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository, SecretaryOnOrganizationRepository $secretaryOnOrgRepository, TableInEventRepository $tableInEventRepository, TableRepository $tableRepository, TrialRepository $trialRepository)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
@@ -37,6 +42,8 @@ class EventService
         $this->eventParticipantRepository = $eventParticipantRepository;
         $this->secretaryOnOrgRepository = $secretaryOnOrgRepository;
         $this->tableInEventRepository = $tableInEventRepository;
+        $this->tableRepository = $tableRepository;
+        $this->trialRepository = $trialRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -158,5 +165,28 @@ class EventService
     public function getTable(int $eventId)
     {
         return $this->tableInEventRepository->getFilteredByEventId($eventId);
+    }
+
+    public function addTable(int $eventId, int $tableId)
+    {
+        $table = $this->tableRepository->get($tableId);
+        $tableInEvent = new TableInEvent(-1, $eventId, $table);
+        return $this->tableInEventRepository->add($tableInEvent);
+    }
+
+    public function getFreeTrials(int $eventId)
+    {
+        $tableInEvent = $this->tableInEventRepository->getFilteredByEventId($eventId);
+        if ($tableInEvent == null){
+            return [];
+        }
+
+        $trials = $this->trialRepository->getFilteredByTableId($tableInEvent->getTable()->getTableId());
+        $response = [];
+        foreach ($trials as $trial){
+            $response[] = $trial->toArray();
+        }
+
+        return $response;
     }
 }

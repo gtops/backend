@@ -235,3 +235,14 @@
  * )
  */
 
+/**
+ * @SWG\Definition(
+ *    definition="trial",
+ *    type="object",
+ *    @SWG\Property(property="trialId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *     @SWG\Property(property="isTypeTime", type="boolean"),
+ *     @SWG\Property(property="tableId", type="integer")
+ * )
+ */
+

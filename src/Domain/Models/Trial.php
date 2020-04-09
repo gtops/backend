@@ -21,13 +21,13 @@ class Trial implements IModel
     private $idGroupInAgeCategory;
     private $typeTime;
 
-    public function __construct(string $trialName, int $trialId, string $resultForSilver, string $resultForBronze, string $resultForGold, string $seccndResult, bool $necessarily, int $idGroupInAgeCategory, bool $typeTime)
+    public function __construct(string $trialName, int $trialId, string $resultForSilver, string $resultForBronze, string $resultForGold, string $secondResult, bool $necessarily, int $idGroupInAgeCategory, bool $typeTime)
     {
         $this->trialName = $trialName;
         $this->trialId = $trialId;
         $this->resultForSilver = $resultForSilver;
         $this->resultForBronze = $resultForBronze;
-        $this->secondResult = $seccndResult;
+        $this->secondResult = $secondResult;
         $this->resultForGold = $resultForGold;
         $this->necessarily = $necessarily;
         $this->idGroupInAgeCategory = $idGroupInAgeCategory;

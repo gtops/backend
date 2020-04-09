@@ -12,6 +12,7 @@ use App\Persistance\ModelsEloquant\Trial\Table AS TablePDO;
 class TableRepository implements IRepository
 {
 
+    /**@return Table*/
     public function get(int $id): ?IModel
     {
         $results = TablePDO::query()->where('id_version_standard', '=', $id)->get();

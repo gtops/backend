@@ -4,7 +4,9 @@
 namespace App\Domain\Models\Trial;
 
 
-class TableInEvent
+use App\Domain\Models\IModel;
+
+class TableInEvent implements IModel
 {
     private $tableInEventId;
     private $eventId;

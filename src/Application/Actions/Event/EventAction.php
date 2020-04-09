@@ -352,7 +352,7 @@ class EventAction extends Action
      *  @SWG\Get(
      *   path="/api/v1/event/{eventId}/table",
      *   summary="получение таблицы перевода для определенного мероприятия",
-     *   tags={"Tables"},
+     *   tags={"Event"},
      *     @SWG\Response(response=404, description="Not found"),
      *   @SWG\Response(response=200, description="OK", @SWG\Property(ref="#/definitions/tableInEvent"),
      *  )
@@ -368,5 +368,66 @@ class EventAction extends Action
         }
 
         return $this->respond(200, $tableInEvent->toArray(), $response);
+    }
+
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/event/{eventId}/table/{tableId}",
+     *   summary="добавляет к мероприятию таблицу перевода(локальный админ, Секретарь)",
+     *   tags={"Tables"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Parameter(in="query", name="tableId", type="integer", description="id таблицы"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *   @SWG\Response(response=403, description=""),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function addTable(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        $eventId = (int)$args['eventId'];
+        $tableId = (int)$args['tableId'];
+        $access = $this->accessService->hasAccessAddTableToEvent($eventId, $userEmail, $userRole, $tableId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $id = $this->eventService->addTable($eventId, $tableId);
+        return $this->respond(200, ['id' => $id], $response);
+    }
+
+    /**
+     *  @SWG\Get(
+     *   path="/api/v1/event/{eventId}/freeTrials",
+     *   summary="получение видов спорта, которые предоставляет таблица перевода, закрепленная за мероприятием",
+     *   tags={"Event"},
+     *   @SWG\Response(response=200, description="OK", @SWG\Property(type="array", @SWG\Items(ref="#/definitions/trial")),
+     *  )
+     * )
+     */
+    public function getFreeTrials(Request $request, Response $response, $args):Response
+    {
+        $eventId = (int)$args['eventId'];
+        $trials = $this->eventService->getFreeTrials($eventId);
+        return $this->respond(200, $trials, $response);
     }
 }

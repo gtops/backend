@@ -23,6 +23,8 @@ use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
+use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
+use App\Persistance\Repositories\TrialRepository\TableRepository;
 use App\Persistance\Repositories\User\UserRepository;
 
 class AccessService
@@ -41,6 +43,8 @@ class AccessService
     private $secretaryOnOrganizationRepository;
     private $sportObjectRepository;
     private $refereeOnOrganizationRepository;
+    private $tableInEventRepository;
+    private $tableRepository;
 
     public function __construct
     (
@@ -55,7 +59,9 @@ class AccessService
         TeamLeadRepository $teamLeadRepository,
         SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository,
         SportObjectRepository $sportObjectRepository,
-        RefereeRepository $refereeRepository
+        RefereeRepository $refereeRepository,
+        TableInEventRepository $tableInEventRepository,
+        TableRepository $tableRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -70,6 +76,8 @@ class AccessService
         $this->secretaryOnOrganizationRepository = $secretaryOnOrganizationRepository;
         $this->sportObjectRepository = $sportObjectRepository;
         $this->refereeOnOrganizationRepository = $refereeRepository;
+        $this->tableInEventRepository = $tableInEventRepository;
+        $this->tableRepository = $tableRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -379,7 +387,6 @@ class AccessService
     public function hasAccessWorkWithEvent(int $eventId, int $organizationId, string $userEmail, $role)
     {
         $userEmail = mb_strtolower($userEmail);
-        $user = $this->userRepository->getByEmail($userEmail);
         $event = $this->eventRepository->get($eventId);
         $organization = $this->organizationRepository->get($organizationId);
         $this->addErrorIfEventNoInLeadUpStatus($event);
@@ -397,6 +404,25 @@ class AccessService
         }
         $this->response = false;
         return $this->getResponse();
+    }
+
+    public function hasAccessAddTableToEvent(int $eventId, string $userEmail, string $role, int $tableId)
+    {
+        $organizationId = -1;
+        $event = $this->eventRepository->get($eventId);
+        if ($event != null){
+            $organizationId = $event->getIdOrganization();
+        }
+        $response = $this->hasAccessWorkWithEvent($eventId, $organizationId, $userEmail, $role);
+        $tableInEvent = $this->tableInEventRepository->getFilteredByEventId($eventId);
+        $table = $this->tableRepository->get($tableId);
+        $this->addErrorIfTableNotExists($table);
+        $this->addErrorIfTableExistsOnEvent($tableInEvent);
+        if ($response === true){
+            return $this->getResponse();
+        }
+
+        return $response;
     }
 
     public function hasAccessAddSecretaryToOrganization(string $userRole, string $localAdminEmail, int $organizationId, $secretaryEmail)
@@ -488,7 +514,6 @@ class AccessService
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Этот пользователь уже имеет другую роль'));
         }
     }
-
 
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
@@ -662,6 +687,20 @@ class AccessService
 
         if ($refereeOnOrganization->getOrganizationId() !== $organizationId){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данный судья не относится к этой организации'));
+        }
+    }
+
+    private function addErrorIfTableExistsOnEvent(?IModel $tableInEvent)
+    {
+        if ($tableInEvent !== null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'У этого мероприятия уже выбрана таблица перевода'));
+        }
+    }
+
+    private function addErrorIfTableNotExists(?IModel $table)
+    {
+        if ($table == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такой таблицы не существует'));
         }
     }
 }

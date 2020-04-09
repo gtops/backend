@@ -136,7 +136,9 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TeamLeadRepository::class),
                 $c->get(SecretaryOnOrganizationRepository::class),
                 $c->get(SportObjectRepository::class),
-                $c->get(RefereeRepository::class)
+                $c->get(RefereeRepository::class),
+                $c->get(TableInEventRepository::class),
+                $c->get(TableRepository::class)
             );
         },
         TeamService::class => function(ContainerInterface $c){
@@ -162,7 +164,9 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(UserRepository::class),
                 $c->get(EventParticipantRepository::class),
                 $c->get(SecretaryOnOrganizationRepository::class),
-                $c->get(TableInEventRepository::class)
+                $c->get(TableInEventRepository::class),
+                $c->get(TableRepository::class),
+                $c->get(TrialRepository::class)
             );
         },
         SportObjectAction::class => function(ContainerInterface $c)
