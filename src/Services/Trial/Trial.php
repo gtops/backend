@@ -8,6 +8,7 @@
 
 namespace App\Services\Trial;
 use App\Domain\Models\Trial as TrialModel;
+use App\Persistance\Repositories\TrialRepository\TableRepository;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use Psr\Http\Message\ResponseInterface as Response;
 use App\Services\Presenters\TrialsToResponsePresenter;
@@ -15,9 +16,11 @@ use App\Services\Presenters\TrialsToResponsePresenter;
 class Trial
 {
     private $trialRep;
-    public function __construct(TrialRepository $trialRepository)
+    private $tableRepository;
+    public function __construct(TrialRepository $trialRepository, TableRepository $tableRepository)
     {
         $this->trialRep = $trialRepository;
+        $this->tableRepository = $tableRepository;
     }
 
     public function getTrialsByGenderAndAge(array $params, Response $response):Response
@@ -35,5 +38,10 @@ class Trial
         $secondResult = $this->trialRep->getSecondResult($params['firstResult'], $params['trialId']);
         $response->getBody()->write(json_encode(['secondResult' => $secondResult]));
         return $response;
+    }
+
+    public function getAllFreeTables()
+    {
+        return $this->tableRepository->getAll();
     }
 }

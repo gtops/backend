@@ -113,4 +113,24 @@ class TrialAction extends Action
 
         return $this->trialService->getSecondResult($params, $response);
     }
+
+    /**
+     *  @SWG\Get(
+     *   path="/api/v1/tables",
+     *   summary="получение всех доступных таблиц перевода",
+     *   tags={"Tables"},
+     *   @SWG\Response(response=200, description="OK", @SWG\Property(type="array", @SWG\Items(ref="#/definitions/table")),
+     *  )
+     * )
+     */
+    public function getAllFreeTables(Request $request, Response $response, $args): Response
+    {
+        $tables = $this->trialService->getAllFreeTables();
+        $tablesForResponse = [];
+        foreach ($tables as $table){
+            $tablesForResponse[] = $table->toArray();
+        }
+
+        return $this->respond(200, $tablesForResponse, $response);
+    }
 }

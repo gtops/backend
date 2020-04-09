@@ -21,4 +21,14 @@ class RefereeService
         $refereeOnOrganization = new RefereeOnOrganization(-1, $organizationId, $user->getId(), $user);
         return $this->refereeRepository->add($refereeOnOrganization);
     }
+
+    public function get(int $organizationId)
+    {
+        return $this->refereeRepository->getFilteredByOrgId($organizationId);
+    }
+
+    public function delete(int $refereeId)
+    {
+        $this->refereeRepository->delete($refereeId);
+    }
 }

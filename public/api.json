@@ -699,6 +699,25 @@
                 }
             }
         },
+        "/api/v1/event/{eventId}/table": {
+            "get": {
+                "tags": [
+                    "Tables"
+                ],
+                "summary": "\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u0442\u0430\u0431\u043b\u0438\u0446\u044b \u043f\u0435\u0440\u0435\u0432\u043e\u0434\u0430 \u0434\u043b\u044f \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u043d\u043e\u0433\u043e \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",
+                "responses": {
+                    "404": {
+                        "description": "Not found"
+                    },
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/tableInEvent"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/invite": {
             "post": {
                 "tags": [
@@ -1196,6 +1215,48 @@
             }
         },
         "/api/v1/organization/{id}/referee": {
+            "get": {
+                "tags": [
+                    "Referee"
+                ],
+                "summary": "\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u0441\u0443\u0434\u0435\u0439, \u043d\u0430\u0445\u043e\u0434\u044f\u0449\u0438\u0445\u0441\u044f \u0432 \u0441\u043f\u0440\u0430\u0432\u043e\u0447\u043d\u0438\u043a\u0435 \u043e\u043f\u0440\u0435\u0434\u0435\u043b\u0435\u043d\u043d\u043e\u0439 \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "description": "id \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/refereeOnOrganizationResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Error",
+                        "schema": {
+                            "properties": {
+                                "errors": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string"
+                                            },
+                                            "description": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "Referee"
@@ -2553,6 +2614,25 @@
                 }
             }
         },
+        "/api/v1/tables": {
+            "get": {
+                "tags": [
+                    "Tables"
+                ],
+                "summary": "\u043f\u043e\u043b\u0443\u0447\u0435\u043d\u0438\u0435 \u0432\u0441\u0435\u0445 \u0434\u043e\u0441\u0442\u0443\u043f\u043d\u044b\u0445 \u0442\u0430\u0431\u043b\u0438\u0446 \u043f\u0435\u0440\u0435\u0432\u043e\u0434\u0430",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/table"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/confirmAccount": {
             "post": {
                 "tags": [
@@ -3161,6 +3241,60 @@
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "refereeOnOrganizationResponse": {
+            "properties": {
+                "refereeOnOrganizationId": {
+                    "type": "integer"
+                },
+                "organizationId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "table": {
+            "properties": {
+                "tableId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "tableInEvent": {
+            "properties": {
+                "tableInEventId": {
+                    "type": "integer"
+                },
+                "eventId": {
+                    "type": "integer"
+                },
+                "tableId": {
+                    "type": "integer"
+                },
+                "tableName": {
                     "type": "string"
                 }
             },

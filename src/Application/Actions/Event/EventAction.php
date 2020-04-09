@@ -347,4 +347,26 @@ class EventAction extends Action
 
         return $this->eventService->update($event, $userEmail, $response);
     }
+
+    /**
+     *  @SWG\Get(
+     *   path="/api/v1/event/{eventId}/table",
+     *   summary="получение таблицы перевода для определенного мероприятия",
+     *   tags={"Tables"},
+     *     @SWG\Response(response=404, description="Not found"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Property(ref="#/definitions/tableInEvent"),
+     *  )
+     * )
+     */
+    public function getTable(Request $request, Response $response, $args):Response
+    {
+        $eventId = (int)$args['eventId'];
+        $tableInEvent = $this->eventService->getTable($eventId);
+
+        if ($tableInEvent == null){
+            return $response->withStatus(404);
+        }
+
+        return $this->respond(200, $tableInEvent->toArray(), $response);
+    }
 }

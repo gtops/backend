@@ -430,6 +430,20 @@ class AccessService
         return false;
     }
 
+    public function hasAccessWorkWithRefereeToOrganization(string $userRole, string $localAdminEmail, int $organizationId, int $refereeId)
+    {
+        $organization = $this->organizationRepository->get($organizationId);
+        $this->addErrorIfOrganizationNotExist($organization);
+        $refereeOnOrganization = $this->refereeOnOrganizationRepository->get($refereeId);
+        $this->addErrorIfRefereeNotExistsOnOrganization($refereeOnOrganization, $organizationId);
+
+        if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
+            return $this->localAdminHasAccessWorkWithOrganization($localAdminEmail, $organizationId);
+        }
+
+        return false;
+    }
+
     public function hasAccessAddSportObjectToOrganization(string $userRole, string $localAdminEmail, int $organizationId)
     {
         if ($userRole == AuthorizeMiddleware::LOCAL_ADMIN){
@@ -474,6 +488,7 @@ class AccessService
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Этот пользователь уже имеет другую роль'));
         }
     }
+
 
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
@@ -635,6 +650,18 @@ class AccessService
     {
         if ($refereeOnOrganization != null){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Судья с такой почтой уже существует в справочнике организации'));
+        }
+    }
+
+    /**@var $refereeOnOrganization RefereeOnOrganization*/
+    private function addErrorIfRefereeNotExistsOnOrganization(?IModel $refereeOnOrganization, int $organizationId)
+    {
+        if ($refereeOnOrganization == null){
+            return;
+        }
+
+        if ($refereeOnOrganization->getOrganizationId() !== $organizationId){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данный судья не относится к этой организации'));
         }
     }
 }

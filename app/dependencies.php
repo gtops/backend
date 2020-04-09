@@ -10,6 +10,8 @@ use App\Persistance\Repositories\Referee\RefereeRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\SportObject\SportObjectRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
+use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
+use App\Persistance\Repositories\TrialRepository\TableRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use App\Services\Referee\RefereeService;
@@ -159,7 +161,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(RoleRepository::class),
                 $c->get(UserRepository::class),
                 $c->get(EventParticipantRepository::class),
-                $c->get(SecretaryOnOrganizationRepository::class)
+                $c->get(SecretaryOnOrganizationRepository::class),
+                $c->get(TableInEventRepository::class)
             );
         },
         SportObjectAction::class => function(ContainerInterface $c)
@@ -169,6 +172,10 @@ return function (ContainerBuilder $containerBuilder) {
         SportObjectService::class => function(ContainerInterface $c)
         {
             return new SportObjectService($c->get(SportObjectRepository::class));
+        },
+        TableInEventRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new TableInEventRepository();
         },
         SportObjectRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
@@ -234,7 +241,11 @@ return function (ContainerBuilder $containerBuilder) {
         },
         TrialAction::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
-            return new TrialAction(new Trial(new TrialRepository()));
+            return new TrialAction(new Trial(new TrialRepository(), $c->get(TableRepository::class)));
+        },
+        TableRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new TableRepository();
         },
         UserRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

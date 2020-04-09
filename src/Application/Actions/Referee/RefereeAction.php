@@ -67,9 +67,39 @@ class RefereeAction extends Action
         return $this->respond(200, ['id' => $id], $response);
     }
 
+
+    /**
+     *
+     * * @SWG\Get(
+     *   path="/api/v1/organization/{id}/referee",
+     *   summary="получение судей, находящихся в справочнике определенной организации",
+     *   tags={"Referee"},
+     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
+     *   @SWG\Response(response=200, description="OK",
+     *          @SWG\Schema(ref="#/definitions/refereeOnOrganizationResponse")
+     *   ),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     */
     public function  get(Request $request, Response $response, $args):Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+        $organizationId = (int)$args['id'];
 
+        $referiesResponse = [];
+        $referies = $this->refereeService->get($organizationId);
+        foreach ($referies as $refery){
+            $referiesResponse[] = $refery->toArray();
+        }
+
+        return $this->respond(200, $referiesResponse, $response);
     }
 
     /**
@@ -94,6 +124,24 @@ class RefereeAction extends Action
      */
     public function delete(Request $request, Response $response, $args):Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $refereeId = (int)$args['refereeId'];
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
+        $organizationId = (int)$args['id'];
+
+        $access = $this->accessService->hasAccessWorkWithRefereeToOrganization($userRole, $localAdminEmail, $organizationId, $refereeId);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->refereeService->delete($refereeId);
+        return $response->withStatus(200);
     }
 }

@@ -61,6 +61,7 @@ return function (App $app) {
     $app->get('/api/v1/organization/{id:[0-9]+}/event', EventAction::class.':getAll');
     $app->get('/api/v1/event/forSecretary', EventAction::class.':getForSecretary');
     $app->get('/api/v1/event/forUser', EventAction::class.':getForUser');
+    $app->get('/api/v1/event/{eventId:[0-9]+}/table', EventAction::class.':getTable');
 
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
@@ -104,6 +105,9 @@ return function (App $app) {
     $app->post('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':add');
     $app->get('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':getAllForTeam');
     $app->delete('/api/v1/teamLead/{teamLeadId:[0-9]+}', TeamLeadAction::class.':delete');
+
+    //tables
+    $app->get('/api/v1/tables', TrialAction::class.':getAllFreeTables');
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');

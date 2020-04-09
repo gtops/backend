@@ -28,8 +28,9 @@ class RefereeRepository implements IRepository
     public function get(int $id): ?IModel
     {
         $results = RefereeOnOrganization::query()
+            ->join('user', 'user.user_id', '=', 'referee_on_organization.user_id')
             ->where('referee_on_organization_id', '=', $id)
-            ->get();
+            ->get($this->dateForCreateReferee);
 
         if (count($results) == 0){
             return null;
@@ -63,8 +64,8 @@ class RefereeRepository implements IRepository
     public function getFilteredByOrgId(int $organizationId): ?array
     {
         $results = RefereeOnOrganization::query()
-            ->join('user', 'user.user_id', '=', 'secretary.user_id')
-            ->where('event.organization_id', '=', $organizationId)
+            ->join('user', 'user.user_id', '=', 'referee_on_organization.user_id')
+            ->where('organization_id', '=', $organizationId)
             ->get($this->dateForCreateReferee);
 
         return $this->getReferies($results);
@@ -91,7 +92,7 @@ class RefereeRepository implements IRepository
         return RefereeOnOrganization::query()->create([
             'organization_id' => $model->getOrganizationId(),
             'user_id' => $model->getUserId()
-        ])->getAttribute('secretary_id');
+        ])->getAttribute('referee_on_organization_id');
     }
 
     public function delete(int $id)

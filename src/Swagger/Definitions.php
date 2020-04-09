@@ -200,3 +200,38 @@
  *    @SWG\Property(property="description", type="string"),
  * )
  */
+
+/**
+ * @SWG\Definition(
+ *    definition="refereeOnOrganizationResponse",
+ *    type="object",
+ *    @SWG\Property(property="refereeOnOrganizationId", type="integer"),
+ *    @SWG\Property(property="organizationId", type="integer"),
+ *    @SWG\Property(property="userId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="gender", type="integer"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="email", type="string")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="table",
+ *    type="object",
+ *    @SWG\Property(property="tableId", type="integer"),
+ *    @SWG\Property(property="name", type="string")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="tableInEvent",
+ *    type="object",
+ *    @SWG\Property(property="tableInEventId", type="integer"),
+ *    @SWG\Property(property="eventId", type="integer"),
+ *     @SWG\Property(property="tableId", type="integer"),
+ *     @SWG\Property(property="tableName", type="string")
+ * )
+ */
+

@@ -12,6 +12,7 @@ use App\Domain\Models\Event\Event;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
+use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use Psr\Http\Message\ResponseInterface;
 
@@ -24,8 +25,9 @@ class EventService
     private $userRepository;
     private $eventParticipantRepository;
     private $secretaryOnOrgRepository;
+    private $tableInEventRepository;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository, SecretaryOnOrganizationRepository $secretaryOnOrgRepository)
+    public function __construct(LocalAdminRepository $localAdminRepository, EventRepository $eventRepository, SecretaryRepository $secretaryRepository, RoleRepository $roleRepository, UserRepository $userRepository, EventParticipantRepository $eventParticipantRepository, SecretaryOnOrganizationRepository $secretaryOnOrgRepository, TableInEventRepository $tableInEventRepository)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
@@ -34,6 +36,7 @@ class EventService
         $this->userRepository = $userRepository;
         $this->eventParticipantRepository = $eventParticipantRepository;
         $this->secretaryOnOrgRepository = $secretaryOnOrgRepository;
+        $this->tableInEventRepository = $tableInEventRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -150,5 +153,10 @@ class EventService
         }
 
         return $events;
+    }
+
+    public function getTable(int $eventId)
+    {
+        return $this->tableInEventRepository->getFilteredByEventId($eventId);
     }
 }
