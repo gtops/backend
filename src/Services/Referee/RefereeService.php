@@ -2,6 +2,8 @@
 
 namespace App\Services\Referee;
 use App\Domain\Models\Referee\RefereeOnOrganization;
+use App\Domain\Models\Referee\RefereeOnTrialInEvent;
+use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
 use App\Persistance\Repositories\Referee\RefereeRepository;
 use App\Persistance\Repositories\User\UserRepository;
 
@@ -9,10 +11,14 @@ class RefereeService
 {
     private $refereeRepository;
     private $userRepository;
-    public function __construct(RefereeRepository $refereeRepository, UserRepository $userRepository)
+    private $refereeOnTrialInEventRepository;
+
+    public function __construct(RefereeRepository $refereeRepository, UserRepository $userRepository, RefereeInTrialOnEventRepository $refereeOnTrialInEventRepository)
     {
         $this->refereeRepository = $refereeRepository;
         $this->userRepository = $userRepository;
+        $this->refereeOnTrialInEventRepository = $refereeOnTrialInEventRepository;
+
     }
 
     public function addToOrganization(int $organizationId, $refereeEmail)
@@ -30,5 +36,12 @@ class RefereeService
     public function delete(int $refereeId)
     {
         $this->refereeRepository->delete($refereeId);
+    }
+
+    public function addToTrialOnEvent(int $refereeInOrganizationId, int $trialInEventId)
+    {
+        $refereeInOrganization = $this->refereeRepository->get($refereeInOrganizationId);
+        $refereeInTrialOnEvent = new RefereeOnTrialInEvent(-1, $trialInEventId, $refereeInOrganization->getUser());
+        return $this->refereeOnTrialInEventRepository->add($refereeInTrialOnEvent);
     }
 }

@@ -133,6 +133,46 @@ class EventAction extends Action
     /**
      *
      * @SWG\Post(
+     *   path="/api/v1/event/{eventId}/unsubscribe",
+     *   summary="пользователь отписывается от мероприятия, пока его не приняли в это мероприятие",
+     *   tags={"ParticipantEvent"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function unsubscribe(Request $request, Response $response, $args): Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userEmail = $request->getHeader('userEmail')[0];
+        $eventId = (int)$args['eventId'];
+
+        $access = $this->accessService->hasAccessUnsubscribeFromEvent($eventId, $userEmail);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->eventService->unsubscribe($userEmail, $eventId);
+        return $response;
+    }
+
+    /**
+     *
+     * @SWG\Post(
      *   path="/api/v1/organization/{id}/event",
      *   summary="добавляет мероприятие к организации локальным админом(локальный админ)",
      *   tags={"Event"},
@@ -483,5 +523,26 @@ class EventAction extends Action
 
         $id = $this->eventService->addTrialToEventFromTable($eventId, $trialId, $sportObjectId);
         return $this->respond(200, ['id' => $id], $response);
+    }
+
+    /**
+     *  @SWG\Get(
+     *   path="/api/v1/event/{eventId}/trial",
+     *   summary="получение видов спорта, добавленных в мероприятие",
+     *   tags={"Event"},
+     *   @SWG\Response(response=200, description="OK", @SWG\Property(type="array", @SWG\Items(ref="#/definitions/trialInEventResponse")),
+     *  )
+     * )
+     */
+    public function getTrials(Request $request, Response $response, $args):Response
+    {
+        $eventId = (int)$args['eventId'];
+        $trialInEvents = $this->eventService->getTrialsOnEvent($eventId);
+        $responseArray = [];
+        foreach ($trialInEvents as $trialInEvent){
+            $responseArray[] = $trialInEvent->toArray();
+        }
+
+        return $this->respond(200, $responseArray, $response);
     }
 }

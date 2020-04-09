@@ -67,6 +67,47 @@ class RefereeAction extends Action
         return $this->respond(200, ['id' => $id], $response);
     }
 
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/trialInEvent/{trialInEventId}/refereeInOrganization/{refereeInOrganizationId}",
+     *   summary="добавляет судью в испытание(локальный админ)",
+     *   tags={"Referee"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="trialInEventId", type="integer", description="id испытания в мероприятии, к которому добавляем судью"),
+     *   @SWG\Parameter(in="query", name="refereeInOrganizationId", type="integer", description="id судьи в организации"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function addRefereeToTrialInEvent(Request $request, Response $response, $args): Response
+    {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $localAdminEmail = $request->getHeader('userEmail')[0];
+        $trialInEventId = (int)$args['trialInEventId'];
+        $refereeInOrganizationId = (int)$args['refereeInOrganizationId'];
+
+        $access = $this->accessService->hasAccessAddRefereeToTrialOnEvent($userRole, $localAdminEmail, $trialInEventId, $refereeInOrganizationId);
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $id = $this->refereeService->addToTrialOnEvent($refereeInOrganizationId, $trialInEventId);
+        return $this->respond(200, ['id' => $id], $response);
+    }
 
     /**
      *

@@ -11,6 +11,7 @@ use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Domain\Models\Event\Event;
+use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
@@ -36,6 +37,7 @@ class EventService
     private $trialRepository;
     private $trialInEventRepository;
     private $sportObjectRepository;
+    private $refereeInTrialOnEventRepository;
 
     public function __construct(
         LocalAdminRepository $localAdminRepository,
@@ -49,7 +51,9 @@ class EventService
         TableRepository $tableRepository,
         TrialRepository $trialRepository,
         TrialInEventRepository $trialInEventRepository,
-        SportObjectRepository $sportObjectRepository)
+        SportObjectRepository $sportObjectRepository,
+        RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository
+    )
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->eventRepository = $eventRepository;
@@ -63,6 +67,7 @@ class EventService
         $this->trialRepository = $trialRepository;
         $this->trialInEventRepository = $trialInEventRepository;
         $this->sportObjectRepository = $sportObjectRepository;
+        $this->refereeInTrialOnEventRepository = $refereeInTrialOnEventRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -215,5 +220,23 @@ class EventService
         $sportObject = $this->sportObjectRepository->get($sportObjectId);
         $trialInEvent = new TrialInEvent(-1, $trial, $eventId, $sportObject);
         return $this->trialInEventRepository->add($trialInEvent);
+    }
+
+    public function getTrialsOnEvent(int $eventId)
+    {
+        $trialsInEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
+
+        foreach ($trialsInEvent as $trialInEvent){
+            $referies = $this->refereeInTrialOnEventRepository->getFilteredByTrialOnEventId($trialInEvent->getTrialInEventId());
+            $trialInEvent->setReferies($referies);
+        }
+
+        return $trialsInEvent;
+    }
+
+    public function unsubscribe(string $userEmail, int $eventId)
+    {
+        $participant = $this->eventParticipantRepository->getByEmailAndEvent($userEmail, $eventId);
+        $this->eventParticipantRepository->delete($participant->getEventParticipantId());
     }
 }

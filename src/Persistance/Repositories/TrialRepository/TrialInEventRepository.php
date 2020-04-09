@@ -42,12 +42,13 @@ class TrialInEventRepository implements IRepository
         return $this->getTrialsInEvent($results)[0];
     }
 
-    public function getFilteredByTrialId(int $trialId)
+    public function getFilteredByTrialId(int $trialId, $eventId)
     {
         $results = TrialInEventPDO::query()
             ->join('trial', 'trial.id_trial', '=', 'trial_in_event.trial_id')
             ->join('sport_object', 'sport_object.sport_object_id', '=', 'trial_in_event.sport_object_id')
             ->where('trial_in_event.trial_id', '=', $trialId)
+            ->where('event_id', '=', $eventId)
             ->get();
 
         if (count($results) == null){
@@ -55,6 +56,25 @@ class TrialInEventRepository implements IRepository
         }
 
         return $this->getTrialsInEvent($results)[0];
+    }
+
+    /**
+     * @param $eventId
+     * @return TrialInEvent[]
+     */
+    public function getFilteredByEventId($eventId):array
+    {
+        $results = TrialInEventPDO::query()
+            ->join('trial', 'trial.id_trial', '=', 'trial_in_event.trial_id')
+            ->join('sport_object', 'sport_object.sport_object_id', '=', 'trial_in_event.sport_object_id')
+            ->where('event_id', '=', $eventId)
+            ->get();
+
+        if (count($results) == null){
+            return null;
+        }
+
+        return $this->getTrialsInEvent($results);
     }
 
     private function getTrialsInEvent($results)

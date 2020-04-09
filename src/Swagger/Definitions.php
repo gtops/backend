@@ -255,3 +255,34 @@
  * )
  */
 
+/**
+ * @SWG\Definition(
+ *    definition="refereeOnTrialInEvent",
+ *    type="object",
+ *    @SWG\Property(property="refereeOnTrialInEventId", type="integer"),
+ *    @SWG\Property(property="trialInEventId", type="integer"),
+ *    @SWG\Property(property="userId", type="integer"),
+ *    @SWG\Property(property="name", type="string"),
+ *    @SWG\Property(property="email", type="string"),
+ *    @SWG\Property(property="dateOfBirth", type="string"),
+ *    @SWG\Property(property="gender", type="integer")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="trialInEventResponse",
+ *    type="object",
+ *    @SWG\Property(property="trialInEventId", type="integer"),
+ *    @SWG\Property(property="trialId", type="integer"),
+ *     @SWG\Property(property="trialName", type="string"),
+ *     @SWG\Property(property="trialIsTypeTime", type="boolean"),
+ *     @SWG\Property(property="tableId", type="integer"),
+ *     @SWG\Property(property="eventId", type="integer"),
+ *     @SWG\Property(property="sportObjectId", type="integer"),
+ *     @SWG\Property(property="sportObjectName", type="string"),
+ *     @SWG\Property(property="sportObjectAddress", type="string"),
+ *   @SWG\Property(property="sportObjectDescription", type="string"),
+ *   @SWG\Property(property="referies", type="array", @SWG\Items(ref="#/definitions/refereeOnTrialInEvent"))
+ * )
+ */

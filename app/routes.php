@@ -65,6 +65,7 @@ return function (App $app) {
     $app->post('/api/v1/event/{eventId:[0-9]+}/table/{tableId:[0-9]+}', EventAction::class.':addTable');
     $app->get('/api/v1/event/{eventId:[0-9]+}/freeTrials', EventAction::class.':getFreeTrials');
     $app->post('/api/v1/event/{eventId:[0-9]+}/trial', EventAction::class.':addTrialToEvent');
+    $app->get('/api/v1/event/{eventId:[0-9]+}/trial', EventAction::class.':getTrials');
 
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
@@ -97,6 +98,7 @@ return function (App $app) {
 
     //eventParticipant
     $app->post('/api/v1/event/{eventId:[0-9]+}/apply', EventAction::class.':apply');
+    $app->post('/api/v1/event/{eventId:[0-9]+}/unsubscribe', EventAction::class.':unsubscribe');
     $app->post('/api/v1/team/{teamId:[0-9]+}/participant', EventParticipantAction::class.':add');
     $app->post('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':addParticipantWithoutTeam');
     $app->get('/api/v1/event/{eventId:[0-9]+}/participant', EventParticipantAction::class.':getAllForEvent');
@@ -108,6 +110,8 @@ return function (App $app) {
     $app->post('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':add');
     $app->get('/api/v1/team/{teamId:[0-9]+}/teamLead', TeamLeadAction::class.':getAllForTeam');
     $app->delete('/api/v1/teamLead/{teamLeadId:[0-9]+}', TeamLeadAction::class.':delete');
+
+    $app->post('/api/v1/trialInEvent/{trialInEventId:[0-9]+}/refereeInOrganization/{refereeInOrganizationId:[0-9]+}', RefereeAction::class.':addRefereeToTrialInEvent');
 
     //tables
     $app->get('/api/v1/tables', TrialAction::class.':getAllFreeTables');

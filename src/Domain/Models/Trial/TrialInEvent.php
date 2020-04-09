@@ -29,6 +29,13 @@ class TrialInEvent implements IModel
     }
 
     /**
+     * @param RefereeOnTrialInEvent $referies
+     */
+    public function setReferies(array $referies)
+    {
+        $this->referies = $referies;
+    }
+    /**
      * @return int
      */
     public function getEventId(): int
@@ -70,11 +77,11 @@ class TrialInEvent implements IModel
 
     public function toArray(): array
     {
-        $localAdminsTmp = $this->getReferies();
-        $localAdmins = [];
+        $referies = $this->getReferies();
+        $referies = [];
 
-        foreach ($localAdminsTmp as $item){
-            $localAdmins[] = $item->toArray();
+        foreach ($referies as $item){
+            $referies[] = $item->toArray();
         }
 
         return [
@@ -88,7 +95,7 @@ class TrialInEvent implements IModel
             'sportObjectName' => $this->getSportObject()->getName(),
             'sportObjectAddress' => $this->getSportObject()->getAddress(),
             'sportObjectDescription' => $this->getSportObject()->getDescription(),
-            'localAdmins' => $localAdmins
+            'referies' => $referies
         ];
     }
 }

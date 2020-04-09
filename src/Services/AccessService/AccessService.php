@@ -16,6 +16,7 @@ use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
+use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
 use App\Persistance\Repositories\Referee\RefereeRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
@@ -47,6 +48,7 @@ class AccessService
     private $tableInEventRepository;
     private $tableRepository;
     private $trialInEventRepository;
+    private $refereeOnTrialInEventRepository;
 
     public function __construct
     (
@@ -64,7 +66,8 @@ class AccessService
         RefereeRepository $refereeRepository,
         TableInEventRepository $tableInEventRepository,
         TableRepository $tableRepository,
-        TrialInEventRepository $trialInEventRepository
+        TrialInEventRepository $trialInEventRepository,
+        RefereeInTrialOnEventRepository $refereeOnTrialInEventRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -82,6 +85,7 @@ class AccessService
         $this->tableInEventRepository = $tableInEventRepository;
         $this->tableRepository = $tableRepository;
         $this->trialInEventRepository = $trialInEventRepository;
+        $this->refereeOnTrialInEventRepository = $refereeOnTrialInEventRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -104,13 +108,26 @@ class AccessService
     public function hasAccessApplyToEvent(int $eventId, string $email)
     {
         $email = mb_strtolower($email);
-        $user = $this->userRepository->getByEmail($email);
         $event = $this->eventRepository->get($eventId);
         $participant = $this->eventParticipantRepository->getByEmailAndEvent($email, $eventId);
         $this->addErrorIfEventNoInLeadUpStatus($event);
         $this->addErrorIfEventNotExists($event);
         $this->addErrorIfParticipantExistOnEvent($participant);
         return $this->getResponse();
+    }
+
+    public function hasAccessUnsubscribeFromEvent(int $eventId, string $userEmail)
+    {
+        $participant = $this->eventParticipantRepository->getByEmailAndEvent($userEmail, $eventId);
+        if ($participant == null){
+            return false;
+        }
+
+        if ($participant->isConfirmed()){
+            return false;
+        }
+
+        return true;
     }
 
     private function addErrorIfParticipantExistOnEvent(?EventParticipant $eventParticipant)
@@ -438,12 +455,34 @@ class AccessService
         }
         $response = $this->hasAccessWorkWithEvent($eventId, $organizationId, $userEmail, $role);
 
-        $trialInEvent = $this->trialInEventRepository->getFilteredByTrialId($trialId);
+        $trialInEvent = $this->trialInEventRepository->getFilteredByTrialId($trialId, $eventId);
         $this->addErrorIfTrialExistsOnEvent($trialInEvent);
         $sportObject = $this->sportObjectRepository->get($sportObjectId);
         $this->addErrorIfSportObjectNotExists($sportObject);
         //todo проверка на то, что это испытание есть в таблице
         //todo проверка, что вообще есть таблица перевода у мероприятия
+        if ($response === true){
+            return $this->getResponse();
+        }
+
+        return $response;
+    }
+
+    public function hasAccessAddRefereeToTrialOnEvent(string $role, string $userEmail, int $trialInEventId, int $refereeInOrganizationId)
+    {
+        $trialInEvent = $this->trialInEventRepository->get($trialInEventId);
+        $this->addErrorIfTrialNotExistsOnEvent($trialInEvent);
+
+        $organizationId = -1;
+        $event = $this->eventRepository->get($trialInEvent->getEventId());
+        if ($event != null){
+            $organizationId = $event->getIdOrganization();
+        }
+        $response = $this->hasAccessWorkWithEvent($event->getId(), $organizationId, $userEmail, $role);
+        $referee = $this->refereeOnOrganizationRepository->get($refereeInOrganizationId);
+        $this->addErrorIfRefereeNotExistsOnOrganization($referee, $organizationId);
+        $refereeInTrialOnEvent = $this->refereeOnTrialInEventRepository->getFilteredByTrialOnEventIdAndUserId($trialInEventId, $referee->getUserId());
+        $this->addErrorIfRefereeOnTrialInEventExits($refereeInTrialOnEvent);
         if ($response === true){
             return $this->getResponse();
         }
@@ -734,6 +773,20 @@ class AccessService
     {
         if ($trialInEvent != null){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такое испытание уже добавлено в данное мероприятие'));
+        }
+    }
+
+    private function addErrorIfTrialNotExistsOnEvent(?IModel $trialInEvent)
+    {
+        if ($trialInEvent == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данного испытания нет в мероприятии'));
+        }
+    }
+
+    private function addErrorIfRefereeOnTrialInEventExits(?IModel $refereeInTrialOnEvent)
+    {
+        if ($refereeInTrialOnEvent != null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Этот судья уже добавлен в данное испытание'));
         }
     }
 }

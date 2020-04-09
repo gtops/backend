@@ -6,6 +6,7 @@ use App\Application\Actions\Referee\RefereeAction;
 use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
+use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
 use App\Persistance\Repositories\Referee\RefereeRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\SportObject\SportObjectRepository;
@@ -140,7 +141,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(RefereeRepository::class),
                 $c->get(TableInEventRepository::class),
                 $c->get(TableRepository::class),
-                $c->get(TrialInEventRepository::class)
+                $c->get(TrialInEventRepository::class),
+                $c->get(RefereeInTrialOnEventRepository::class)
             );
         },
         TrialInEventRepository::class => function(ContainerInterface $c)
@@ -155,7 +157,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new RefereeAction($c->get(AccessService::class), $c->get(RefereeService::class));
         },
         RefereeService::class => function(ContainerInterface $c){
-            return new RefereeService($c->get(RefereeRepository::class), $c->get(UserRepository::class));
+            return new RefereeService($c->get(RefereeRepository::class), $c->get(UserRepository::class), $c->get(RefereeInTrialOnEventRepository::class));
         },
         RefereeRepository::class =>function(ContainerInterface$c){
             $c->get(DataBase::class);
@@ -175,7 +177,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TableRepository::class),
                 $c->get(TrialRepository::class),
                 $c->get(TrialInEventRepository::class),
-                $c->get(SportObjectRepository::class)
+                $c->get(SportObjectRepository::class),
+                $c->get(RefereeInTrialOnEventRepository::class)
             );
         },
         SportObjectAction::class => function(ContainerInterface $c)
@@ -189,6 +192,10 @@ return function (ContainerBuilder $containerBuilder) {
         TableInEventRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
             return new TableInEventRepository();
+        },
+        RefereeInTrialOnEventRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new RefereeInTrialOnEventRepository();
         },
         SportObjectRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);
