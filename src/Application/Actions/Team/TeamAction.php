@@ -201,7 +201,6 @@ class TeamAction extends Action
      *   tags={"Team"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации"),
-     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
      *   @SWG\Parameter(in="query", name="teamId", type="integer", description="id мероприятия"),
      *   @SWG\Response(response=200, description="OK"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
@@ -215,7 +214,30 @@ class TeamAction extends Action
      */
     public function delete(Request $request, Response $response, $args): Response
     {
+        if ($this->tokenWithError($response, $request)){
+            return $response->withStatus(401);
+        }
 
+        $userRole = $request->getHeader('userRole')[0];
+
+        if ($userRole == AuthorizeMiddleware::TEAM_LEAD){
+            return $response->withStatus(403);
+        }
+
+        $userEmail = $request->getHeader('userEmail')[0];
+        $teamId = (int)$args['teamId'];
+        $access = $this->accessService->hasAccessWorkWithTeamWithId($userRole, $userEmail, $teamId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+
+        $this->temaService->delete($teamId);
+        return $response;
     }
 
     /**

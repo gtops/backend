@@ -7,6 +7,11 @@ pipeline {
                 sh 'composer install'
             }
         }
+        stage('analyze') {
+             steps{
+                 sh 'composer analyze'
+             }
+         }
     }
 
 }

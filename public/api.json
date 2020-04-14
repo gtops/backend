@@ -2768,12 +2768,6 @@
                         "type": "integer"
                     },
                     {
-                        "name": "eventId",
-                        "in": "query",
-                        "description": "id \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",
-                        "type": "integer"
-                    },
-                    {
                         "name": "teamId",
                         "in": "query",
                         "description": "id \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",

@@ -71,7 +71,7 @@ return function (App $app) {
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':getAll');
     $app->get('/api/v1/team/{teamId:[0-9]+}', TeamAction::class.':get');
-    $app->delete('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team/{teamId:[0-9]+}', TeamAction::class.':delete');
+    $app->delete('/api/v1/team/{teamId:[0-9]+}', TeamAction::class.':delete');
     $app->put('/api/v1/team/{teamId:[0-9]+}', TeamAction::class.':update');
     $app->get('/api/v1/team', TeamAction::class.':getListForUser');
     $app->post('/api/v1/team/{teamId:[0-9]+}/confirm', TeamAction::class.':confirm');

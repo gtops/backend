@@ -44,7 +44,16 @@ class TeamLeadRepository implements IRepository
      */
     public function getAll(): ?array
     {
-        // TODO: Implement getAll() method.
+        $results = TeamLeadPDO::query()
+            ->join('user', 'team_lead.user_id', '=', 'user.user_id')
+            ->get($this->dateForTeamLead);
+
+        $teamLeads = [];
+        foreach ($results as $result){
+            $teamLeads[] = $this->getTeamLead($result);
+        }
+
+        return $teamLeads;
     }
 
     /**@var $model TeamLead*/
