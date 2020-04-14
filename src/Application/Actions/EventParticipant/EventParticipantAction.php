@@ -8,6 +8,8 @@ use App\Application\Middleware\AuthorizeMiddleware;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use App\Validators\Auth\EmailValidator;
+use App\Validators\User\UserValidator;
+use DateTime;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -222,7 +224,7 @@ class EventParticipantAction extends Action
      *
      * @SWG\Delete(
      *   path="/api/v1/event/{eventId}/participant/{participantId}",
-     *   summary="Удаляет участника из мероприятия(локальный админ и секретарь этого мероприятия)",
+     *   summary="Удаляет участника из мероприятия(локальный админ и секретарь этого мероприятия, тренер команды)",
      *   tags={"ParticipantEvent"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
@@ -248,7 +250,6 @@ class EventParticipantAction extends Action
 
         $participantId = (int)$args['participantId'];
 
-        //todo сделать отдельную функцию под это, так как удаление у тренера тоже может быть
         $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $participantId, $userRole);
 
         if ($access === false){
@@ -259,6 +260,60 @@ class EventParticipantAction extends Action
         }
 
         $this->eventParticipantService->delete($participantId);
+        return $response;
+    }
+
+    /**
+     *
+     * @SWG\Put(
+     *   path="/api/v1/participant/{participantId}",
+     *   summary="меняет данные участника(тренер команды, в котором находится участник)",
+     *   tags={"ParticipantEvent"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="participantId", type="integer", description="id участника"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="name", type="string"), @SWG\Property(property="dateOfBirth", type="string"), @SWG\Property(property="gender", type="integer"))),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function updateUserOnTeam(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        if (in_array($userRole, [AuthorizeMiddleware::SECRETARY, AuthorizeMiddleware::SECRETARY])){
+            return $response->withStatus(403);
+        }
+
+        $participantId = (int)$args['participantId'];
+
+        $access = $this->accessService->hasAccessWorkWithParticipant($userEmail, $participantId, $userRole);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+
+        $errors = (new UserValidator())->validate($rowParams);
+        if (count($errors) > 0) {
+            return $this->respond(400, ['errors' => $errors], $response);
+        }
+
+        $this->eventParticipantService->updateUserOnTeam($rowParams['name'], $rowParams['gender'], (new DateTime($rowParams['dateOfBirth'])), $participantId);
         return $response;
     }
 }

@@ -469,6 +469,28 @@ class AccessService
         return $response;
     }
 
+    public function hasAccessDeleteTrialFromEvent(string $userRole, string $userEmail, int $trialInEventId)
+    {
+        $trialInEvent = $this->trialInEventRepository->get($trialInEventId);
+        if ($trialInEvent == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данного испытания нет в мероприятии'));
+            return $this->getResponse();
+        }
+
+        $organizationId = -1;
+        $event = $this->eventRepository->get($trialInEvent->getEventId());
+        if ($event != null){
+            $organizationId = $event->getIdOrganization();
+        }
+
+        $response = $this->hasAccessWorkWithEvent($event->getId(), $organizationId, $userEmail, $userRole);
+        if ($response === true){
+            return $this->getResponse();
+        }
+
+        return $response;
+    }
+
     public function hasAccessAddRefereeToTrialOnEvent(string $role, string $userEmail, int $trialInEventId, int $refereeInOrganizationId)
     {
         $trialInEvent = $this->trialInEventRepository->get($trialInEventId);

@@ -208,7 +208,10 @@ class EventService
         $trials = $this->trialRepository->getFilteredByTableId($tableInEvent->getTable()->getTableId());
         $response = [];
         foreach ($trials as $trial){
-            $response[] = $trial->toArray();
+            $ageCategories = $this->trialRepository->getAgeCategoriesForTrialId($trial->getTrialId());
+            $trialInArray = $trial->toArray();
+            $trialInArray['ageCategories'] = $ageCategories;
+            $response[] = $trialInArray;
         }
 
         return $response;
@@ -238,5 +241,10 @@ class EventService
     {
         $participant = $this->eventParticipantRepository->getByEmailAndEvent($userEmail, $eventId);
         $this->eventParticipantRepository->delete($participant->getEventParticipantId());
+    }
+
+    public function deleteTrialFromEvent(int $trialInEventId)
+    {
+        $this->trialInEventRepository->delete($trialInEventId);
     }
 }

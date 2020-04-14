@@ -15,6 +15,7 @@ use App\Domain\Models\Organization;
 use App\Domain\Models\Trial;
 use App\Persistance\ModelsEloquant\AgeCategory\AgeCategory;
 use App\Persistance\ModelsEloquant\ResultGuide\ResultGuide;
+use Codeception\PHPUnit\Constraint\Page;
 use Illuminate\Database\Capsule\Manager as Capsule;
 use Monolog\Logger;
 use App\Persistance\ModelsEloquant\Trial\Trial AS TrialPDO;
@@ -141,5 +142,26 @@ class TrialRepository implements IRepository
     public function update(IModel $organization)
     {
         // TODO: Implement update() method.
+    }
+
+    public function getAgeCategoriesForTrialId($trialId)
+    {
+        $results = ResultGuide::query()
+            ->join('age_category', 'age_category.id_age_category', '=', 'result_guide.id_age_category')
+            ->where('id_trial', '=', $trialId)
+            ->get(['age_category.name_age_category']);
+
+        if ($results == null){
+            return null;
+        }
+
+        $response = [];
+        foreach ($results as $result){
+            if (!in_array($result['name_age_category'], $response)){
+                $response[] = $result['name_age_category'];
+            }
+        }
+
+        return $response;
     }
 }

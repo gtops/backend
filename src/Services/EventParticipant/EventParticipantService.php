@@ -2,9 +2,11 @@
 
 namespace App\Services\EventParticipant;
 use App\Domain\Models\EventParticipant\EventParticipant;
+use App\Domain\Models\User\UserCreater;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class EventParticipantService
 {
@@ -64,6 +66,25 @@ class EventParticipantService
 
         $eventParticipant = new EventParticipant(-1, $eventId, $user->getId(), false, $user, null);
         return $this->eventParticipantRepository->add($eventParticipant);
+    }
+
+    public function updateUserOnTeam(string $name, int $gender, \DateTime $dateOfBirth, int $participantId)
+    {
+        $participant = $this->eventParticipantRepository->get($participantId);
+        $user = $this->userRepository->getByEmail($participant->getUser()->getEmail());
+        $updatedUser = UserCreater::createModel([
+            'id' => $user->getId(),
+            'name' => $name,
+            'password' => $user->getPassword(),
+            'email' => $user->getEmail(),
+            'roleId' => $user->getRoleId(),
+            'isActivity' => $gender,
+            'dateTime' => new \DateTime($user->getRegistrationDate()),
+            'gender' =>$user->isActivity(),
+            'dateOfBirth' => $dateOfBirth,
+        ]);
+
+        $this->userRepository->update($updatedUser);
     }
 
 }

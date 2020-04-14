@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\ModelsEloquant\User\User as UserPDO;
+use TypeError;
 
 class UserRepository implements IRepository
 {
@@ -59,7 +60,7 @@ class UserRepository implements IRepository
     public function add(IModel $user):int
     {
         if (!($user instanceof User)){
-            throw new \TypeError();
+            throw new TypeError();
         }
 
         $roleRep = new RoleRepository();
@@ -130,6 +131,8 @@ class UserRepository implements IRepository
             'email' => $user->getEmail(),
             'role_id' => $user->getRoleId(),
             'is_activity' => $user->isActivity(),
+            'gender' => $user->getGender(),
+            'date_of_birth' => $user->getDateOfBirth()
             ]);
     }
 }

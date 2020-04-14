@@ -476,7 +476,7 @@ class EventAction extends Action
      *
      * @SWG\Post(
      *   path="/api/v1/event/{eventId}/trial",
-     *   summary="Добавляет новое испытание в мероприятии (локальный админ)",
+     *   summary="Добавляет новое испытание в мероприятии (локальный админ, Секретарь)",
      *   tags={"Event"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять мероприятия"),
@@ -523,6 +523,47 @@ class EventAction extends Action
 
         $id = $this->eventService->addTrialToEventFromTable($eventId, $trialId, $sportObjectId);
         return $this->respond(200, ['id' => $id], $response);
+    }
+
+    /**
+     *
+     * @SWG\Delete(
+     *   path="/api/v1/trialInEvent/{trialInEventId}",
+     *   summary="удаляет испытание из мероприятия(локальный админ)",
+     *   tags={"Event"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="trialInEventId", type="integer", description="id испытания в мероприятии"),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function deleteTrialFromEvent(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+        $trialInEventId = (int)$args['trialInEventId'];
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        $access = $this->accessService->hasAccessDeleteTrialFromEvent($userRole, $userEmail, $trialInEventId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->eventService->deleteTrialFromEvent($trialInEventId);
+        return $response;
     }
 
     /**

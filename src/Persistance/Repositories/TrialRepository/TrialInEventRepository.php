@@ -112,7 +112,9 @@ class TrialInEventRepository implements IRepository
 
     public function delete(int $id)
     {
-        // TODO: Implement delete() method.
+        TrialInEventPDO::query()
+            ->where('trial_in_event_id', '=', $id)
+            ->delete();
     }
 
     public function update(IModel $model)

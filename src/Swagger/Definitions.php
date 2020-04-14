@@ -242,7 +242,8 @@
  *    @SWG\Property(property="trialId", type="integer"),
  *    @SWG\Property(property="name", type="string"),
  *     @SWG\Property(property="isTypeTime", type="boolean"),
- *     @SWG\Property(property="tableId", type="integer")
+ *     @SWG\Property(property="tableId", type="integer"),
+ *     @SWG\Property(property="ageCategories", type="array", @SWG\Items(type="string"))
  * )
  */
 
