@@ -151,7 +151,15 @@ return function (ContainerBuilder $containerBuilder) {
             return new TrialInEventRepository();
         },
         TeamService::class => function(ContainerInterface $c){
-            return new TeamService($c->get(UserRepository::class), $c->get(TeamRepository::class), $c->get(EventRepository::class), $c->get(LocalAdminRepository::class));
+            return new TeamService(
+                $c->get(UserRepository::class),
+                $c->get(TeamRepository::class),
+                $c->get(EventRepository::class),
+                $c->get(LocalAdminRepository::class),
+                $c->get(TeamLeadRepository::class),
+                $c->get(RoleRepository::class),
+                $c->get(EventParticipantRepository::class)
+            );
         },
         RefereeAction::class => function (ContainerInterface $c){
             return new RefereeAction($c->get(AccessService::class), $c->get(RefereeService::class));
