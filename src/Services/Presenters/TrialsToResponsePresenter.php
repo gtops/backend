@@ -42,6 +42,10 @@ class TrialsToResponsePresenter
                     $itemsOfGroup['group'][] = self::getTrialWithNullResults($trial);
                 }
 
+                if (count($results) != 0){
+                    $itemsOfGroup['group'][] = self::getTrialWithResults($trial, $results);
+                }
+
                 $itemsOfGroup['necessary'] = $trial->getNecessarily();
                 $groupId = $trial->getIdGroup();
             }
@@ -74,7 +78,7 @@ class TrialsToResponsePresenter
     {
         return [
             'trialName' => $trial->getTrialName(),
-            'trialId' => $trial->getResultGuideId(),
+            'trialId' => $trial->getTrialId(),
             'resultForBronze' => $trial->getResultForBronze(),
             'resultForSilver' => $trial->getResultForSilver(),
             'resultForGold' => $trial->getResultForGold(),
@@ -86,11 +90,23 @@ class TrialsToResponsePresenter
     {
         return [
             'trialName' => $trial->getTrialName(),
-            'trialId' => $trial->getResultGuideId(),
+            'trialId' => $trial->getTrialId(),
             'typeTime' => $trial->getTypeTime(),
             'firstResult' => null,
             'secondResult' => null,
             'badge' => null
+        ];
+    }
+
+    private static function getTrialWithResults(Trial $trial, $results)
+    {
+        return [
+            'trialName' => $trial->getTrialName(),
+            'trialId' => $trial->getTrialId(),
+            'typeTime' => $trial->getTypeTime(),
+            'firstResult' => $results[$trial->getTrialId()]['firstResult'] ?? null,
+            'secondResult' => $results[$trial->getTrialId()]['secondResult'] ?? null,
+            'badge' => $results[$trial->getTrialId()]['badge']
         ];
     }
 }

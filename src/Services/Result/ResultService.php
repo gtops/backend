@@ -2,11 +2,13 @@
 
 namespace App\Services\Result;
 use App\Domain\Models\Event\Event;
+use App\Domain\Models\Result\ResultOnTrialInEvent;
 use App\Domain\Models\Trial;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
+use App\Persistance\Repositories\Result\ResultRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
@@ -33,6 +35,7 @@ class ResultService
     private $trialInEventRepository;
     private $sportObjectRepository;
     private $refereeInTrialOnEventRepository;
+    private $resultRepository;
 
     public function __construct(
         LocalAdminRepository $localAdminRepository,
@@ -47,7 +50,8 @@ class ResultService
         TrialRepository $trialRepository,
         TrialInEventRepository $trialInEventRepository,
         SportObjectRepository $sportObjectRepository,
-        RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository
+        RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository,
+        ResultRepository $resultRepository
     )
     {
         $this->localAdminRepository = $localAdminRepository;
@@ -63,6 +67,7 @@ class ResultService
         $this->trialInEventRepository = $trialInEventRepository;
         $this->sportObjectRepository = $sportObjectRepository;
         $this->refereeInTrialOnEventRepository = $refereeInTrialOnEventRepository;
+        $this->resultRepository = $resultRepository;
     }
 
     public function getResultsUfUserInEvent(int $eventId, int $userId)
@@ -92,7 +97,9 @@ class ResultService
         }
 
         if ($event->getStatus() == Event::HOLDING){
-
+            $results = $this->resultRepository->getFilteredByUserIdAndEventId($userId, $eventId);
+            $trials = $this->getFilteredFromAllTrialsTrialsOnEvent($listOfAllTrials, $listTrialsOnEvent);
+            $responseList = TrialsToResponsePresenter::getView($trials, $this->getArrayWithResultsForTrials($results));
         }
 
         return [
@@ -102,14 +109,12 @@ class ResultService
         ];
     }
 
-    /**@var $listOfAllTrials Trial[]*/
-    /**@var $listTrialsOEvent Trial\TrialInEvent[]*/
+    /**@param $listOfAllTrials Trial[]*/
+    /**@param  $listTrialsOEvent Trial\TrialInEvent[]*/
     private function getFilteredFromAllTrialsTrialsOnEvent(array $listOfAllTrials, array $listTrialsOEvent)
     {
         $response = [];
-        /**@var $trial Trial*/
         foreach ($listOfAllTrials as $trial){
-            /**@var $trialOnEvent Trial\TrialInEvent*/
             foreach ($listTrialsOEvent as $trialOnEvent){
                 if ($trial->getTrialId() == $trialOnEvent->getTrial()->getTrialId()){
                     $response[] = $trial;
@@ -118,5 +123,20 @@ class ResultService
         }
 
         return $response;
+    }
+
+    /**@param  $results ResultOnTrialInEvent[]*/
+    private function getArrayWithResultsForTrials(array $results)
+    {
+        $arrayWithResults = [];
+        foreach ($results as $result){
+            $arrayWithResults[$result->getTrialInEvent()->getTrial()->getTrialId()] = [
+                'firstResult' => $result->getFistResult(),
+                'secondResult' => $result->getSecondResult(),
+                'badge' => $result->getBadge()
+            ];
+        }
+
+        return $arrayWithResults;
     }
 }

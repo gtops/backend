@@ -23,7 +23,7 @@ class ResultOnTrialInEvent implements IModel
         $this->badge = $badge;
         $this->resultGuideId = $resultGuideId;
 
-        if (!in_array($badge, ['золото', 'серебро', 'бронза'])){
+        if (!in_array($badge, ['золото', 'серебро', 'бронза']) && $badge != null){
             throw new BadgeException();
         }
     }

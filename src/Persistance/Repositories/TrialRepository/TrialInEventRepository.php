@@ -27,6 +27,8 @@ class TrialInEventRepository implements IRepository
         'sport_object.description',
         'sport_object.sport_object_id'
     ];
+
+    /**@return TrialInEvent*/
     public function get(int $id): ?IModel
     {
         $results = TrialInEventPDO::query()

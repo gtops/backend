@@ -11,15 +11,66 @@ namespace App\Persistance\Repositories\Result;
 
 use App\Domain\Models\IModel;
 use App\Domain\Models\IRepository;
+use App\Domain\Models\Result\ResultOnTrialInEvent;
+use App\Persistance\ModelsEloquant\Result\Result as ResultPDO;
+use App\Persistance\ModelsEloquant\User\User;
+use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
+use App\Persistance\Repositories\User\UserRepository;
 
 class ResultRepository implements IRepository
 {
 
-    public function get(int $id): IModel
+    private $trialInEventRepository;
+    private $userRepository;
+
+    public function __construct(TrialInEventRepository $trialInEventRepository, UserRepository $userRepository)
     {
-        // TODO: Implement get() method.
+        $this->trialInEventRepository = $trialInEventRepository;
+        $this->userRepository = $userRepository;
     }
 
+    /**@return ResultOnTrialInEvent*/
+    public function get(int $id): IModel
+    {
+        $results = ResultPDO::query()
+            ->where('result_on_trial_in_event_id', '=', $id)
+            ->get();
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        return $this->getResultModels($results)[0];
+    }
+
+    private function getResultModels($results)
+    {
+        $resultModels = [];
+        foreach ($results as $result)
+        {
+            $user = $this->userRepository->get($result->user_id);
+            $trialInEvent = $this->trialInEventRepository->get($result->trial_in_event_id);
+            $resultModels[] = new ResultOnTrialInEvent($trialInEvent, $user, $result->id_result_guide, $result->first_result, $result->second_result, $result->badge);
+        }
+
+        return $resultModels;
+    }
+
+    /**@return ResultOnTrialInEvent[]*/
+    public function getFilteredByUserIdAndEventId(int $userId, int $eventId)
+    {
+        $results = ResultPDO::query()
+            ->join('trial_in_event', 'trial_in_event.trial_in_event_id', '=', 'result_on_trial_in_event.trial_in_event_id')
+            ->where('user_id', '=', $userId)
+            ->where('trial_in_event.event_id', '=', $eventId)
+            ->get();
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        return $this->getResultModels($results);
+    }
     /**
      * @inheritDoc
      */
@@ -36,5 +87,10 @@ class ResultRepository implements IRepository
     public function delete(int $id)
     {
         // TODO: Implement delete() method.
+    }
+
+    public function update(IModel $model)
+    {
+        // TODO: Implement update() method.
     }
 }

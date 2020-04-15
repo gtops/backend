@@ -84,6 +84,7 @@ class UserRepository implements IRepository
         return $userId;
     }
 
+    /**@return User*/
     public function get(int $id): IModel
     {
         $userElaquent = UserElaquent::query()->where('user_id', '=', $id)->get();
