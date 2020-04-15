@@ -1890,7 +1890,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/sportObjectResponse"
+                                "$ref": "#/definitions/participantsInTrial"
                             }
                         }
                     }
@@ -3963,6 +3963,43 @@
                     }
                 },
                 "ageCategory": {
+                    "type": "string"
+                },
+                "badge": {
+                    "type": "string",
+                    "enum": [
+                        "\u0437\u043e\u043b\u043e\u0442\u043e",
+                        "\u0441\u0435\u0440\u0435\u0431\u0440\u043e",
+                        "\u0431\u0440\u043e\u043d\u0437\u0430"
+                    ]
+                }
+            },
+            "type": "object"
+        },
+        "participantsInTrial": {
+            "properties": {
+                "userId": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                },
+                "teamId": {
+                    "type": "integer"
+                },
+                "teamName": {
+                    "type": "string"
+                },
+                "dateOfBirth": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "integer"
+                },
+                "firstResult": {
+                    "type": "string"
+                },
+                "secondResult": {
                     "type": "string"
                 },
                 "badge": {

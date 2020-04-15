@@ -126,5 +126,6 @@ return function (App $app) {
 
     //result
     $app->get('/api/v1/event/{eventId:[0-9]+}/user/{userId:[0-9]+}/result', ResultAction::class.':getResultsOfUserInEvent');
+    $app->get('/api/v1/trialInEvent/{trialInEventId:[0-9]+}/result', ResultAction::class.':getResultsOnTrialInEvent');
 
 };

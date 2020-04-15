@@ -2,8 +2,10 @@
 
 namespace App\Services\Result;
 use App\Domain\Models\Event\Event;
+use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\Result\ResultOnTrialInEvent;
 use App\Domain\Models\Trial;
+use App\Domain\Models\User\User;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
@@ -13,6 +15,7 @@ use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\SportObject\SportObjectRepository;
+use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TrialRepository\TableInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TableRepository;
 use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
@@ -36,6 +39,7 @@ class ResultService
     private $sportObjectRepository;
     private $refereeInTrialOnEventRepository;
     private $resultRepository;
+    private $teamRepository;
 
     public function __construct(
         LocalAdminRepository $localAdminRepository,
@@ -51,7 +55,8 @@ class ResultService
         TrialInEventRepository $trialInEventRepository,
         SportObjectRepository $sportObjectRepository,
         RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository,
-        ResultRepository $resultRepository
+        ResultRepository $resultRepository,
+        TeamRepository $teamRepository
     )
     {
         $this->localAdminRepository = $localAdminRepository;
@@ -68,6 +73,7 @@ class ResultService
         $this->sportObjectRepository = $sportObjectRepository;
         $this->refereeInTrialOnEventRepository = $refereeInTrialOnEventRepository;
         $this->resultRepository = $resultRepository;
+        $this->teamRepository = $teamRepository;
     }
 
     public function getResultsUfUserInEvent(int $eventId, int $userId)
@@ -87,6 +93,10 @@ class ResultService
         }
 
         $listOfAllTrials = $this->trialRepository->getList($user->getGender(), $user->getAge());
+        if (count($listOfAllTrials) == 0){
+            return [];
+        }
+
         $listTrialsOnEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
 
         $responseList = [];
@@ -107,6 +117,101 @@ class ResultService
             'ageCategory' => $ageCategory,
             'badge' => null
         ];
+    }
+
+    public function getResultsForTrial(int $trialInEventId)
+    {
+        $trialInEvent = $this->trialInEventRepository->get($trialInEventId);
+        if ($trialInEvent == null){
+            return [];
+        }
+
+        $event = $this->eventRepository->get($trialInEvent->getEventId());
+
+        $trialId = $trialInEvent->getTrial()->getTrialId();
+        $eventParticipants = $this->eventParticipantRepository->getAllByEventId($event->getId());
+
+        $eventParticipantsForTrial = [];
+        $ParticipantsInTrial = $this->getParticipantsForTrial($eventParticipants, $event->getId(), $trialId);
+        $results = [];
+
+        if ($event->getStatus() == Event::LEAD_UP) {
+            foreach ($ParticipantsInTrial as $participant){
+                $team = $this->teamRepository->get($participant->getTeamId() ?? -1);
+                if ($team == null){
+                    $teamName = null;
+                }else{
+                    $teamName = $team->getName();
+                }
+
+                $results[] = [
+                    'userId' => $participant->getUser()->getId(),
+                    'userName' => $participant->getUser()->getName(),
+                    'teamId' => $participant->getTeamId(),
+                    'teamName' => $teamName,
+                    'dateOfBirth' => $participant->getUser()->getDateOfBirth(),
+                    'gender' => $participant->getUser()->getGender(),
+                    'firstResult' => null,
+                    'secondResult' => null,
+                    'badge' => null
+                ];
+            }
+        }
+
+        if ($event->getStatus() == Event::HOLDING){
+            foreach ($ParticipantsInTrial as $participant){
+                $team = $this->teamRepository->get($participant->getTeamId() ?? -1);
+                if ($team == null){
+                    $teamName = null;
+                }else{
+                    $teamName = $team->getName();
+                }
+
+                $resultOfTrialOnEvent = $this->resultRepository->getFilteredByUserIdEventIdTrialId($participant->getUser()->getId(), $event->getId(), $trialId);
+
+                $results[] = [
+                    'userId' => $participant->getUser()->getId(),
+                    'userName' => $participant->getUser()->getName(),
+                    'teamId' => $participant->getTeamId(),
+                    'teamName' => $teamName,
+                    'dateOfBirth' => $participant->getUser()->getDateOfBirth(),
+                    'gender' => $participant->getUser()->getGender(),
+                    'firstResult' => $resultOfTrialOnEvent->getFistResult(),
+                    'secondResult' => $resultOfTrialOnEvent->getSecondResult(),
+                    'badge' => $resultOfTrialOnEvent->getBadge()
+                ];
+            }
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param $eventParticipants EventParticipant[]
+     * @param int $eventId
+     * @param int $trialId
+     * @return EventParticipant[]
+     */
+    private function getParticipantsForTrial(array $eventParticipants, int $eventId, int $trialId)
+    {
+        $participants = [];
+        $listTrialsOnEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
+        foreach ($eventParticipants as $eventParticipant){
+            $listOfAllTrials = $this->trialRepository->getList($eventParticipant->getUser()->getGender(), $eventParticipant->getUser()->getAge());
+            if (count($listOfAllTrials) == 0){
+                continue;
+            }
+
+            $trials = $this->getFilteredFromAllTrialsTrialsOnEvent($listOfAllTrials, $listTrialsOnEvent);
+            foreach ($trials as $trial){
+                if ($trial->getTrialId() == $trialId){
+                    $participants[] = $eventParticipant;
+                    break;
+                }
+            }
+        }
+
+        return $participants;
     }
 
     /**@param $listOfAllTrials Trial[]*/

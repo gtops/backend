@@ -321,3 +321,18 @@
  * )
  */
 
+/**
+ * @SWG\Definition(
+ *    definition="participantsInTrial",
+ *    type="object",
+ *    @SWG\Property(property="userId", type="integer"),
+ *     @SWG\Property(property="userName", type="string"),
+ *     @SWG\Property(property="teamId", type="integer"),
+ *     @SWG\Property(property="teamName", type="string"),
+ *     @SWG\Property(property="dateOfBirth", type="string"),
+ *     @SWG\Property(property="gender", type="integer"),
+ *     @SWG\Property(property="firstResult", type="string"),
+ *     @SWG\Property(property="secondResult", type="string"),
+ *     @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"}),
+ * )
+ */

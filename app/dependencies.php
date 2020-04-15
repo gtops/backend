@@ -182,7 +182,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TrialInEventRepository::class),
                 $c->get(SportObjectRepository::class),
                 $c->get(RefereeInTrialOnEventRepository::class),
-                $c->get(ResultRepository::class)
+                $c->get(ResultRepository::class),
+                $c->get(TeamRepository::class)
             );
         },
         ResultRepository::class => function(ContainerInterface $c){

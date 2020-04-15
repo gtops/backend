@@ -93,4 +93,26 @@ class ResultRepository implements IRepository
     {
         // TODO: Implement update() method.
     }
+
+    /**
+     * @param int $userId
+     * @param $eventId
+     * @param int $trialId
+     * @return ResultOnTrialInEvent
+     */
+    public function getFilteredByUserIdEventIdTrialId(int $userId, $eventId, int $trialId)
+    {
+        $results = ResultPDO::query()
+            ->join('trial_in_event', 'trial_in_event.trial_in_event_id', '=', 'result_on_trial_in_event.trial_in_event_id')
+            ->where('user_id', '=', $userId)
+            ->where('trial_in_event.event_id', '=', $eventId)
+            ->where('trial_in_event.trial_id', '=', $trialId)
+            ->get();
+
+        if (count($results) == 0){
+            return null;
+        }
+
+        return $this->getResultModels($results)[0];
+    }
 }

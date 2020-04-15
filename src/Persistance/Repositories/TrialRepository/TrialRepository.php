@@ -81,6 +81,7 @@ class TrialRepository implements IRepository
     {
         for($i = 0; $i < count($results) - 1; $i++){
            $keyValue = explode('=', $results[$i]);
+           //todo добавить проверку на 0,1 при таком случае заменить разбить на два массива и склеить
            if ($keyValue[1] <= $firstResult){
                return $keyValue[0];
            }

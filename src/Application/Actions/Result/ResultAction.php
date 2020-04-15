@@ -54,7 +54,7 @@ class ResultAction extends Action
      *   tags={"Result"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="trialInEventId", type="integer", description="id испытания в мероприятии"),
-     *   @SWG\Response(response=200, description="OK", @SWG\Property(type="array", @SWG\Items(ref="#/definitions/sportObjectResponse")),
+     *   @SWG\Response(response=200, description="OK", @SWG\Property(type="array", @SWG\Items(ref="#/definitions/participantsInTrial")),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
      *              @SWG\Property(property="type", type="string"),
@@ -65,6 +65,8 @@ class ResultAction extends Action
      */
     public function getResultsOnTrialInEvent(Request $request, Response $response, $args): Response
     {
-
+        $trialInEventId = (int)$args['trialInEventId'];
+        $result = $this->resultService->getResultsForTrial($trialInEventId);
+        return $this->respond(200, $result, $response);
     }
 }
