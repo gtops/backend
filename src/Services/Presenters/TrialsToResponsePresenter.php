@@ -94,7 +94,10 @@ class TrialsToResponsePresenter
             'typeTime' => $trial->getTypeTime(),
             'firstResult' => null,
             'secondResult' => null,
-            'badge' => null
+            'badge' => null,
+            'resultForBronze' => $trial->getResultForBronze(),
+            'resultForSilver' => $trial->getResultForSilver(),
+            'resultForGold' => $trial->getResultForGold(),
         ];
     }
 
@@ -106,7 +109,10 @@ class TrialsToResponsePresenter
             'typeTime' => $trial->getTypeTime(),
             'firstResult' => $results[$trial->getTrialId()]['firstResult'] ?? null,
             'secondResult' => $results[$trial->getTrialId()]['secondResult'] ?? null,
-            'badge' => $results[$trial->getTrialId()]['badge']
+            'badge' => $results[$trial->getTrialId()]['badge'],
+            'resultForBronze' => $trial->getResultForBronze(),
+            'resultForSilver' => $trial->getResultForSilver(),
+            'resultForGold' => $trial->getResultForGold(),
         ];
     }
 }

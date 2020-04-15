@@ -6,6 +6,7 @@ use App\Application\Actions\Referee\RefereeAction;
 use App\Application\Actions\Result\ResultAction;
 use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
+use App\Persistance\Repositories\AgeCategory\AgeCategoryRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
 use App\Persistance\Repositories\Referee\RefereeRepository;
@@ -183,8 +184,13 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(SportObjectRepository::class),
                 $c->get(RefereeInTrialOnEventRepository::class),
                 $c->get(ResultRepository::class),
-                $c->get(TeamRepository::class)
+                $c->get(TeamRepository::class),
+                $c->get(AgeCategoryRepository::class)
             );
+        },
+        AgeCategoryRepository::class => function(ContainerInterface $c){
+            $c->get(DataBase::class);
+            return new AgeCategoryRepository();
         },
         ResultRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

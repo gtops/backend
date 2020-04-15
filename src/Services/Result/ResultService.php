@@ -1,11 +1,13 @@
 <?php
 
 namespace App\Services\Result;
+use App\Domain\Models\AgeCategory\AgeCategory;
 use App\Domain\Models\Event\Event;
 use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\Result\ResultOnTrialInEvent;
 use App\Domain\Models\Trial;
 use App\Domain\Models\User\User;
+use App\Persistance\Repositories\AgeCategory\AgeCategoryRepository;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
@@ -40,6 +42,7 @@ class ResultService
     private $refereeInTrialOnEventRepository;
     private $resultRepository;
     private $teamRepository;
+    private $ageCategoryRepository;
 
     public function __construct(
         LocalAdminRepository $localAdminRepository,
@@ -56,7 +59,8 @@ class ResultService
         SportObjectRepository $sportObjectRepository,
         RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository,
         ResultRepository $resultRepository,
-        TeamRepository $teamRepository
+        TeamRepository $teamRepository,
+        AgeCategoryRepository $ageCategoryRepository
     )
     {
         $this->localAdminRepository = $localAdminRepository;
@@ -74,6 +78,7 @@ class ResultService
         $this->refereeInTrialOnEventRepository = $refereeInTrialOnEventRepository;
         $this->resultRepository = $resultRepository;
         $this->teamRepository = $teamRepository;
+        $this->ageCategoryRepository = $ageCategoryRepository;
     }
 
     public function getResultsUfUserInEvent(int $eventId, int $userId)
@@ -112,11 +117,35 @@ class ResultService
             $responseList = TrialsToResponsePresenter::getView($trials, $this->getArrayWithResultsForTrials($results));
         }
 
+        $dateAboutCountOfTest = $this->getDataAboutCountOfTests($user->getGender(), $this->ageCategoryRepository->getFilteredByName($ageCategory));
+
         return [
             'groups' => $responseList,
             'ageCategory' => $ageCategory,
-            'badge' => null
+            'badge' => null,
+            'countTestsForBronze' => $dateAboutCountOfTest['countTestsForBronze'] ?? null,
+            'countTestForSilver' => $dateAboutCountOfTest['countTestForSilver'] ?? null,
+            'countTestsForGold' => $dateAboutCountOfTest['countTestsForGold'] ?? null
         ];
+    }
+
+    private function getDataAboutCountOfTests(int $gender, AgeCategory $ageCategory)
+    {
+        if ($gender == 0){
+            return [
+                'countTestsForBronze' => $ageCategory->getCountTestForBronzeForWoman(),
+                'countTestForSilver' => $ageCategory->getCountTestFromSilverForWoman(),
+                'countTestsForGold' => $ageCategory->getCountTestsForGoldForWoman()
+            ];
+        }
+
+        if ($gender == 1){
+            return [
+                'countTestsForBronze' => $ageCategory->getCountTestForBronzeForMan(),
+                'countTestForSilver' => $ageCategory->getCountTestFromSilverForMan(),
+                'countTestsForGold' => $ageCategory->getCountTestsForGoldForMan()
+            ];
+        }
     }
 
     public function getResultsForTrial(int $trialInEventId)

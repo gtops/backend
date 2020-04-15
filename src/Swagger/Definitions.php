@@ -298,7 +298,10 @@
  *     @SWG\Property(property="trypeTime", type="boolean"),
  *     @SWG\Property(property="fristResult", type="string"),
  *     @SWG\Property(property="secondResult", type="integer"),
- *     @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"})
+ *     @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"}),
+ *     @SWG\Property(property="resultForBronze", type="integer"),
+ *     @SWG\Property(property="resultForSilver", type="integer"),
+ *     @SWG\Property(property="resultForGold", type="integer"),
  * )
  */
 
@@ -318,6 +321,9 @@
  *   @SWG\Property(property="groups", type="array", @SWG\Items(ref="#/definitions/groupTrial")),
  *    @SWG\Property(property="ageCategory", type="string"),
  *    @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"}),
+ *    @SWG\Property(property="countTestsForBronze", type="integer"),
+ *     @SWG\Property(property="countTestForSilver", type="integer"),
+ *     @SWG\Property(property="countTestsForGold", type="integer"),
  * )
  */
 

@@ -3936,6 +3936,15 @@
                         "\u0441\u0435\u0440\u0435\u0431\u0440\u043e",
                         "\u0431\u0440\u043e\u043d\u0437\u0430"
                     ]
+                },
+                "resultForBronze": {
+                    "type": "integer"
+                },
+                "resultForSilver": {
+                    "type": "integer"
+                },
+                "resultForGold": {
+                    "type": "integer"
                 }
             },
             "type": "object"

@@ -43,7 +43,7 @@ class ResultAction extends Action
             return $response->withStatus(404);
         }
 
-        return $this->respond(200, ['groups' => $result['groups'], 'ageCategory' => $result['ageCategory'], 'badge' => $result['badge']],  $response);
+        return $this->respond(200, ['groups' => $result['groups'], 'ageCategory' => $result['ageCategory'], 'badge' => $result['badge'], 'countTestsForBronze' => $result['countTestsForBronze'], 'countTestForSilver' => $result['countTestForSilver'], 'countTestsForGold' => $result['countTestsForGold']],  $response);
     }
 
     /**
