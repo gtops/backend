@@ -12,7 +12,7 @@ namespace App\Domain\Models;
 class Trial implements IModel
 {
     private $trialName;
-    private $trialId;
+    private $resultGuideId;
     private $resultForSilver;
     private $resultForBronze;
     private $resultForGold;
@@ -20,11 +20,13 @@ class Trial implements IModel
     private $necessarily;
     private $idGroupInAgeCategory;
     private $typeTime;
+    private $trialId;
 
-    public function __construct(string $trialName, int $trialId, string $resultForSilver, string $resultForBronze, string $resultForGold, string $secondResult, bool $necessarily, int $idGroupInAgeCategory, bool $typeTime)
+    public function __construct(string $trialName, int $resultGuideId, int $trialId, string $resultForSilver, string $resultForBronze, string $resultForGold, string $secondResult, bool $necessarily, int $idGroupInAgeCategory, bool $typeTime)
     {
-        $this->trialName = $trialName;
         $this->trialId = $trialId;
+        $this->trialName = $trialName;
+        $this->resultGuideId = $resultGuideId;
         $this->resultForSilver = $resultForSilver;
         $this->resultForBronze = $resultForBronze;
         $this->secondResult = $secondResult;
@@ -32,6 +34,14 @@ class Trial implements IModel
         $this->necessarily = $necessarily;
         $this->idGroupInAgeCategory = $idGroupInAgeCategory;
         $this->typeTime = $typeTime;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTrialId(): int
+    {
+        return $this->trialId;
     }
 
     public function getTypeTime():bool
@@ -54,9 +64,9 @@ class Trial implements IModel
         return $this->trialName;
     }
 
-    public function getTrialId():int
+    public function getResultGuideId():int
     {
-        return $this->trialId;
+        return $this->resultGuideId;
     }
 
     public function getResultForSilver():string
@@ -83,7 +93,7 @@ class Trial implements IModel
     {
         return [
                 'trialName' => $this->getTrialName(),
-                'trialId' => $this->getTrialId(),
+                'trialId' => $this->getResultGuideId(),
                 'resultForSilver' => $this->getResultForSilver(),
                 'resultForBronze' => $this->getResultForBronze(),
                 'resultForGold' => $this->getResultForGold(),

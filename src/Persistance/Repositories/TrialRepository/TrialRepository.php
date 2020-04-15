@@ -52,15 +52,13 @@ class TrialRepository implements IRepository
 
 
         $response = [];
-        $logger = new Logger('a');
         foreach ($results as $result)
         {
             $silver = str_replace(',', ':', $result->result_for_silver);
-            $logger->alert($result->result_for_silver);
             $bronze = str_replace(',', ':', $result->result_for_bronze);
             $gold = str_replace(',', ':', $result->result_for_gold);
             //добавить фильтрацию для времени в минутах и секундах
-            $response[] = new Trial($result->trial, $result->id_result_guide, $silver, $bronze,
+            $response[] = new Trial($result->trial, $result->id_result_guide, $result->id_trial, $silver, $bronze,
                 $gold, 0, $result->necessarily, $result->id_group_result_guide, $result->type_time);
         }
 
@@ -69,7 +67,6 @@ class TrialRepository implements IRepository
 
     public function getSecondResult(float $firstResult, int $allDataStandardId):int
     {
-        $logger = new Logger('a');
         $translatorModels = ResultGuide::query()
             ->where('id_result_guide', '=', $allDataStandardId)
             ->get();

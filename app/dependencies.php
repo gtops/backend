@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
 use App\Application\Actions\Referee\RefereeAction;
+use App\Application\Actions\Result\ResultAction;
 use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
@@ -17,6 +18,7 @@ use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Services\AccessService\AccessService;
 use App\Services\EventParticipant\EventParticipantService;
 use App\Services\Referee\RefereeService;
+use App\Services\Result\ResultService;
 use App\Services\SportObject\SportObjectService;
 use App\Services\TeamLead\TeamLeadService;
 use DI\ContainerBuilder;
@@ -159,6 +161,26 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TeamLeadRepository::class),
                 $c->get(RoleRepository::class),
                 $c->get(EventParticipantRepository::class)
+            );
+        },
+        ResultAction::class => function(ContainerInterface $c){
+            return new ResultAction($c->get(ResultService::class));
+        },
+        ResultService::class => function(ContainerInterface $c){
+            return new ResultService(
+                $c->get(LocalAdminRepository::class),
+                $c->get(EventRepository::class),
+                $c->get(SecretaryRepository::class),
+                $c->get(RoleRepository::class),
+                $c->get(UserRepository::class),
+                $c->get(EventParticipantRepository::class),
+                $c->get(SecretaryOnOrganizationRepository::class),
+                $c->get(TableInEventRepository::class),
+                $c->get(TableRepository::class),
+                $c->get(TrialRepository::class),
+                $c->get(TrialInEventRepository::class),
+                $c->get(SportObjectRepository::class),
+                $c->get(RefereeInTrialOnEventRepository::class)
             );
         },
         RefereeAction::class => function (ContainerInterface $c){

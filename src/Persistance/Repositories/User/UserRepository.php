@@ -86,7 +86,22 @@ class UserRepository implements IRepository
 
     public function get(int $id): IModel
     {
-        // TODO: Implement get() method.
+        $userElaquent = UserElaquent::query()->where('user_id', '=', $id)->get();
+        if (count($userElaquent) == 0){
+            return null;
+        }
+
+        return UserCreater::createModel([
+            'id' => $userElaquent[0]['user_id'],
+            'name' => $userElaquent[0]['name'],
+            'password' => $userElaquent[0]['password'],
+            'email' => $userElaquent[0]['email'],
+            'roleId' => $userElaquent[0]['role_id'],
+            'isActivity' => $userElaquent[0]['is_activity'],
+            'dateTime' => new \DateTime($userElaquent[0]['registration_date']),
+            'gender' => $userElaquent[0]['gender'],
+            'dateOfBirth' => new \DateTime($userElaquent[0]['date_of_birth'])
+        ]);
     }
 
     public function getByEmail(string $email):?User

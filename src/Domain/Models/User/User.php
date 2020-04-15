@@ -3,6 +3,8 @@
 namespace App\Domain\Models\User;
 
 use App\Domain\Models\IModel;
+use DateTime;
+use DateTimeZone;
 
 class User implements IModel
 {
@@ -23,9 +25,9 @@ class User implements IModel
         string $email,
         string $roleId,
         int $isActivity,
-        \DateTime $registrationDate,
+        DateTime $registrationDate,
         int $gender,
-        \DateTime $dateOfBirth
+        DateTime $dateOfBirth
     )
     {
         $this->id = $id;
@@ -51,6 +53,12 @@ class User implements IModel
     public function getName():string
     {
         return $this->name;
+    }
+
+    public function getAge():int
+    {
+        $date = new DateTime();
+        return $date->diff($this->dateOfBirth)->y;
     }
 
     public function setIsActivity()
@@ -88,13 +96,13 @@ class User implements IModel
 
     public function getRegistrationDate():string
     {
-        return $this->registrationDate->setTimezone(new \DateTimeZone('europe/moscow'))
+        return $this->registrationDate->setTimezone(new DateTimeZone('europe/moscow'))
             ->format('Y-m-d H:i:s');
     }
 
     public function getDateOfBirth():string
     {
-        return $this->dateOfBirth->setTimezone(new \DateTimeZone('europe/moscow'))
+        return $this->dateOfBirth->setTimezone(new DateTimeZone('europe/moscow'))
             ->format('Y-m-d H:i:s');
     }
 

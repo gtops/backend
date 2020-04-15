@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 use App\Application\Actions\EventParticipant\EventParticipantAction;
 use App\Application\Actions\Referee\RefereeAction;
+use App\Application\Actions\Result\ResultAction;
 use App\Application\Actions\SportObject\SportObjectAction;
 use App\Application\Actions\TeamLead\TeamLeadAction;
 use Slim\App;
@@ -122,5 +123,8 @@ return function (App $app) {
 
     //роли
     $app->get('/api/v1/role', RoleAction::class.':getList');
+
+    //result
+    $app->get('/api/v1/event/{eventId:[0-9]+}/user/{userId:[0-9]+}/result', ResultAction::class.':getResultsOfUserInEvent');
 
 };

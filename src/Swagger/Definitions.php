@@ -287,3 +287,37 @@
  *   @SWG\Property(property="referies", type="array", @SWG\Items(ref="#/definitions/refereeOnTrialInEvent"))
  * )
  */
+
+
+/**
+ * @SWG\Definition(
+ *    definition="trialItemInResult",
+ *    type="object",
+ *    @SWG\Property(property="trialName", type="string"),
+ *     @SWG\Property(property="trialId", type="integer"),
+ *     @SWG\Property(property="trypeTime", type="boolean"),
+ *     @SWG\Property(property="fristResult", type="string"),
+ *     @SWG\Property(property="secondResult", type="integer"),
+ *     @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"})
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="groupTrial",
+ *    type="object",
+ *   @SWG\Property(property="group", type="array", @SWG\Items(ref="#/definitions/trialItemInResult")),
+ *    @SWG\Property(property="necessary", type="boolean")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="resultForUser",
+ *    type="object",
+ *   @SWG\Property(property="groups", type="array", @SWG\Items(ref="#/definitions/groupTrial")),
+ *    @SWG\Property(property="ageCategory", type="string"),
+ *    @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"}),
+ * )
+ */
+

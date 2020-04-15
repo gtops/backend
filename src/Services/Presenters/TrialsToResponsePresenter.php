@@ -12,47 +12,85 @@ use App\Domain\Models\Trial;
 
 class TrialsToResponsePresenter
 {
-    public static function getView(array $trials):array
+    public static function getView(array $trials, $results = null):array
     {
         /** @var  $trial Trial */
         $responseData = [];
-        $arrayTrials = [];
-        $trialsView = [];
+        $itemsOfGroup = [];
+
         $groupId = -1;
-
-        foreach ($trials as $trial){
-
-            if ($trial->getIdGroup() != $groupId)
-            {
-                $arrayTrials['group'] = $trialsView;
-
-                if ($groupId != -1) {
-                    $responseData[] = $arrayTrials;
-                }
-
-                $arrayTrials = [];
-                $groupId = $trial->getIdGroup();
-
-                $arrayTrials['necessary'] = $trial->getNecessarily();
-
-                $trialsView = [];
+        $tempArray = [];
+        $allCount = count($trials);
+        $counter = 1;
+        foreach ($trials as $trial) {
+            if (self::itemInArray($tempArray, $trial)){
+                continue;
             }
 
-            $trialsView[] = TrialsToResponsePresenter::getTrialVIew($trial);
+            if ($trial->getIdGroup() != $groupId && $groupId != -1){
+                $responseData[] = $itemsOfGroup;
+                $itemsOfGroup = [];
+                $groupId = $trial->getIdGroup();
+            }
+
+            if ($groupId == -1 || $groupId == $trial->getIdGroup()){
+                if($results === null) {
+                    $itemsOfGroup['group'][] = self::getTrialVIew($trial);
+                }
+
+                if (count($results) == 0){
+                    $itemsOfGroup['group'][] = self::getTrialWithNullResults($trial);
+                }
+
+                $itemsOfGroup['necessary'] = $trial->getNecessarily();
+                $groupId = $trial->getIdGroup();
+            }
+
+            if ($counter == $allCount)
+            {
+                $responseData[] = $itemsOfGroup;
+                $itemsOfGroup = [];
+                $groupId = $trial->getIdGroup();
+            }
+            $counter++;
         }
 
-        return$responseData;
+        return  $responseData;
+    }
+
+    /**@var $tempArray Trial[]*/
+    private static function itemInArray(array $tempArray, Trial $item)
+    {
+        foreach ($tempArray as $trial){
+            if ($trial->getResultGuideId() == $item->getResultGuideId()){
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static function getTrialVIew(Trial $trial):array
     {
         return [
             'trialName' => $trial->getTrialName(),
-            'trialId' => $trial->getTrialId(),
+            'trialId' => $trial->getResultGuideId(),
             'resultForBronze' => $trial->getResultForBronze(),
             'resultForSilver' => $trial->getResultForSilver(),
             'resultForGold' => $trial->getResultForGold(),
             'typeTime' => $trial->getTypeTime()
+        ];
+    }
+
+    private static function getTrialWithNullResults(Trial $trial)
+    {
+        return [
+            'trialName' => $trial->getTrialName(),
+            'trialId' => $trial->getResultGuideId(),
+            'typeTime' => $trial->getTypeTime(),
+            'firstResult' => null,
+            'secondResult' => null,
+            'badge' => null
         ];
     }
 }
