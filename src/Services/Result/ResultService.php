@@ -186,7 +186,7 @@ class ResultService
                 ];
             }
         }
-
+        $trial = $this->trialRepository->get($trialId);
         if ($event->getStatus() == Event::HOLDING){
             foreach ($ParticipantsInTrial as $participant){
                 $team = $this->teamRepository->get($participant->getTeamId() ?? -1);
@@ -197,7 +197,6 @@ class ResultService
                 }
 
                 $resultOfTrialOnEvent = $this->resultRepository->getFilteredByUserIdEventIdTrialId($participant->getUser()->getId(), $event->getId(), $trialId);
-
                 $results[] = [
                     'userId' => $participant->getUser()->getId(),
                     'userName' => $participant->getUser()->getName(),
@@ -212,7 +211,11 @@ class ResultService
             }
         }
 
-        return $results;
+        return [
+            'participants' => $results,
+            'trialName' => $trial->getName(),
+            'isTypeTime' => $trial->isTypeTime(),
+        ];
     }
 
     /**

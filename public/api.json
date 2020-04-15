@@ -942,9 +942,9 @@
                         "type": "string"
                     },
                     {
-                        "name": "id",
+                        "name": "eventId",
                         "in": "query",
-                        "description": "id \u043e\u0440\u0433\u0430\u043d\u0438\u0437\u0430\u0446\u0438\u0438, \u043a \u043a\u043e\u0442\u043e\u0440\u043e\u0439 \u0431\u0443\u0434\u0435\u043c \u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0442\u044c \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",
+                        "description": "id \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f, \u043a\u0443\u0434\u0430 \u0431\u0443\u0434\u0435\u043c \u0434\u043e\u0431\u0430\u0432\u043b\u044f\u0442\u044c \u043d\u043e\u0432\u044b\u0435 \u0438\u0441\u043f\u044b\u0442\u0430\u043d\u0438\u044f",
                         "type": "integer"
                     },
                     {
@@ -1050,7 +1050,7 @@
                         "type": "string"
                     },
                     {
-                        "name": "id",
+                        "name": "eventId",
                         "in": "query",
                         "description": "id \u043c\u0435\u0440\u043e\u043f\u0440\u0438\u044f\u0442\u0438\u044f",
                         "type": "integer"
@@ -4042,6 +4042,23 @@
             "type": "object"
         },
         "participantsInTrial": {
+            "properties": {
+                "participants": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/participantsInTrialPbject"
+                    }
+                },
+                "trialName": {
+                    "type": "string"
+                },
+                "isTypeTime": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "participantsInTrialPbject": {
             "properties": {
                 "userId": {
                     "type": "integer"

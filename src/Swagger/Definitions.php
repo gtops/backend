@@ -331,6 +331,16 @@
  * @SWG\Definition(
  *    definition="participantsInTrial",
  *    type="object",
+ *   @SWG\Property(property="participants", type="array", @SWG\Items(ref="#/definitions/participantsInTrialPbject")),
+ *    @SWG\Property(property="trialName", type="string"),
+ *     @SWG\Property(property="isTypeTime", type="boolean"),
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="participantsInTrialPbject",
+ *    type="object",
  *    @SWG\Property(property="userId", type="integer"),
  *     @SWG\Property(property="userName", type="string"),
  *     @SWG\Property(property="teamId", type="integer"),
