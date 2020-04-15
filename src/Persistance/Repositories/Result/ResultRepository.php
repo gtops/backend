@@ -79,9 +79,20 @@ class ResultRepository implements IRepository
         // TODO: Implement getAll() method.
     }
 
+    /**@param $model ResultOnTrialInEvent*/
     public function add(IModel $model):int
     {
-        // TODO: Implement add() method.
+        ResultPDO::query()
+            ->create([
+                'trial_in_event_id' => $model->getTrialInEvent()->getTrialInEventId(),
+                'user_id' => $model->getUser()->getId(),
+                'id_result_guide' => $model->getResultGuideId(),
+                'first_result' => $model->getFistResult(),
+                'second_result' => $model->getSecondResult(),
+                'badge' => $model->getBadge()
+            ]);
+
+        return 1;
     }
 
     public function delete(int $id)

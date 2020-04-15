@@ -309,7 +309,7 @@ class AccessService
         }
         
         if ($event->getStatus() != Event::LEAD_UP){
-            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
+            $this->addError(new ActionError(ActionError::BAD_STATUS_OF_EVENT, 'Данное действие возможно только при статусе мероприятия `'.Event::LEAD_UP.'`'));
         }
     }
 
@@ -513,6 +513,29 @@ class AccessService
         return $response;
     }
 
+    public function hasAccessChangeStatusOfEvent(string $userRole, string $userEmail, int $eventId)
+    {
+        $event = $this->eventRepository->get($eventId);
+        $organizationId = -1;
+        if ($event != null){
+            $organizationId = $event->getIdOrganization();
+        }
+        $this->hasAccessWorkWithEvent($eventId, $organizationId, $userEmail, $userRole);
+        $this->addErrorIfLastStatusOfEvent($event);
+
+        if (count($this->errors) == 1  && $this->errors[0]->getType() == ActionError::BAD_STATUS_OF_EVENT){
+            return true;
+        }
+
+        if (count($this->errors) != 0) {
+            if ($this->errors[0]->getType() == ActionError::BAD_STATUS_OF_EVENT) {
+                unset($this->errors[0]);
+            }
+        }
+
+        return $this->getResponse();
+    }
+
     public function hasAccessAddSecretaryToOrganization(string $userRole, string $localAdminEmail, int $organizationId, $secretaryEmail)
     {
         $organization = $this->organizationRepository->get($organizationId);
@@ -622,6 +645,7 @@ class AccessService
 
         return $response;
     }
+
 
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
@@ -837,6 +861,17 @@ class AccessService
     {
         if ($refereeInTrialOnEvent == null){
             $this->addError(new ActionError(ActionError::class, 'Данной судьи не существует'));
+        }
+    }
+
+    private function addErrorIfLastStatusOfEvent(?IModel $event)
+    {
+        if ($event == null){
+            return;
+        }
+
+        if ($event->getStatus() == Event::COMPLETED){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Это мероприятие уже завершено'));
         }
     }
 }

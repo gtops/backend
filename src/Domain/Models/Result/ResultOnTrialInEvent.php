@@ -14,7 +14,7 @@ class ResultOnTrialInEvent implements IModel
     private $secondResult;
     private $badge;
 
-    public function __construct(TrialInEvent $trialInEvent, User $user, int $resultGuideId, $fistResult, $secondResult, string $badge)
+    public function __construct(TrialInEvent $trialInEvent, User $user, int $resultGuideId, $fistResult, $secondResult, ?string $badge)
     {
         $this->trialInEvent = $trialInEvent;
         $this->user = $user;
@@ -39,7 +39,7 @@ class ResultOnTrialInEvent implements IModel
     /**
      * @return string
      */
-    public function getBadge(): string
+    public function getBadge(): ?string
     {
         return $this->badge;
     }

@@ -39,6 +39,10 @@ class Event implements IModel
         return $this->status;
     }
 
+    public function setStatus(string $status){
+        $this->status = $status;
+    }
+
     public function getId():int
     {
         return $this->id;

@@ -221,7 +221,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TrialRepository::class),
                 $c->get(TrialInEventRepository::class),
                 $c->get(SportObjectRepository::class),
-                $c->get(RefereeInTrialOnEventRepository::class)
+                $c->get(RefereeInTrialOnEventRepository::class),
+                $c->get(ResultRepository::class)
             );
         },
         SportObjectAction::class => function(ContainerInterface $c)

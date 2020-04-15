@@ -479,7 +479,7 @@ class EventAction extends Action
      *   summary="Добавляет новое испытание в мероприятии (локальный админ, Секретарь)",
      *   tags={"Event"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
-     *   @SWG\Parameter(in="query", name="id", type="integer", description="id организации, к которой будем добавлять мероприятия"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия, куда будем добавлять новые испытания"),
      *   @SWG\Parameter(in="body", name="body", @SWG\Schema(ref="#/definitions/trialInEvent")),
      *   @SWG\Response(response=200, description="OK", @SWG\Schema(@SWG\Property(property="id", type="integer"),)),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
@@ -585,5 +585,51 @@ class EventAction extends Action
         }
 
         return $this->respond(200, $responseArray, $response);
+    }
+
+    /**
+     *
+     * @SWG\Post(
+     *   path="/api/v1/event/{eventId}/changeStatus",
+     *   summary="меняет стаус мероприятия(локальный админ)",
+     *   tags={"Event"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function changeStatusOfEvent(Request $request, Response $response, $args):Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $eventId = (int)$args['eventId'];
+
+        $userRole = $request->getHeader('userRole')[0];
+        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
+            return $response->withStatus(403);
+        }
+
+        $userEmail = $request->getHeader('userEmail')[0];
+
+        $access = $this->accessService->hasAccessChangeStatusOfEvent($userRole, $userEmail, $eventId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->eventService->changeStatusOfEvent($eventId);
+        return $response;
     }
 }

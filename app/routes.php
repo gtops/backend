@@ -68,6 +68,7 @@ return function (App $app) {
     $app->post('/api/v1/event/{eventId:[0-9]+}/trial', EventAction::class.':addTrialToEvent');
     $app->get('/api/v1/event/{eventId:[0-9]+}/trial', EventAction::class.':getTrials');
     $app->delete('/api/v1/trialInEvent/{trialInEventId:[0-9]+}', EventAction::class.':deleteTrialFromEvent');
+    $app->post('/api/v1/event/{eventId}/changeStatus', EventAction::class.':changeStatusOfEvent');
 
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');

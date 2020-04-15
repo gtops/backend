@@ -4,7 +4,9 @@ namespace App\Services\Event;
 use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\EventParticipant\EventParticipant;
+use App\Domain\Models\Result\ResultOnTrialInEvent;
 use App\Domain\Models\Secretary\Secretary;
+use App\Domain\Models\Trial;
 use App\Domain\Models\Trial\TableInEvent;
 use App\Domain\Models\Trial\TrialInEvent;
 use App\Persistance\Repositories\Event\EventRepository;
@@ -12,6 +14,7 @@ use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
 use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Domain\Models\Event\Event;
 use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
+use App\Persistance\Repositories\Result\ResultRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
@@ -38,6 +41,7 @@ class EventService
     private $trialInEventRepository;
     private $sportObjectRepository;
     private $refereeInTrialOnEventRepository;
+    private $resultRepository;
 
     public function __construct(
         LocalAdminRepository $localAdminRepository,
@@ -52,7 +56,8 @@ class EventService
         TrialRepository $trialRepository,
         TrialInEventRepository $trialInEventRepository,
         SportObjectRepository $sportObjectRepository,
-        RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository
+        RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository,
+        ResultRepository $resultRepository
     )
     {
         $this->localAdminRepository = $localAdminRepository;
@@ -68,6 +73,7 @@ class EventService
         $this->trialInEventRepository = $trialInEventRepository;
         $this->sportObjectRepository = $sportObjectRepository;
         $this->refereeInTrialOnEventRepository = $refereeInTrialOnEventRepository;
+        $this->resultRepository = $resultRepository;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -246,5 +252,75 @@ class EventService
     public function deleteTrialFromEvent(int $trialInEventId)
     {
         $this->trialInEventRepository->delete($trialInEventId);
+    }
+
+    public function changeStatusOfEvent(int $eventId)
+    {
+        $event = $this->eventRepository->get($eventId);
+
+        if ($event->getStatus() == Event::HOLDING){
+            $event->setStatus(Event::COMPLETED);
+            $this->eventRepository->update($event);
+        }
+
+        if ($event->getStatus() == Event::PREPARADNESS){
+            $event->setStatus(Event::HOLDING);
+            $this->eventRepository->update($event);
+        }
+
+        if ($event->getStatus() == Event::LEAD_UP) {
+            $eventParticipants = $this->eventParticipantRepository->getAllByEventId($eventId);
+            $this->confirmParticipants($eventParticipants);
+            $this->createResultsForAllParticipants($eventParticipants, $eventId);
+            $event->setStatus(Event::PREPARADNESS);
+            $this->eventRepository->update($event);
+        }
+    }
+
+    /**
+     * @param $participants EventParticipant[]
+     * @param int $eventId
+     */
+    private function createResultsForAllParticipants(array $participants, int $eventId)
+    {
+        foreach ($participants as $participant){
+            $user = $participant->getUser();
+            $listOfAllTrials = $this->trialRepository->getList($user->getGender(), $user->getAge());
+            $listTrialsOnEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
+            $trials = $this->getFilteredFromAllTrialsTrialsOnEvent($listOfAllTrials, $listTrialsOnEvent);
+            foreach ($trials as $trial){
+                $result = new ResultOnTrialInEvent($this->trialInEventRepository->getFilteredByTrialId($trial->getTrialId(), $eventId), $user, $trial->getResultGuideId(), null, null, null);
+                $this->resultRepository->add($result);
+            }
+        }
+    }
+
+    /**@param $listOfAllTrials Trial[]*/
+    /**@param  $listTrialsOEvent Trial\TrialInEvent[]*/
+    private function getFilteredFromAllTrialsTrialsOnEvent(array $listOfAllTrials, array $listTrialsOEvent)
+    {
+        $response = [];
+        foreach ($listOfAllTrials as $trial){
+            foreach ($listTrialsOEvent as $trialOnEvent){
+                if ($trial->getTrialId() == $trialOnEvent->getTrial()->getTrialId()){
+                    $response[] = $trial;
+                }
+            }
+        }
+
+        return $response;
+    }
+
+    /**@param $participants EventParticipant[]*/
+    private function confirmParticipants(array $participants)
+    {
+        foreach ($participants as $participant){
+            if ($participant->isConfirmed()){
+                continue;
+            }
+
+            $participant->doConfirm();
+            $this->eventParticipantRepository->update($participant);
+        }
     }
 }
