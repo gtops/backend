@@ -77,7 +77,7 @@ class ResultAction extends Action
      *
      * @SWG\Put(
      *   path="/api/v1/resultTrialInEvent/{resultTrialInEventId}",
-     *   summary="меняет результат(локальный админ)",
+     *   summary="меняет результат(локальный админ, секретарь)",
      *   tags={"Result"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="resultTrialInEventId", type="integer", description="id опрделенного результата"),

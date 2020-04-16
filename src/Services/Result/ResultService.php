@@ -114,7 +114,7 @@ class ResultService
             $responseList = TrialsToResponsePresenter::getView($trials, []);
         }
 
-        if ($event->getStatus() == Event::HOLDING){
+        if ($event->getStatus() != Event::LEAD_UP){
             $results = $this->resultRepository->getFilteredByUserIdAndEventId($userId, $eventId);
             $trials = $this->getFilteredFromAllTrialsTrialsOnEvent($listOfAllTrials, $listTrialsOnEvent);
             $responseList = TrialsToResponsePresenter::getView($trials, $this->getArrayWithResultsForTrials($results));
@@ -221,6 +221,7 @@ class ResultService
                 }
 
                 $results[] = [
+                    'resultOfTrialInEventId' => null,
                     'userId' => $participant->getUser()->getId(),
                     'userName' => $participant->getUser()->getName(),
                     'teamId' => $participant->getTeamId(),
@@ -234,7 +235,7 @@ class ResultService
             }
         }
         $trial = $this->trialRepository->get($trialId);
-        if ($event->getStatus() == Event::HOLDING){
+        if ($event->getStatus() != Event::LEAD_UP){
             foreach ($ParticipantsInTrial as $participant){
                 $team = $this->teamRepository->get($participant->getTeamId() ?? -1);
                 if ($team == null){
@@ -245,6 +246,7 @@ class ResultService
 
                 $resultOfTrialOnEvent = $this->resultRepository->getFilteredByUserIdEventIdTrialId($participant->getUser()->getId(), $event->getId(), $trialId);
                 $results[] = [
+                    'resultOfTrialInEventId' => $resultOfTrialOnEvent->getResultTrialInEventId(),
                     'userId' => $participant->getUser()->getId(),
                     'userName' => $participant->getUser()->getName(),
                     'teamId' => $participant->getTeamId(),
@@ -318,7 +320,8 @@ class ResultService
             $arrayWithResults[$result->getTrialInEvent()->getTrial()->getTrialId()] = [
                 'firstResult' => $result->getFistResult(),
                 'secondResult' => $result->getSecondResult(),
-                'badge' => $result->getBadge()
+                'badge' => $result->getBadge(),
+                'resultTrialInEventId' => $result->getResultTrialInEventId()
             ];
         }
 
