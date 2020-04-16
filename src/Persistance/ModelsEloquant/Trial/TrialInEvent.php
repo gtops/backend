@@ -15,6 +15,7 @@ class TrialInEvent extends Model
     protected $fillable = array(
         "trial_id",
         "event_id",
-        "sport_object_id"
+        "sport_object_id",
+        "start_date_time"
     );
 }

@@ -13,8 +13,9 @@ class ResultOnTrialInEvent implements IModel
     private $fistResult;
     private $secondResult;
     private $badge;
+    private $resultTrialInEventId;
 
-    public function __construct(TrialInEvent $trialInEvent, User $user, int $resultGuideId, $fistResult, $secondResult, ?string $badge)
+    public function __construct(TrialInEvent $trialInEvent, User $user, int $resultGuideId, $fistResult, $secondResult, ?string $badge, int $resultTrialInEventId)
     {
         $this->trialInEvent = $trialInEvent;
         $this->user = $user;
@@ -22,7 +23,7 @@ class ResultOnTrialInEvent implements IModel
         $this->secondResult = $secondResult;
         $this->badge = $badge;
         $this->resultGuideId = $resultGuideId;
-
+        $this->resultTrialInEventId = $resultTrialInEventId;
         if (!in_array($badge, ['золото', 'серебро', 'бронза']) && $badge != null){
             throw new BadgeException();
         }
@@ -34,6 +35,19 @@ class ResultOnTrialInEvent implements IModel
     public function getUser(): User
     {
         return $this->user;
+    }
+
+    public function setBadge(?string $badge)
+    {
+        $this->badge = $badge;
+    }
+
+    /**
+     * @return int
+     */
+    public function getResultTrialInEventId(): int
+    {
+        return $this->resultTrialInEventId;
     }
 
     /**

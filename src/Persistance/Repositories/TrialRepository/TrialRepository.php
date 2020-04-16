@@ -39,6 +39,9 @@ class TrialRepository implements IRepository
             ->orderByDesc('max_age')
             ->limit(1)
             ->get();
+        if (count($ageCategories) == 0){
+            return [];
+        }
 
         $idAgeCategory = $ageCategories[0]->id_age_category;
 

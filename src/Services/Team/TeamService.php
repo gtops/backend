@@ -87,7 +87,15 @@ class TeamService
 
     public function get(int $teamId)
     {
-        return $this->teamRepository->get($teamId);
+        $team = $this->teamRepository->get($teamId);
+        if ($team == null){
+            return $team;
+        }
+
+        $event = $this->eventRepository->get($team->getEventId());
+        $teamInArray = $team->toArray();
+        $teamInArray['organizationId'] = $event->getIdOrganization();
+        return $teamInArray;
     }
 
     public function update(string $name, int $teamId)

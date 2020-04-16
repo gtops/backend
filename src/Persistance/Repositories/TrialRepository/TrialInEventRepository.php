@@ -10,6 +10,7 @@ use App\Domain\Models\SportObject\SportObject;
 use App\Domain\Models\Trial\Trial;
 use App\Domain\Models\Trial\TrialInEvent;
 use App\Persistance\ModelsEloquant\Trial\TrialInEvent AS TrialInEventPDO;
+use DateTime;
 
 class TrialInEventRepository implements IRepository
 {
@@ -73,7 +74,7 @@ class TrialInEventRepository implements IRepository
             ->get();
 
         if (count($results) == null){
-            return null;
+            return [];
         }
 
         return $this->getTrialsInEvent($results);
@@ -85,7 +86,7 @@ class TrialInEventRepository implements IRepository
         foreach ($results as $result){
             $trial = new Trial($result['trial_id'], $result['trial'], $result['type_time'], $result['id_version_standard']);
             $sportObject = new SportObject($result['organization_id'], $result['name'], $result['address'], $result['description'], $result['sport_object_id']);
-            $trialsInEvent[] = new TrialInEvent($result['trial_in_event_id'], $trial, $result['event_id'], $sportObject);
+            $trialsInEvent[] = new TrialInEvent($result['trial_in_event_id'], $trial, $result['event_id'], $sportObject, new DateTime($result['start_date_time']));
         }
 
         return $trialsInEvent;
@@ -106,7 +107,8 @@ class TrialInEventRepository implements IRepository
             ->create([
                 'trial_id' => $model->getTrial()->getTrialId(),
                 'event_id' => $model->getEventId(),
-                'sport_object_id' => $model->getSportObject()->getSportObjectId()
+                'sport_object_id' => $model->getSportObject()->getSportObjectId(),
+                'start_date_time' => $model->getStartDate()
             ]);
 
         return $result->getAttribute('trial_in_event_id');

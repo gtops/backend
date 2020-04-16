@@ -159,7 +159,7 @@ class TeamAction extends Action
         if ($team == null){
             return $response->withStatus(404);
         }
-        return $this->respond(200, $team->toArray(), $response);
+        return $this->respond(200, $team, $response);
     }
 
     /**

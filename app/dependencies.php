@@ -146,7 +146,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TableInEventRepository::class),
                 $c->get(TableRepository::class),
                 $c->get(TrialInEventRepository::class),
-                $c->get(RefereeInTrialOnEventRepository::class)
+                $c->get(RefereeInTrialOnEventRepository::class),
+                $c->get(ResultRepository::class)
             );
         },
         TrialInEventRepository::class => function(ContainerInterface $c)
@@ -166,7 +167,7 @@ return function (ContainerBuilder $containerBuilder) {
             );
         },
         ResultAction::class => function(ContainerInterface $c){
-            return new ResultAction($c->get(ResultService::class));
+            return new ResultAction($c->get(ResultService::class), $c->get(AccessService::class));
         },
         ResultService::class => function(ContainerInterface $c){
             return new ResultService(

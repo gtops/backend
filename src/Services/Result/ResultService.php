@@ -27,6 +27,9 @@ use App\Services\Presenters\TrialsToResponsePresenter;
 
 class ResultService
 {
+    private const RESULT_FOR_BRONZE = 25;
+    private const RESULT_FOR_SILVER = 40;
+    private const RESULT_FOR_GOLD = 60;
     private $eventRepository;
     private $localAdminRepository;
     private $roleRepository;
@@ -129,6 +132,50 @@ class ResultService
         ];
     }
 
+    public function updateResult(int $resultTrialInEventId, string $firstResult)
+    {
+        $badge = null;
+        $result = $this->resultRepository->get($resultTrialInEventId);
+        $secondResult = $this->trialRepository->getSecondResult($firstResult, $result->getResultGuideId());
+        if ($secondResult >= self::RESULT_FOR_BRONZE){
+            $result->setBadge('бронза');
+        }
+
+        if ($secondResult >= self::RESULT_FOR_SILVER){
+            $result->setBadge('серебро');
+        }
+
+        if ($secondResult >= self::RESULT_FOR_GOLD){
+            $result->setBadge('золото');
+        }
+
+        $this->resultRepository->update($result);
+
+        /*операция по смене общего знака
+        $ageCategory = $this->ageCategoryRepository->getFilteredByName($this->trialRepository->getNameOfAgeCategory($result->getUser()->getAge()));
+        $listOfAllTrials = $this->trialRepository->getList($result->getUser()->getGender(), $result->getUser()->getAge());
+
+        if (count($listOfAllTrials) == 0){
+            return;
+        }
+
+        $listTrialsOnEvent = $this->trialInEventRepository->getFilteredByEventId($result->getTrialInEvent()->getEventId());
+        $results = $this->resultRepository->getFilteredByUserIdAndEventId($result->get, $eventId);
+        */
+    }
+
+    /**@param $trials Trial[]*/
+    private function getTrialFromResultGuideWithDataToBadge($trialId, array $trials)
+    {
+        foreach ($trials as $trial){
+            if ($trial->getTrialId() == $trialId){
+                return $trial;
+            }
+        }
+
+        return null;
+    }
+
     private function getDataAboutCountOfTests(int $gender, AgeCategory $ageCategory)
     {
         if ($gender == 0){
@@ -215,6 +262,7 @@ class ResultService
             'participants' => $results,
             'trialName' => $trial->getName(),
             'isTypeTime' => $trial->isTypeTime(),
+            'eventStatus' => $event->getStatus()
         ];
     }
 

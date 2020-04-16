@@ -29,8 +29,11 @@ class ResultRepository implements IRepository
         $this->userRepository = $userRepository;
     }
 
-    /**@return ResultOnTrialInEvent*/
-    public function get(int $id): IModel
+    /**
+     * @param int $id
+     * @return ResultOnTrialInEvent
+     */
+    public function get(int $id): ?IModel
     {
         $results = ResultPDO::query()
             ->where('result_on_trial_in_event_id', '=', $id)
@@ -50,7 +53,7 @@ class ResultRepository implements IRepository
         {
             $user = $this->userRepository->get($result->user_id);
             $trialInEvent = $this->trialInEventRepository->get($result->trial_in_event_id);
-            $resultModels[] = new ResultOnTrialInEvent($trialInEvent, $user, $result->id_result_guide, $result->first_result, $result->second_result, $result->badge);
+            $resultModels[] = new ResultOnTrialInEvent($trialInEvent, $user, $result->id_result_guide, $result->first_result, $result->second_result, $result->badge, $result->result_on_trial_in_event_id);
         }
 
         return $resultModels;
@@ -100,9 +103,16 @@ class ResultRepository implements IRepository
         // TODO: Implement delete() method.
     }
 
+    /**@param $model ResultOnTrialInEvent*/
     public function update(IModel $model)
     {
-        // TODO: Implement update() method.
+        ResultPDO::query()
+            ->where('result_on_trial_in_event_id', '=', $model->getResultTrialInEventId())
+            ->update([
+                'first_result' => $model->getFistResult(),
+                'second_result' => $model->getSecondResult(),
+                'badge' => $model->getBadge()
+            ]);
     }
 
     /**

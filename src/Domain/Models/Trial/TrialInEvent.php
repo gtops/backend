@@ -7,6 +7,8 @@ namespace App\Domain\Models\Trial;
 use App\Domain\Models\IModel;
 use App\Domain\Models\Referee\RefereeOnTrialInEvent;
 use App\Domain\Models\SportObject\SportObject;
+use DateTime;
+use DateTimeZone;
 
 class TrialInEvent implements IModel
 {
@@ -14,14 +16,16 @@ class TrialInEvent implements IModel
     private $trial;
     private $eventId;
     private $sportObject;
+    private $startDateTime;
     private $referies;
 
-    public function __construct(int $trialInEventId, Trial $trial, int $eventId, SportObject $sportObject)
+    public function __construct(int $trialInEventId, Trial $trial, int $eventId, SportObject $sportObject, DateTime $startDateTime)
     {
         $this->trialInEventId = $trialInEventId;
         $this->trial = $trial;
         $this->eventId = $eventId;
         $this->sportObject = $sportObject;
+        $this->startDateTime = $startDateTime;
     }
 
     public function addReferee(RefereeOnTrialInEvent $referee){
@@ -59,6 +63,12 @@ class TrialInEvent implements IModel
         return $this->sportObject;
     }
 
+    public function getStartDate()
+    {
+        return $this->startDateTime->setTimezone(new DateTimeZone('europe/moscow'))
+            ->format('Y-m-d H:i:s');
+    }
+
     /**
      * @return Trial
      */
@@ -86,6 +96,7 @@ class TrialInEvent implements IModel
 
         return [
             'trialInEventId' => $this->getTrialInEventId(),
+            'startDateTime' => $this->getStartDate(),
             'trialId' => $this->getTrial()->getTrialId(),
             'trialName' => $this->getTrial()->getName(),
             'trialIsTypeTime' => $this->getTrial()->isTypeTime(),

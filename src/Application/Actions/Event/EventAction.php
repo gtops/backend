@@ -521,7 +521,7 @@ class EventAction extends Action
             return $this->respond(400, ['errors' => $access], $response);
         }
 
-        $id = $this->eventService->addTrialToEventFromTable($eventId, $trialId, $sportObjectId);
+        $id = $this->eventService->addTrialToEventFromTable($eventId, $trialId, $sportObjectId, new DateTime($rowParams['startDateTime']));
         return $this->respond(200, ['id' => $id], $response);
     }
 

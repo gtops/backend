@@ -69,7 +69,6 @@ return function (App $app) {
     $app->get('/api/v1/event/{eventId:[0-9]+}/trial', EventAction::class.':getTrials');
     $app->delete('/api/v1/trialInEvent/{trialInEventId:[0-9]+}', EventAction::class.':deleteTrialFromEvent');
     $app->post('/api/v1/event/{eventId}/changeStatus', EventAction::class.':changeStatusOfEvent');
-
     //Team
     $app->post('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':add');
     $app->get('/api/v1/organization/{id:[0-9]+}/event/{eventId:[0-9]+}/team', TeamAction::class.':getAll');
@@ -128,5 +127,6 @@ return function (App $app) {
     //result
     $app->get('/api/v1/event/{eventId:[0-9]+}/user/{userId:[0-9]+}/result', ResultAction::class.':getResultsOfUserInEvent');
     $app->get('/api/v1/trialInEvent/{trialInEventId:[0-9]+}/result', ResultAction::class.':getResultsOnTrialInEvent');
+    $app->put('/api/v1/resultTrialInEvent/{resultTrialInEventId:[0-9]+}', ResultAction::class.':updateResult');
 
 };

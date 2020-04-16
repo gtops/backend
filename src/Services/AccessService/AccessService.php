@@ -19,6 +19,7 @@ use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Referee\RefereeInTrialOnEventRepository;
 use App\Persistance\Repositories\Referee\RefereeRepository;
+use App\Persistance\Repositories\Result\ResultRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
@@ -50,6 +51,7 @@ class AccessService
     private $tableRepository;
     private $trialInEventRepository;
     private $refereeOnTrialInEventRepository;
+    private $resultRepository;
 
     public function __construct
     (
@@ -68,7 +70,8 @@ class AccessService
         TableInEventRepository $tableInEventRepository,
         TableRepository $tableRepository,
         TrialInEventRepository $trialInEventRepository,
-        RefereeInTrialOnEventRepository $refereeOnTrialInEventRepository
+        RefereeInTrialOnEventRepository $refereeOnTrialInEventRepository,
+        ResultRepository $resultRepository
     )
     {
         $this->userRepository = $userRepository;
@@ -87,6 +90,7 @@ class AccessService
         $this->tableRepository = $tableRepository;
         $this->trialInEventRepository = $trialInEventRepository;
         $this->refereeOnTrialInEventRepository = $refereeOnTrialInEventRepository;
+        $this->resultRepository = $resultRepository;
         $this->errors = [];
         $this->response = true;
     }
@@ -428,6 +432,27 @@ class AccessService
         return $this->getResponse();
     }
 
+    public function hasAccessUpdateResult(string $userRole, string $userEmail, int $resultTrialInEventId)
+    {
+        $userEmail = mb_strtolower($userEmail);
+        $result = $this->resultRepository->get($resultTrialInEventId);
+        $this->addErrorIfResultNotFound($result);
+        $eventId = $user = $result->getTrialInEvent()->getEventId();
+        $event = $this->eventRepository->get($eventId);
+        $this->addErrorIfStatusOfEventNotHolding($event);
+
+        switch ($userRole){
+            case AuthorizeMiddleware::LOCAL_ADMIN:{
+                return $this->localAdminHasAccessWorkWithOrganization($userEmail, $event->getIdOrganization());
+            }
+            case AuthorizeMiddleware::SECRETARY:{
+                return $this->secretaryHasAccessWorkWithEvent($userEmail, $eventId);
+            }
+        }
+        $this->response = false;
+        return $this->getResponse();
+    }
+
     public function hasAccessAddTableToEvent(int $eventId, string $userEmail, string $role, int $tableId)
     {
         $organizationId = -1;
@@ -645,7 +670,6 @@ class AccessService
 
         return $response;
     }
-
 
     private function changeResponseStatusToFalseIfSecretaryNotExistInOrganization(?Secretary $secretary, ?Organization $organization)
     {
@@ -872,6 +896,24 @@ class AccessService
 
         if ($event->getStatus() == Event::COMPLETED){
             $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Это мероприятие уже завершено'));
+        }
+    }
+
+    private function addErrorIfResultNotFound(?IModel $result)
+    {
+        if ($result == null){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Такого поля результата не найдено'));
+        }
+    }
+
+    private function addErrorIfStatusOfEventNotHolding(?IModel $event)
+    {
+        if ($event == null){
+            return;
+        }
+
+        if ($event->getStatus() != Event::HOLDING){
+            $this->addError(new ActionError(ActionError::BAD_REQUEST, 'Данная операция доступна только в статусе мероприятия "проведение"'));
         }
     }
 }

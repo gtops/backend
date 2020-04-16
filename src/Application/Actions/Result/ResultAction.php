@@ -2,6 +2,7 @@
 
 namespace App\Application\Actions\Result;
 use App\Application\Actions\Action;
+use App\Services\AccessService\AccessService;
 use App\Services\Result\ResultService;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -9,9 +10,11 @@ use Psr\Http\Message\ResponseInterface as Response;
 class ResultAction extends Action
 {
     private $resultService;
-    public function __construct(ResultService $resultService)
+    private $accessService;
+    public function __construct(ResultService $resultService, AccessService $accessService)
     {
         $this->resultService = $resultService;
+        $this->accessService = $accessService;
     }
 
 
@@ -68,5 +71,47 @@ class ResultAction extends Action
         $trialInEventId = (int)$args['trialInEventId'];
         $result = $this->resultService->getResultsForTrial($trialInEventId);
         return $this->respond(200, $result, $response);
+    }
+
+    /**
+     *
+     * @SWG\Put(
+     *   path="/api/v1/resultTrialInEvent/{resultTrialInEventId}",
+     *   summary="меняет результат(локальный админ)",
+     *   tags={"Result"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="resultTrialInEventId", type="integer", description="id опрделенного результата"),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="firstResult", type="string"))),
+     *   @SWG\Response(response=200, description="OK"),
+     *  @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     *
+     */
+    public function updateResult(Request $request, Response $response, $args): Response
+    {
+        if ($this->tokenWithError($response, $request)) {
+            return $response->withStatus(401);
+        }
+
+        $userRole = $request->getHeader('userRole')[0];
+        $userEmail = $request->getHeader('userEmail')[0];
+        $resultTrialInEventId = (int)$args['resultTrialInEventId'];
+        $rowParams = json_decode($request->getBody()->getContents(), true);
+        $access = $this->accessService->hasAccessUpdateResult($userRole, $userEmail, $resultTrialInEventId);
+
+        if ($access === false){
+            return $response->withStatus(403);
+        }else if ($access !== true){
+            /**@var $access array*/
+            return $this->respond(400, ['errors' => $access], $response);
+        }
+
+        $this->resultService->updateResult($resultTrialInEventId, $rowParams['firstResult']);
+        return $response->withStatus(200);
     }
 }

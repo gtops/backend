@@ -139,10 +139,6 @@ class SportObjectAction extends Action
         $userRole = $request->getHeader('userRole')[0];
         $organizationId = (int)$args['id'];
 
-        if ($userRole != AuthorizeMiddleware::LOCAL_ADMIN){
-            return $response->withStatus(403);
-        }
-
         $sportObjects = $this->sportObjectService->getFilteredByOrganization($organizationId);
         $responseArray = [];
         foreach ($sportObjects as $sportObject) {

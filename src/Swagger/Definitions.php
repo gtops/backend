@@ -252,7 +252,8 @@
  *    definition="trialInEvent",
  *    type="object",
  *    @SWG\Property(property="trialId", type="integer"),
- *    @SWG\Property(property="sportObjectId", type="integer")
+ *    @SWG\Property(property="sportObjectId", type="integer"),
+ *     @SWG\Property(property="startDateTime", type="string")
  * )
  */
 
@@ -334,6 +335,7 @@
  *   @SWG\Property(property="participants", type="array", @SWG\Items(ref="#/definitions/participantsInTrialPbject")),
  *    @SWG\Property(property="trialName", type="string"),
  *     @SWG\Property(property="isTypeTime", type="boolean"),
+ *     @SWG\Property(property="eventStatus", type="string"),
  * )
  */
 

@@ -24,6 +24,7 @@ use App\Persistance\Repositories\TrialRepository\TableRepository;
 use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use DateTime;
 use Psr\Http\Message\ResponseInterface;
 
 class EventService
@@ -91,11 +92,6 @@ class EventService
         if ($response->getStatusCode() != 200){
             return $response;
         }
-
-        $roleIdOfSimpleUser = $this->roleRepository->getByName(AuthorizeMiddleware::SIMPLE_USER)->getId();
-        $secretariesInOrganization = $this->secretaryRepository->getFilteredByEventId($eventId);
-
-        $this->changeAdminStatusToSimple($secretariesInOrganization, $roleIdOfSimpleUser);
 
         $this->eventRepository->delete($eventId);
     }
@@ -223,11 +219,11 @@ class EventService
         return $response;
     }
 
-    public function addTrialToEventFromTable(int $eventId, int $trialId, int $sportObjectId)
+    public function addTrialToEventFromTable(int $eventId, int $trialId, int $sportObjectId, DateTime $startDateTime)
     {
         $trial = $this->trialRepository->get($trialId);
         $sportObject = $this->sportObjectRepository->get($sportObjectId);
-        $trialInEvent = new TrialInEvent(-1, $trial, $eventId, $sportObject);
+        $trialInEvent = new TrialInEvent(-1, $trial, $eventId, $sportObject, $startDateTime);
         return $this->trialInEventRepository->add($trialInEvent);
     }
 
@@ -289,7 +285,7 @@ class EventService
             $listTrialsOnEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
             $trials = $this->getFilteredFromAllTrialsTrialsOnEvent($listOfAllTrials, $listTrialsOnEvent);
             foreach ($trials as $trial){
-                $result = new ResultOnTrialInEvent($this->trialInEventRepository->getFilteredByTrialId($trial->getTrialId(), $eventId), $user, $trial->getResultGuideId(), null, null, null);
+                $result = new ResultOnTrialInEvent($this->trialInEventRepository->getFilteredByTrialId($trial->getTrialId(), $eventId), $user, $trial->getResultGuideId(), null, null, null, -1);
                 $this->resultRepository->add($result);
             }
         }
