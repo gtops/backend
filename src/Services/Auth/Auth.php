@@ -130,7 +130,7 @@ class Auth
             'email' => $email,
             'role' => $role,
             'type' => 'acess token',
-            'liveTime' => 600,
+            'liveTime' => 1800,
             'addedTime' => (new DateTime())
                 ->setTimezone(new DateTimeZone('europe/moscow'))
                 ->format('Y-m-d H:i:s')
