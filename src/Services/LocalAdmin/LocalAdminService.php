@@ -17,6 +17,7 @@ use DateTime;
 use http\Client\Curl\User;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Response;
+use function GuzzleHttp\Psr7\normalize_header;
 
 class LocalAdminService
 {
@@ -116,14 +117,14 @@ class LocalAdminService
     {
         $response = [];
         $localAdmins = $this->localAdminRepository->getAll();
+        if($localAdmins == null){
+            return null;
+        }
+
         foreach ($localAdmins as $localAdmin) {
             if ($localAdmin['organizationId'] == $organizationId){
                 $response[] = $localAdmin;
             }
-        }
-
-        if (count($response) == 0){
-            return null;
         }
 
         return $response;

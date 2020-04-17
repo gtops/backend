@@ -78,9 +78,9 @@ class EventParticipantService
             'password' => $user->getPassword(),
             'email' => $user->getEmail(),
             'roleId' => $user->getRoleId(),
-            'isActivity' => $gender,
+            'isActivity' => $user->isActivity(),
             'dateTime' => new \DateTime($user->getRegistrationDate()),
-            'gender' =>$user->isActivity(),
+            'gender' => $gender,
             'dateOfBirth' => $dateOfBirth,
         ]);
 

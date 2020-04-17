@@ -183,9 +183,8 @@ class LocalAdminAction extends Action
         $localAdmins = $this->localAdminService->getAll($idOrganization);
 
         if ($localAdmins == null){
-            return $this->respond(200, [], $response);
+             $this->respond(200, [], $response);
         }
-
         return $this->respond(200, $localAdmins, $response);
     }
 

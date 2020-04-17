@@ -27,6 +27,9 @@ use App\Services\Presenters\TrialsToResponsePresenter;
 
 class ResultService
 {
+    private const GOLD = 'золото';
+    private const SILVER = 'серебро';
+    private const BRONZE = 'бронза';
     private const RESULT_FOR_BRONZE = 25;
     private const RESULT_FOR_SILVER = 40;
     private const RESULT_FOR_GOLD = 60;
@@ -114,22 +117,111 @@ class ResultService
             $responseList = TrialsToResponsePresenter::getView($trials, []);
         }
 
+        $badge = null;
+        $dateAboutCountOfTest = $this->getDataAboutCountOfTests($user->getGender(), $this->ageCategoryRepository->getFilteredByName($ageCategory));
         if ($event->getStatus() != Event::LEAD_UP){
             $results = $this->resultRepository->getFilteredByUserIdAndEventId($userId, $eventId);
             $trials = $this->getFilteredFromAllTrialsTrialsOnEvent($listOfAllTrials, $listTrialsOnEvent);
             $responseList = TrialsToResponsePresenter::getView($trials, $this->getArrayWithResultsForTrials($results));
+            $badge = $this->getBadgeOfUser($responseList, $dateAboutCountOfTest);
         }
-
-        $dateAboutCountOfTest = $this->getDataAboutCountOfTests($user->getGender(), $this->ageCategoryRepository->getFilteredByName($ageCategory));
 
         return [
             'groups' => $responseList,
             'ageCategory' => $ageCategory,
-            'badge' => null,
+            'badge' => $badge,
             'countTestsForBronze' => $dateAboutCountOfTest['countTestsForBronze'] ?? null,
             'countTestForSilver' => $dateAboutCountOfTest['countTestForSilver'] ?? null,
             'countTestsForGold' => $dateAboutCountOfTest['countTestsForGold'] ?? null
         ];
+    }
+
+    public function getBadgeOfUser(array $results, array $dateAboutCountOfTest)
+    {
+        $badge = null;
+        if (!$this->allRequiredTestsCompleted($results)){
+            return null;
+        }
+
+        $arrayWithCountOfBadges = $this->getArrayWithCountOfBadges($results);
+        $countOfGold = (int)$arrayWithCountOfBadges['countOfGold'];
+        $countOfSilver = (int)$arrayWithCountOfBadges['countOfSilver'];
+        $countOfBronze = (int)$arrayWithCountOfBadges['countOfBronze'];
+
+        if ($countOfGold >= $dateAboutCountOfTest['countTestsForGold']){
+            return self::GOLD;
+        }
+
+        if (($countOfGold + $countOfSilver) >= $dateAboutCountOfTest['countTestForSilver']){
+            return self::SILVER;
+        }
+
+        if (($countOfGold + $countOfSilver + $countOfBronze) >= $dateAboutCountOfTest['countTestsForBronze']){
+            return self::BRONZE;
+        }
+
+        return $badge;
+    }
+
+    private function getArrayWithCountOfBadges(array $results):array
+    {
+        $countOfGold = 0;
+        $countOfSilver = 0;
+        $countOfBronze = 0;
+
+        foreach ($results as $result){
+            $badge = null;
+            foreach ($result['group'] as $item){
+                if ($item['badge'] == self::GOLD){
+                    $badge = self::GOLD;
+                }
+
+                if ($item['badge'] == self::SILVER && $badge != self::GOLD){
+                    $badge = self::SILVER;
+                }
+
+                if ($item['badge'] == self::BRONZE && $badge != self::GOLD && $badge != self::SILVER){
+                    $badge = self::BRONZE;
+                }
+            }
+            if ($badge == self::GOLD){
+                $countOfGold++;
+            }
+
+            if ($badge == self::SILVER){
+                $countOfSilver++;
+            }
+
+            if ($badge == self::BRONZE){
+                $countOfBronze++;
+            }
+        }
+
+        return [
+            'countOfGold' => $countOfGold,
+            'countOfSilver' => $countOfSilver,
+            'countOfBronze' => $countOfBronze
+        ];
+    }
+
+    private function allRequiredTestsCompleted(array $results):bool
+    {
+        foreach ($results as $result){
+            if ($result['necessary']){
+                $checked = false;
+                foreach ($result['group'] as $trial){
+                    if ($trial['secondResult'] != null && $trial['secondResult'] != 0){
+                        $checked = true;
+                    }
+                }
+
+                if (!$checked){
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public function updateResult(int $resultTrialInEventId, string $firstResult)
@@ -153,18 +245,6 @@ class ResultService
         $result->setFirstResult($firstResult);
         $result->setSecondResult($secondResult);
         $this->resultRepository->update($result);
-
-        /*операция по смене общего знака
-        $ageCategory = $this->ageCategoryRepository->getFilteredByName($this->trialRepository->getNameOfAgeCategory($result->getUser()->getAge()));
-        $listOfAllTrials = $this->trialRepository->getList($result->getUser()->getGender(), $result->getUser()->getAge());
-
-        if (count($listOfAllTrials) == 0){
-            return;
-        }
-
-        $listTrialsOnEvent = $this->trialInEventRepository->getFilteredByEventId($result->getTrialInEvent()->getEventId());
-        $results = $this->resultRepository->getFilteredByUserIdAndEventId($result->get, $eventId);
-        */
     }
 
     /**@param $trials Trial[]*/
