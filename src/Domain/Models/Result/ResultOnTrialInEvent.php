@@ -37,6 +37,16 @@ class ResultOnTrialInEvent implements IModel
         return $this->user;
     }
 
+    public function setFirstResult($firstResult)
+    {
+        $this->fistResult = $firstResult;
+    }
+
+    public function setSecondResult($secondResult)
+    {
+        $this->secondResult = $secondResult;
+    }
+
     public function setBadge(?string $badge)
     {
         $this->badge = $badge;

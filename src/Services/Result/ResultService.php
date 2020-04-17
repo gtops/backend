@@ -137,6 +137,8 @@ class ResultService
         $badge = null;
         $result = $this->resultRepository->get($resultTrialInEventId);
         $secondResult = $this->trialRepository->getSecondResult($firstResult, $result->getResultGuideId());
+        $result->setBadge(null);
+
         if ($secondResult >= self::RESULT_FOR_BRONZE){
             $result->setBadge('бронза');
         }
@@ -148,7 +150,8 @@ class ResultService
         if ($secondResult >= self::RESULT_FOR_GOLD){
             $result->setBadge('золото');
         }
-
+        $result->setFirstResult($firstResult);
+        $result->setSecondResult($secondResult);
         $this->resultRepository->update($result);
 
         /*операция по смене общего знака

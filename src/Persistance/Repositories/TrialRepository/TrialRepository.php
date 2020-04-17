@@ -35,9 +35,8 @@ class TrialRepository implements IRepository
     public function getList(int $gender, int $age):array
     {
         $ageCategories = AgeCategory::query()
-            ->where('max_age', '<=', $age)
-            ->orderByDesc('max_age')
-            ->limit(1)
+            ->where('min_age', '<=', $age)
+            ->where('max_age', '>=', $age)
             ->get();
         if (count($ageCategories) == 0){
             return [];
@@ -82,6 +81,7 @@ class TrialRepository implements IRepository
 
     private function getTranslatedResult(array $results, string $firstResult):int
     {
+        $firstResult = str_replace('.', ',', $firstResult);
         for($i = 0; $i < count($results) - 1; $i++){
            $keyValue = explode('=', $results[$i]);
            //todo добавить проверку на 0,1 при таком случае заменить разбить на два массива и склеить
