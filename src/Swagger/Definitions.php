@@ -326,6 +326,8 @@
  *    @SWG\Property(property="countTestsForBronze", type="integer"),
  *     @SWG\Property(property="countTestForSilver", type="integer"),
  *     @SWG\Property(property="countTestsForGold", type="integer"),
+ *     @SWG\Property(property="orgId", type="integer"),
+ *     @SWG\Property(property="eventId", type="integer"),
  * )
  */
 
@@ -354,5 +356,7 @@
  *     @SWG\Property(property="firstResult", type="string"),
  *     @SWG\Property(property="secondResult", type="string"),
  *     @SWG\Property(property="badge", type="string", enum={"золото", "серебро", "бронза"}),
+ *     @SWG\Property(property="orgId", type="integer"),
+ *     @SWG\Property(property="eventId", type="integer"),
  * )
  */

@@ -1,7 +1,5 @@
 <?php
 
-use Codeception\Actor;
-
 
 /**
  * Inherited Methods
@@ -18,9 +16,9 @@ use Codeception\Actor;
  *
  * @SuppressWarnings(PHPMD)
 */
-class UnitTester extends Actor
+class FunctionalTester extends \Codeception\Actor
 {
-    use _generated\UnitTesterActions;
+    use _generated\FunctionalTesterActions;
 
    /**
     * Define custom actions here

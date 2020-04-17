@@ -126,13 +126,26 @@ class ResultService
             $badge = $this->getBadgeOfUser($responseList, $dateAboutCountOfTest);
         }
 
+        $team = $this->teamRepository->get($eventParticipant->getTeamId());
+        $teamName = null;
+        if ($team != null){
+            $teamName = $team->getName();
+        }
+
         return [
             'groups' => $responseList,
             'ageCategory' => $ageCategory,
             'badge' => $badge,
             'countTestsForBronze' => $dateAboutCountOfTest['countTestsForBronze'] ?? null,
             'countTestForSilver' => $dateAboutCountOfTest['countTestForSilver'] ?? null,
-            'countTestsForGold' => $dateAboutCountOfTest['countTestsForGold'] ?? null
+            'countTestsForGold' => $dateAboutCountOfTest['countTestsForGold'] ?? null,
+            'orgId' => $event->getIdOrganization(),
+            'eventId' => $eventId,
+            'id' => $user->getId(),
+            'name' => $user->getName(),
+            'teamName' => $teamName,
+            'teamId' => $eventParticipant->getTeamId(),
+            'dateOfBirth' => $user->getDateOfBirth()
         ];
     }
 
@@ -347,7 +360,9 @@ class ResultService
             'participants' => $results,
             'trialName' => $trial->getName(),
             'isTypeTime' => $trial->isTypeTime(),
-            'eventStatus' => $event->getStatus()
+            'eventStatus' => $event->getStatus(),
+            'orgId' => $event->getIdOrganization(),
+            'eventId' => $event->getId()
         ];
     }
 
