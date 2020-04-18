@@ -63,6 +63,7 @@
     "scripts": {
         "start": "php -S localhost:8081 -t public",
         "unitTests": "unitTestStart.bat",
+        "integrationTests": "integrationTestStart.bat",
         "analyze": "php vendor/phan/phan/phan --allow-polyfill-parser  analyze"
     }
 }

@@ -12,6 +12,11 @@ pipeline {
                  sh 'composer analyze'
              }
          }
+        stage('testing') {
+              steps{
+                 sh 'composer unitTests'
+              }
+        }
     }
 
 }
