@@ -13,5 +13,9 @@ class TableCest
         $I->sendGET('/tables');
         $I->seeResponseCodeIs(200);
         $I->seeResponseIsJson();
+        $I->seeResponseMatchesJsonType([
+            'tableId' => 'integer',
+            'name' => 'string'
+        ]);
     }
 }
