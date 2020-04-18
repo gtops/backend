@@ -126,9 +126,9 @@ class ResultService
             $badge = $this->getBadgeOfUser($responseList, $dateAboutCountOfTest);
         }
 
-        $team = $this->teamRepository->get($eventParticipant->getTeamId());
         $teamName = null;
-        if ($team != null){
+        if ($eventParticipant->getTeamId() != null){
+            $team = $this->teamRepository->get($eventParticipant->getTeamId());
             $teamName = $team->getName();
         }
 

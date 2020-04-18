@@ -15,12 +15,12 @@ use App\Domain\Models\User\User;
 use App\Domain\Models\User\UserCreater;
 use App\Persistance\ModelsEloquant\Organization\Organization as OrgPDO;
 use App\Persistance\ModelsEloquant\User\User as UserElaquent;
+use App\Persistance\ModelsEloquant\User\User as UserPDO;
 use App\Persistance\Repositories\Role;
 use App\Services\Token\Token;
 use Illuminate\Support\Facades\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 use App\Persistance\Repositories\Role\RoleRepository;
-use App\Persistance\ModelsEloquant\User\User as UserPDO;
 use TypeError;
 
 class UserRepository implements IRepository
@@ -85,9 +85,10 @@ class UserRepository implements IRepository
     }
 
     /**@return User*/
-    public function get(int $id): IModel
+    public function get(int $id): ?IModel
     {
         $userElaquent = UserElaquent::query()->where('user_id', '=', $id)->get();
+
         if (count($userElaquent) == 0){
             return null;
         }
@@ -135,7 +136,9 @@ class UserRepository implements IRepository
 
     public function delete(int $id)
     {
-
+        UserPDO::query()
+            ->where('user_id', '=', $id)
+            ->delete();
     }
 
     /**@var $user User*/

@@ -8,6 +8,6 @@
 actor: FunctionalTester
 modules:
     enabled:
-        # add a framework module here
-        - \Helper\Functional
-    step_decorators: ~        
+        - REST:
+              url: http://localhost:8081/api/v1/
+              depends: Laravel5

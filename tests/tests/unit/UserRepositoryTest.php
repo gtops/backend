@@ -2,6 +2,7 @@
 
 use App\Persistance\Repositories\User\UserRepository;
 use DI\ContainerBuilder;
+use Tests\tests\_data\Container;
 
 class UserRepositoryTest extends \Codeception\Test\Unit
 {
@@ -9,18 +10,11 @@ class UserRepositoryTest extends \Codeception\Test\Unit
      * @var \UnitTester
      */
     protected $tester;
+    /**@var $userRepository UserRepository*/
     private $userRepository;
-
     protected function _before()
     {
-        $containerBuilder = new ContainerBuilder();
-        $settings = require __DIR__ . '/../../../app/settings.php';
-        $settings($containerBuilder);
-
-        $dependencies = require __DIR__ . '/../../../app/dependencies.php';
-        $dependencies($containerBuilder);
-
-        $container = $containerBuilder->build();
+        $container = Container::get();
         $this->userRepository = $container->get(UserRepository::class);
     }
 
@@ -29,10 +23,42 @@ class UserRepositoryTest extends \Codeception\Test\Unit
     }
 
     // tests
-    public function testSomeFeature()
+    public function testAddingUser()
     {
         /**@var $user \App\Domain\Models\User\User*/
-        $user = $this->userRepository->get(6);
-        $this->tester->assertEquals('23', $user->getName());
+        $user = new \App\Domain\Models\User\User(-1, 'Тестовый пользователь','123', 'test@mail.ru', 3,0,new DateTime(), 1, new DateTime());
+        $userId = $this->userRepository->add($user);
+        $this->idCreatingUSer = $userId;
+        $this->tester->assertNotEquals(null, $userId);
+    }
+
+    public function testGettingUserWithEmail()
+    {
+        $user = $this->userRepository->getByEmail('test@mail.ru');
+        $this->tester->assertEquals('Тестовый пользователь', $user->getName());
+    }
+
+    public function testGettingWithId()
+    {
+        $user = $this->userRepository->getByEmail('test@mail.ru');
+        $user = $this->userRepository->get($user->getId());
+        $this->tester->assertEquals('Тестовый пользователь', $user->getName());
+    }
+
+    public function testUpdateUser()
+    {
+        $user = $this->userRepository->getByEmail('test@mail.ru');
+        $user->setIsActivity();
+        $this->userRepository->update($user);
+        $user = $this->userRepository->getByEmail('test@mail.ru');
+        $this->tester->assertEquals(true, $user->isActivity());
+    }
+
+    public function testDeleteUser()
+    {
+        $user = $this->userRepository->getByEmail('test@mail.ru');
+        $this->userRepository->delete($user->getId());
+        $user = $this->userRepository->getByEmail('test@mail.ru');
+        $this->tester->assertEquals(null, $user);
     }
 }
