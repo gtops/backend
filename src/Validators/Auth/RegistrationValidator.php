@@ -17,7 +17,8 @@ class RegistrationValidator extends BaseValidator
     {
         $params = $this->getInitedParams($params);
         $this->addNotNullNotBlankRules(['password']);
-        $this->addLengthRule(['password'], 6);
+        $this->addMinLengthRule(['password'], 6);
+        $this->addMaxLengthRule(['password'], 20);
         $this->addStringRule(['password']);
     }
 

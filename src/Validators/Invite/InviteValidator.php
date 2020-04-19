@@ -18,6 +18,7 @@ class InviteValidator extends BaseValidator
         $params = $this->initParams($params);
         $this->addInChoiceRule(['gender'], [0 , 1]);
         $this->addNotNullNotBlankRules(['name', 'email', 'dateOfBirth', 'gender']);
+        $this->addMaxLengthRule(['name'], 500);
         $this->addStringRule(['name', 'email']);
         $this->addDateTypeRule(['dateOfBirth']);
         $this->addEmailRule(['email']);

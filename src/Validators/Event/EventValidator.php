@@ -11,6 +11,8 @@ class EventValidator extends BaseValidator
         $this->addNotNullRules(['description']);
         $params = $this->initParams($params);
         $this->addStringRule(['description', 'name']);
+        $this->addMaxLengthRule(['description'], 3000);
+        $this->addMinLengthRule(['name'], 1000);
         $this->addIntTypeRule(['organizationId']);
         $this->addDateTypeRule(['startDate', 'expirationDate']);
     }

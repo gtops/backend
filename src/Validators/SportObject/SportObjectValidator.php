@@ -11,6 +11,7 @@ class SportObjectValidator extends BaseValidator
         $this->addNotNullNotBlankRules(['name', 'address']);
         $this->addNotNullRules(['description']);
         $this->addStringRule(['name', 'address', 'description']);
+        $this->addMaxLengthRule(['name', 'address', 'description'], 1000);
     }
 
     private function getInitedParams(array $params)

@@ -10,6 +10,7 @@ class UserValidator extends BaseValidator
         $params = $this->getInitedParams($params);
         $this->addNotNullNotBlankRules(['name', 'dateOfBirth', 'gender']);
         $this->addStringRule(['name']);
+        $this->addMaxLengthRule(['name'], 500);
         $this->addDateTypeRule(['date_of_birth']);
         $this->addIntTypeRule(['gender']);
         $this->addInChoiceRule(['gender'], [0, 1]);

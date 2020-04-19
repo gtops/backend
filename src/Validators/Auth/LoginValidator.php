@@ -18,7 +18,7 @@ class LoginValidator extends BaseValidator
         $params = $this->getInitedParams($params);
         $this->addNotNullNotBlankRules(['password', 'email']);
         $this->addEmailRule(['email']);
-        $this->addLengthRule(['password'], 6);
+        $this->addMinLengthRule(['password'], 6);
         $this->addStringRule(['password']);
     }
 

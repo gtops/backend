@@ -191,12 +191,22 @@ abstract class BaseValidator implements ValidateStrategy
         }
     }
 
-    protected function addLengthRule(array $paramNames, int $length)
+    protected function addMinLengthRule(array $paramNames, int $length)
     {
         foreach ($paramNames as $paramName) {
             $this->addRuleToParam($paramName, new Assert\Length([
                 'min' => $length,
                 'minMessage' => '{{' . $paramName . '}} должен быть длиной не менее ' . $length . ' символов:' . self::INVALID_LENGTH
+            ]));
+        }
+    }
+
+    protected function addMaxLengthRule(array $paramNames, int $length)
+    {
+        foreach ($paramNames as $paramName) {
+            $this->addRuleToParam($paramName, new Assert\Length([
+                'max' => $length,
+                'minMessage' => '{{' . $paramName . '}} должен быть длиной не более ' . $length . ' символов:' . self::INVALID_LENGTH
             ]));
         }
     }

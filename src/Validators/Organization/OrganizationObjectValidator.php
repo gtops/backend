@@ -21,6 +21,7 @@ class OrganizationObjectValidator extends BaseValidator
             ]);
 
         $this->addStringRule(['name', 'address', 'leader', 'phoneNumber', 'paymentAccount', 'branch', 'bik', 'correspondentAccount']);
+        $this->addMaxLengthRule(['name', 'address', 'leader', 'phoneNumber', 'paymentAccount', 'branch', 'bik', 'correspondentAccount'], 1000);
         $this->addIntTypeRule(['id']);
     }
 

@@ -2,19 +2,13 @@
 
 namespace App\Application\Actions\Secretary;
 use App\Application\Actions\Action;
-use App\Application\Actions\ActionError;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\Secretary\SecretaryOnOrganization;
-use App\Domain\Models\User\UserCreater;
 use App\Services\AccessService\AccessService;
 use App\Services\Secretary\SecretaryService;
-use App\Services\Token\Token;
 use App\Validators\Auth\EmailValidator;
-use App\Validators\Secretary\SecretaryValidator;
-use Illuminate\Support\Facades\Date;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 class SecretaryAction extends Action
 {
