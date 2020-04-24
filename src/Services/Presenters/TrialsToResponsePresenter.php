@@ -38,12 +38,16 @@ class TrialsToResponsePresenter
                     $itemsOfGroup['group'][] = self::getTrialVIew($trial);
                 }
 
-                if (count($results) == 0){
-                    $itemsOfGroup['group'][] = self::getTrialWithNullResults($trial);
+                if ($results != null){
+                    if (count($results) == 0) {
+                        $itemsOfGroup['group'][] = self::getTrialWithNullResults($trial);
+                    }
                 }
 
-                if (count($results) != 0){
-                    $itemsOfGroup['group'][] = self::getTrialWithResults($trial, $results);
+                if ($results != null){
+                    if(count($results) != 0) {
+                        $itemsOfGroup['group'][] = self::getTrialWithResults($trial, $results);
+                    }
                 }
 
                 $itemsOfGroup['necessary'] = $trial->getNecessarily();
