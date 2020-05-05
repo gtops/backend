@@ -61,7 +61,6 @@ class SecretaryRepository implements IRepository
         $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('secretary.event_id', '=', $eventId)
-            ->where('event.status', '!=', Event::COMPLETED)
             ->get($this->dateForCreateSecretary);
 
         if (count($results) == 0){
@@ -77,7 +76,6 @@ class SecretaryRepository implements IRepository
         $results = SecretaryPDO::query()->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('event.organization_id', '=', $organizationId)
-            ->where('event.status', '!=', Event::COMPLETED)
             ->get($this->dateForCreateSecretary);
 
         return $this->getSecretaries($results);
@@ -118,7 +116,6 @@ class SecretaryRepository implements IRepository
             ->join('event', 'event.event_id', '=', 'secretary.event_id')
             ->join('user', 'user.user_id', '=', 'secretary.user_id')
             ->where('user.email',  '=', $userEmail)
-            ->where('event.status', '!=', Event::COMPLETED)
             ->get($this->dateForCreateSecretary);
 
         if (count($results) == 0){
