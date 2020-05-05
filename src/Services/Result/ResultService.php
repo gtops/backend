@@ -6,7 +6,6 @@ use App\Domain\Models\Event\Event;
 use App\Domain\Models\EventParticipant\EventParticipant;
 use App\Domain\Models\Result\ResultOnTrialInEvent;
 use App\Domain\Models\Trial;
-use App\Domain\Models\User\User;
 use App\Persistance\Repositories\AgeCategory\AgeCategoryRepository;
 use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\EventParticipant\EventParticipantRepository;
@@ -24,6 +23,10 @@ use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use App\Persistance\Repositories\User\UserRepository;
 use App\Services\Presenters\TrialsToResponsePresenter;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Csv;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ResultService
 {
@@ -260,6 +263,72 @@ class ResultService
         $this->resultRepository->update($result);
     }
 
+    public function getAllResultsInXlsxFormat(int $eventId)
+    {
+        if (file_exists(__DIR__.'/../../../public/'.$eventId.'.xlsx')){
+            return 'http://petrodim.beget.tech/public/'.$eventId.'.xlsx';
+        }
+
+        $trialsInEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
+        $results = [];
+
+        foreach ($trialsInEvent as $trialInEvent){
+            $results[] = $this->getResultsForTrial($trialInEvent->getTrialInEventId());
+        }
+
+        $participants = $this->eventParticipantRepository->getAllByEventId($eventId);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setCellValueByColumnAndRow(1, 1, 'ID');
+        $sheet->setCellValueByColumnAndRow(2, 1, 'UID гто');
+        $sheet->setCellValueByColumnAndRow(3, 1, 'Ф.И.О.');
+        $sheet->setCellValueByColumnAndRow(4, 1, 'Год рождения');
+        $sheet->setCellValueByColumnAndRow(5, 1, 'Команда');
+        $sheet->setCellValueByColumnAndRow(6, 1, 'Знак гто');
+
+        $this->setAllTrials($sheet, $results);
+        $this->setAllParticipants($sheet, $participants, count($results));
+
+        $index = $this->getIndexOfTrialOnSheet('Прыжок в длину с места толчком двумя ногами (см)', $sheet, count($results));
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($eventId.'.xlsx');
+
+        return 'http://petrodim.beget.tech/public/'.$eventId.'.xlsx';
+    }
+
+
+
+    private function getIndexOfTrialOnSheet(string $trialName, Worksheet $sheet, int $allCount){
+        $index = 7;
+        for ($i = $index; $i<= $allCount*3 + 7; $i++){
+            if ($sheet->getCellByColumnAndRow($index, 1)->getValue() == $trialName){
+                return $index;
+            }
+
+            $index++;
+        }
+
+        return -1;
+    }
+
+    private function setAllTrials(Worksheet $sheet, array $results)
+    {
+        $i = 7;
+
+        foreach ($results as $result){
+            $sheet->mergeCellsByColumnAndRow($i, 1, $i+1, 1);
+            $sheet->mergeCellsByColumnAndRow($i, 1, $i+2, 1);
+
+            $sheet->setCellValueByColumnAndRow($i, 1, $result['trialName']);
+            $sheet->setCellValueByColumnAndRow($i, 2,'первичный результат');
+            $sheet->setCellValueByColumnAndRow($i+1, 2,'вторичный результат');
+            $sheet->setCellValueByColumnAndRow($i+2, 2,'знак');
+
+            $i += 3;
+        }
+    }
+
     /**@param $trials Trial[]*/
     private function getTrialFromResultGuideWithDataToBadge($trialId, array $trials)
     {
@@ -289,6 +358,18 @@ class ResultService
                 'countTestsForGold' => $ageCategory->getCountTestsForGoldForMan()
             ];
         }
+    }
+
+    public function getAllResults(int $eventId)
+    {
+        $trialsInEvent = $this->trialInEventRepository->getFilteredByEventId($eventId);
+        $results = [];
+
+        foreach ($trialsInEvent as $trialInEvent){
+            $results[] = $this->getResultsForTrial($trialInEvent->getTrialInEventId());
+        }
+
+        return $results;
     }
 
     public function getResultsForTrial(int $trialInEventId)
@@ -424,5 +505,34 @@ class ResultService
         }
 
         return $arrayWithResults;
+    }
+
+    /**@param EventParticipant[] $participants */
+    private function setAllParticipants(Worksheet $sheet, array $participants, int $allCount)
+    {
+        $index = 3;
+        foreach ($participants as $eventParticipant){
+            $teamName = '';
+            if ($eventParticipant->getTeamId() != null){
+                $teamName = $this->teamRepository->get($eventParticipant->getTeamId())->getName();
+            }
+
+            $resultOfUser = $this->getResultsUfUserInEvent($eventParticipant->getEventId(), $eventParticipant->getUser()->getId());
+            $sheet->setCellValueByColumnAndRow(1, $index, $eventParticipant->getUser()->getId());
+            $sheet->setCellValueByColumnAndRow(3, $index, $eventParticipant->getUser()->getName());
+            $sheet->setCellValueByColumnAndRow(4, $index, $resultOfUser['dateOfBirth']);
+            $sheet->setCellValueByColumnAndRow(5, $index, $teamName);
+            $sheet->setCellValueByColumnAndRow(6, $index, $resultOfUser['badge'] ?? '');
+
+            foreach ($resultOfUser['groups'] as $group){
+                foreach ($group['group'] as $trial){
+                    $indexTrial = $this->getIndexOfTrialOnSheet($trial['trialName'], $sheet, $allCount);
+                    $sheet->setCellValueByColumnAndRow($indexTrial, $index, $trial['firstResult']);
+                    $sheet->setCellValueByColumnAndRow($indexTrial+1, $index, $trial['secondResult']);
+                    $sheet->setCellValueByColumnAndRow($indexTrial+2, $index, $trial['badge']);
+                }
+            }
+            $index++;
+        }
     }
 }

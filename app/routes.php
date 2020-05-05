@@ -37,6 +37,9 @@ return function (App $app) {
     //result
     $app->get('/api/v1/trial/{age:[0-9]+}/{gender:[0-9]+}', TrialAction::class.':getTrialsByGenderAndAge');
     $app->get('/api/v1/trial/{id:[0-9]+}/firstResult', TrialAction::class.':getSecondResult');
+    $app->get('/api/v1/event/{eventId}/allResults', ResultAction::class.':getAllResults');
+    $app->get('/api/v1/event/{eventId}/allResults/csv', ResultAction::class.':getAllResultsInXlsx');
+
     $app->get('/docs', SwaggerWatcher::class.':getNewDocs');
 
     //organization

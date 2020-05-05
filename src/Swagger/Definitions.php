@@ -344,6 +344,25 @@
 
 /**
  * @SWG\Definition(
+ *    definition="allResults",
+ *    type="array",
+ *    @SWG\Items(ref="#/definitions/trialAndPArticipants")
+ * )
+ */
+
+/**
+ * @SWG\Definition(
+ *    definition="trialAndPArticipants",
+ *    type="object",
+ *   @SWG\Property(property="participants", type="array", @SWG\Items(ref="#/definitions/participantsInTrialPbject")),
+ *    @SWG\Property(property="trialName", type="string"),
+ *     @SWG\Property(property="isTypeTime", type="boolean"),
+ *     @SWG\Property(property="eventStatus", type="string"),
+ * )
+ */
+
+/**
+ * @SWG\Definition(
  *    definition="participantsInTrialPbject",
  *    type="object",
  *    @SWG\Property(property="userId", type="integer"),

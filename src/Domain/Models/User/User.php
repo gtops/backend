@@ -17,6 +17,7 @@ class User implements IModel
     private $registrationDate;
     private $dateOfBirth;
     private $gender;
+    private $uid;
 
     public function __construct(
         int $id,
@@ -43,6 +44,17 @@ class User implements IModel
         }
 
         $this->gender = $gender;
+        $this->uid = null;
+    }
+
+    public function setUid(string $uid)
+    {
+        $this->uid = $uid;
+    }
+
+    public function getUid():?string
+    {
+        return $this->uid;
     }
 
     public function getId():?int
@@ -131,7 +143,8 @@ class User implements IModel
             'isActivity' => $this->isActivity(),
             'registrationDate' => $this->getRegistrationDate(),
             'gender' => $this->getGender(),
-            'dateOfBirth' => $this->getDateOfBirth()
+            'dateOfBirth' => $this->getDateOfBirth(),
+            'uid' => $this->getUid()
         ];
     }
 }

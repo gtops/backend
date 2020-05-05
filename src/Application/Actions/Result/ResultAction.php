@@ -4,6 +4,7 @@ namespace App\Application\Actions\Result;
 use App\Application\Actions\Action;
 use App\Services\AccessService\AccessService;
 use App\Services\Result\ResultService;
+use http\Message\Body;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 
@@ -60,6 +61,55 @@ class ResultAction extends Action
             'teamId' => $result['teamId'],
             'dateOfBirth' => $result['dateOfBirth']
         ],  $response);
+    }
+
+    /**
+     *
+     * @SWG\Get(
+     *   path="/api/v1/event/{eventId}/allResults",
+     *   summary="получает все результаты",
+     *   tags={"Result"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK", @SWG\Schema(ref="#/definitions/allResults")),
+     *   @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     */
+    public function getAllResults(Request $request, Response $response, $args)
+    {
+        $eventId = (int)$args['eventId'];
+        $results = $this->resultService->getAllResults($eventId);
+        return $this->respond(200, $results, $response);
+    }
+
+    /**
+     *
+     * @SWG\Get(
+     *   path="/api/v1/event/{eventId}/allResults/csv",
+     *   summary="получает документ в формате csv",
+     *   tags={"Result"},
+     *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
+     *   @SWG\Parameter(in="query", name="eventId", type="integer", description="id мероприятия"),
+     *   @SWG\Response(response=200, description="OK"),
+     *   @SWG\Response(response=400, description="Error", @SWG\Schema(
+     *          @SWG\Property(property="errors", type="array", @SWG\Items(
+     *              @SWG\Property(property="type", type="string"),
+     *              @SWG\Property(property="description", type="string")
+     *          ))
+     *     )))
+     * )
+     */
+    public function getAllResultsInXlsx(Request $request, Response $response, $args)
+    {
+        $eventId = (int)$args['eventId'];
+        $doc = $this->resultService->getAllResultsInXlsxFormat($eventId);
+        $response->getBody()->write($doc);
+        return $response;
     }
 
     /**
