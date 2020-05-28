@@ -83,8 +83,8 @@ class ResultAction extends Action
     public function getAllResults(Request $request, Response $response, $args)
     {
         $eventId = (int)$args['eventId'];
-        $results = $this->resultService->getAllResults($eventId);
-        return $this->respond(200, $results, $response);
+        $result = $this->resultService->getAllResults($eventId);
+        return $this->respond(200, ['trials' => $result['trials'], 'participants' => $result['participants']], $response);
     }
 
     /**

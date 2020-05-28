@@ -8,8 +8,8 @@ class UserValidator extends BaseValidator
     protected function addSpecificRules(array &$params, array $options = null)
     {
         $params = $this->getInitedParams($params);
-        $this->addNotNullNotBlankRules(['name', 'dateOfBirth', 'gender']);
-        $this->addStringRule(['name']);
+        $this->addNotNullNotBlankRules(['name', 'dateOfBirth', 'gender', 'uid']);
+        $this->addStringRule(['name', 'uid']);
         $this->addMaxLengthRule(['name'], 500);
         $this->addDateTypeRule(['date_of_birth']);
         $this->addIntTypeRule(['gender']);

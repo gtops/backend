@@ -369,7 +369,18 @@ class ResultService
             $results[] = $this->getResultsForTrial($trialInEvent->getTrialInEventId());
         }
 
-        return $results;
+        $participants = $this->eventParticipantRepository->getAllByEventId($eventId);
+        $participantsResults = [];
+
+        foreach ($participants as $participant){
+            $resultBadge = $this->getResultsUfUserInEvent($eventId, $participant->getUser()->getId());
+            $participantsResults[] = ['userId' => $participant->getUser()->getId(), 'badge' => $resultBadge['badge'] ];
+        }
+
+        return [
+          'trials' => $results,
+          'participants' => $participantsResults
+        ];
     }
 
     public function getResultsForTrial(int $trialInEventId)
@@ -519,6 +530,7 @@ class ResultService
 
             $resultOfUser = $this->getResultsUfUserInEvent($eventParticipant->getEventId(), $eventParticipant->getUser()->getId());
             $sheet->setCellValueByColumnAndRow(1, $index, $eventParticipant->getUser()->getId());
+            $sheet->setCellValueByColumnAndRow(2, $index, $eventParticipant->getUser()->getUid());
             $sheet->setCellValueByColumnAndRow(3, $index, $eventParticipant->getUser()->getName());
             $sheet->setCellValueByColumnAndRow(4, $index, $resultOfUser['dateOfBirth']);
             $sheet->setCellValueByColumnAndRow(5, $index, $teamName);

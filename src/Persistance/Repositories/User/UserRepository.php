@@ -151,7 +151,8 @@ class UserRepository implements IRepository
             'role_id' => $user->getRoleId(),
             'is_activity' => $user->isActivity(),
             'gender' => $user->getGender(),
-            'date_of_birth' => $user->getDateOfBirth()
+            'date_of_birth' => $user->getDateOfBirth(),
+            'uid' => $user->getUid()
             ]);
     }
 }

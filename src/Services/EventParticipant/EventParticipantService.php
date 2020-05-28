@@ -68,7 +68,7 @@ class EventParticipantService
         return $this->eventParticipantRepository->add($eventParticipant);
     }
 
-    public function updateUserOnTeam(string $name, int $gender, \DateTime $dateOfBirth, int $participantId)
+    public function updateUserOnTeam(string $name, int $gender, \DateTime $dateOfBirth, int $participantId, string $uid)
     {
         $participant = $this->eventParticipantRepository->get($participantId);
         $user = $this->userRepository->getByEmail($participant->getUser()->getEmail());
@@ -83,7 +83,7 @@ class EventParticipantService
             'gender' => $gender,
             'dateOfBirth' => $dateOfBirth,
         ]);
-
+        $updatedUser->setUid($uid);
         $this->userRepository->update($updatedUser);
     }
 

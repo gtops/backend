@@ -164,6 +164,10 @@ class EventService
         $secretaries = $this->secretaryRepository->getFilteredByUserEmail($userEmail);
         $events = [];
 
+        if ($secretaries == null){
+            return [];
+        }
+        
         foreach ($secretaries as $secretary){
             $secretaryInOrg = $this->secretaryOnOrgRepository->getByEmailAndOrgId($secretary->getUser()->getEmail(), $secretary->getOrganizationId());
             if ($secretaryInOrg != null) {

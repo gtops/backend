@@ -761,10 +761,11 @@ class AccessService
         if ($secretary == null){
             $this->response = false;
         }
-
-        foreach ($secretaries as $secretary){
-            if ($secretary->getUser()->getEmail() == $userEmail){
-                return $this->getResponse();
+        if ($secretaries != null) {
+            foreach ($secretaries as $secretary) {
+                if ($secretary->getUser()->getEmail() == $userEmail) {
+                    return $this->getResponse();
+                }
             }
         }
 

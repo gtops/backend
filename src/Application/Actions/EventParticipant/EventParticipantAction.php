@@ -271,7 +271,7 @@ class EventParticipantAction extends Action
      *   tags={"ParticipantEvent"},
      *   @SWG\Parameter(in="header", name="Authorization", type="string", description="токен"),
      *   @SWG\Parameter(in="query", name="participantId", type="integer", description="id участника"),
-     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="name", type="string"), @SWG\Property(property="dateOfBirth", type="string"), @SWG\Property(property="gender", type="integer"))),
+     *   @SWG\Parameter(in="body", name="body", @SWG\Schema(@SWG\Property(property="name", type="string"), @SWG\Property(property="dateOfBirth", type="string"), @SWG\Property(property="gender", type="integer"), @SWG\Property(property="uid", type="string"))),
      *   @SWG\Response(response=200, description="OK"),
      *  @SWG\Response(response=400, description="Error", @SWG\Schema(
      *          @SWG\Property(property="errors", type="array", @SWG\Items(
@@ -313,7 +313,7 @@ class EventParticipantAction extends Action
             return $this->respond(400, ['errors' => $errors], $response);
         }
 
-        $this->eventParticipantService->updateUserOnTeam($rowParams['name'], $rowParams['gender'], (new DateTime($rowParams['dateOfBirth'])), $participantId);
+        $this->eventParticipantService->updateUserOnTeam($rowParams['name'], $rowParams['gender'], (new DateTime($rowParams['dateOfBirth'])), $participantId, $rowParams['uid'] ?? '');
         return $response;
     }
 }

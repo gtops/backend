@@ -139,10 +139,15 @@ class TrialRepository implements IRepository
             return str_replace('.', ':', $result);
         }
 
-        if ($typeTime == 1 && strpos($result, ',') !== false){
-            $result = explode(',', $result);
-            $seconds = (int)$result[0];
-            $milSeconds = (int)$result[1];
+        if ($typeTime == 1 && (strpos($result, ',') !== false || strpos($result, '.') !== false)){
+            $resultChange = explode(',', $result);
+
+            if (count($resultChange) == 1){
+                $resultChange = explode('.', $result);
+            }
+
+            $seconds = (int)$resultChange[0];
+            $milSeconds = (int)$resultChange[1];
             $resultString = '00:';
 
             if ($seconds <= 9){
@@ -158,7 +163,7 @@ class TrialRepository implements IRepository
             return $resultString;
         }
 
-        return $result;
+        return $resultChange;
     }
 
     /**@return Trial\Trial*/
