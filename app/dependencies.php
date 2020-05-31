@@ -73,7 +73,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new EventParticipantAction($c->get(AccessService::class), $c->get(EventParticipantService::class));
         },
         EventParticipantService::class => function(ContainerInterface $c){
-            return new EventParticipantService($c->get(EventParticipantRepository::class), $c->get(UserRepository::class), $c->get(TeamRepository::class));
+            return new EventParticipantService($c->get(EventParticipantRepository::class), $c->get(UserRepository::class), $c->get(TeamRepository::class), $c->get(EmailSendler::class), $c->get(EventRepository::class));
         },
         SecretaryService::class => function(ContainerInterface $c){
             return new SecretaryService(
@@ -83,7 +83,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(LocalAdminRepository::class),
                 $c->get(EventRepository::class),
                 $c->get(RoleRepository::class),
-                $c->get(SecretaryOnOrganizationRepository::class)
+                $c->get(SecretaryOnOrganizationRepository::class),
+                $c->get(EmailSendler::class)
             );
         },
         SecretaryOnOrganizationRepository::class => function(ContainerInterface $c){
@@ -100,7 +101,7 @@ return function (ContainerBuilder $containerBuilder) {
         },
         LocalAdminService::class => function(ContainerInterface $c)
         {
-            return new LocalAdminService($c->get(LocalAdminRepository::class), $c->get(RoleRepository::class), $c->get(UserRepository::class), $c->get(OrganizationRepository::class));
+            return new LocalAdminService($c->get(LocalAdminRepository::class), $c->get(RoleRepository::class), $c->get(UserRepository::class), $c->get(OrganizationRepository::class), $c->get(EmailSendler::class));
         },
         LocalAdminRepository::class => function(ContainerInterface $c)
         {
@@ -163,7 +164,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(LocalAdminRepository::class),
                 $c->get(TeamLeadRepository::class),
                 $c->get(RoleRepository::class),
-                $c->get(EventParticipantRepository::class)
+                $c->get(EventParticipantRepository::class),
+                $c->get(EmailSendler::class)
             );
         },
         ResultAction::class => function(ContainerInterface $c){
@@ -223,7 +225,8 @@ return function (ContainerBuilder $containerBuilder) {
                 $c->get(TrialInEventRepository::class),
                 $c->get(SportObjectRepository::class),
                 $c->get(RefereeInTrialOnEventRepository::class),
-                $c->get(ResultRepository::class)
+                $c->get(ResultRepository::class),
+                $c->get(EmailSendler::class)
             );
         },
         SportObjectAction::class => function(ContainerInterface $c)
@@ -287,7 +290,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new TeamLeadAction($c->get(TeamLeadService::class), $c->get(AccessService::class));
         },
         TeamLeadService::class => function(ContainerInterface $c){
-            return new TeamLeadService($c->get(TeamLeadRepository::class), $c->get(UserRepository::class), $c->get(RoleRepository::class), $c->get(TeamRepository::class));
+            return new TeamLeadService($c->get(TeamLeadRepository::class), $c->get(UserRepository::class), $c->get(RoleRepository::class), $c->get(TeamRepository::class), $c->get(EventRepository::class), $c->get(EmailSendler::class));
         },
         RefreshTokenRepository::class => function(ContainerInterface $c){
             $c->get(DataBase::class);

@@ -135,6 +135,7 @@ class TrialRepository implements IRepository
 
     private function getInTimeFormat(int $typeTime, string $result)
     {
+        $resultChange = $result;
         if ($typeTime == 1 && strpos($result, ':') !== false){
             return str_replace('.', ':', $result);
         }

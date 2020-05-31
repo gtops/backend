@@ -3,10 +3,12 @@
 namespace App\Services\TeamLead;
 use App\Application\Middleware\AuthorizeMiddleware;
 use App\Domain\Models\TeamLead\TeamLead;
+use App\Persistance\Repositories\Event\EventRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\EmailSendler\EmailSendler;
 
 class TeamLeadService
 {
@@ -14,13 +16,17 @@ class TeamLeadService
     private $userRepository;
     private $roleRepository;
     private $teamRepository;
+    private $emailSender;
+    private $eventRepository;
 
-    public function __construct(TeamLeadRepository $teamLeadRepository, UserRepository $userRepository, RoleRepository $roleRepository, TeamRepository $teamRepository)
+    public function __construct(TeamLeadRepository $teamLeadRepository, UserRepository $userRepository, RoleRepository $roleRepository, TeamRepository $teamRepository, EventRepository $eventRepository, EmailSendler $emailSendler)
     {
         $this->teamLeadRepository = $teamLeadRepository;
         $this->userRepository = $userRepository;
         $this->roleRepository = $roleRepository;
         $this->teamRepository = $teamRepository;
+        $this->eventRepository = $eventRepository;
+        $this->emailSender = $emailSendler;
     }
 
     /**@return TeamLead[]*/
@@ -48,6 +54,13 @@ class TeamLeadService
         $user->setRoleId($this->roleRepository->getByName(AuthorizeMiddleware::TEAM_LEAD)->getId());
         $this->userRepository->update($user);
         $teamLead = new TeamLead(-1, $teamId, $user->getId(), $user);
+
+        $message = EmailSendler::$MESSAGE_FOR_TEAMLEAD_ON_ADDING;
+        $team = $this->teamRepository->get($teamId);
+        $event = $this->eventRepository->get($team->getEventId());
+        $message = str_replace('team_name', $team->getName(), $message);
+        $message = str_replace('event_name', $event->getName(), $message);
+        $this->emailSender->sendMessage([$email], $message);
         return $this->teamLeadRepository->add($teamLead);
     }
 
@@ -66,6 +79,12 @@ class TeamLeadService
             $this->userRepository->update($user);
         }
 
+        $message = EmailSendler::$MESSAGE_FOR_DELETING_TEAM_LEAD;
+        $team = $this->teamRepository->get($teamLead->getTeamId());
+        $event = $this->eventRepository->get($team->getEventId());
+        $message = str_replace('event_name', $event->getName(), $message);
+        $message = str_replace('team_name', $team->getName(), $message);
+        $this->emailSender->sendMessage([$teamLead->getUser()->getEmail()], $message);
         $this->teamLeadRepository->delete($teamLeadId);
     }
 }

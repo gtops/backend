@@ -10,6 +10,7 @@ use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Team\TeamRepository;
 use App\Persistance\Repositories\TeamLead\TeamLeadRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\EmailSendler\EmailSendler;
 
 class TeamService
 {
@@ -20,7 +21,9 @@ class TeamService
     private $localAdminRepository;
     private $roleRepository;
     private $eventParticipantRepository;
-    public function __construct(UserRepository $userRepository, TeamRepository $teamRepository, EventRepository $eventRepository, LocalAdminRepository $localAdminRepository, TeamLeadRepository $teamLeadRepository, RoleRepository $roleRepository, EventParticipantRepository $eventParticipantRepository)
+    private $emailSender;
+
+    public function __construct(UserRepository $userRepository, TeamRepository $teamRepository, EventRepository $eventRepository, LocalAdminRepository $localAdminRepository, TeamLeadRepository $teamLeadRepository, RoleRepository $roleRepository, EventParticipantRepository $eventParticipantRepository, EmailSendler $emailSendler)
     {
         $this->teamRepository = $teamRepository;
         $this->userRepository = $userRepository;
@@ -29,6 +32,7 @@ class TeamService
         $this->teamLeadRepository = $teamLeadRepository;
         $this->roleRepository = $roleRepository;
         $this->eventParticipantRepository = $eventParticipantRepository;
+        $this->emailSender = $emailSendler;
     }
 
     public function add($name, int $eventId)
@@ -83,6 +87,20 @@ class TeamService
     public function confirm(int $teamId)
     {
         $this->teamRepository->confirm($teamId);
+
+        $message = EmailSendler::$MESSAGE_FOR_PARTICIPANT_ON_CONFIRM_TEAM;
+        $team = $this->teamRepository->get($teamId);
+        $event = $this->eventRepository->get($team->getEventId());
+        $message = str_replace('team_name', $team->getName(), $message);
+        $message = str_replace('event_name', $event->getName(), $message);
+        $participants = $this->eventParticipantRepository->getAllFilteredByTeamId($teamId);
+        $users = [];
+
+        foreach ($participants as $participant){
+            $users[] = $participant->getUser()->getEmail();
+        }
+
+        $this->emailSender->sendMessage($users, $message);
     }
 
     public function get(int $teamId)

@@ -12,6 +12,7 @@ use App\Persistance\Repositories\LocalAdmin\LocalAdminRepository;
 use App\Persistance\Repositories\Organization\OrganizationRepository;
 use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\EmailSendler\EmailSendler;
 use App\Services\Token\Token;
 use DateTime;
 use http\Client\Curl\User;
@@ -25,13 +26,15 @@ class LocalAdminService
     private $roleRepository;
     private $userRepository;
     private $organizationRepository;
+    private $emailSendler;
 
-    public function __construct(LocalAdminRepository $localAdminRepository, RoleRepository $roleRepository, UserRepository $userRepository, OrganizationRepository $organizationRepository)
+    public function __construct(LocalAdminRepository $localAdminRepository, RoleRepository $roleRepository, UserRepository $userRepository, OrganizationRepository $organizationRepository, EmailSendler $emailSendler)
     {
         $this->localAdminRepository = $localAdminRepository;
         $this->roleRepository = $roleRepository;
         $this->userRepository = $userRepository;
         $this->organizationRepository = $organizationRepository;
+        $this->emailSendler = $emailSendler;
     }
 
     public function add(string $name, string $password, string $email, $gender, DateTime $dateOfBirth, int $organizationId, ResponseInterface $response)
@@ -62,11 +65,14 @@ class LocalAdminService
             $user = UserCreater::createModel($rowParams);
             $userId = $this->userRepository->add($user);
             $user->setId($userId);
+            $organization = $this->organizationRepository->get($organizationId);
+            $message = EmailSendler::$MESSAGE_FOR_LOCAL_ADMIN_ON_CHANGE_ROLE;
+            $message = str_replace('organization_name', $organization->getName(), $message);
+            $this->emailSendler->sendMessage([$user->getEmail()], $message);
         }else{
             $response->getBody()->write(json_encode(['errors' => array(new ActionError(ActionError::BAD_REQUEST, 'такой пользователь уже существует'))]));
             return $response->withStatus(400);
         }
-
 
         return $this->localAdminRepository->add(new LocalAdmin($user, $organizationId, -1));
     }
@@ -95,6 +101,11 @@ class LocalAdminService
         $user = $this->userRepository->getByEmail($localAdmin->getUser()->getEmail());
         $user->setRoleId($roleId);
         $this->userRepository->update($user);
+
+        $organization = $this->organizationRepository->get($organizationId);
+        $message = EmailSendler::$MESSAGE_WHEN_DELETE_LOCAL_ADMIN;
+        $message = str_replace('organization_name', $organization->getName(), $message);
+        $this->emailSendler->sendMessage([$user->getEmail()], $message);
         $this->localAdminRepository->delete($localAdminId);
     }
 
@@ -168,7 +179,8 @@ class LocalAdminService
             $this->userRepository->update($user);
         }
 
-
+        $organization = $this->organizationRepository->get($organizationId);
+        $this->emailSendler->sendMessage([$user->getEmail()], 'Вам была присвоена роль локального администратора для организации '.$organization->getName());
         return $this->localAdminRepository->add(new LocalAdmin($user, $organizationId, -1));
     }
 

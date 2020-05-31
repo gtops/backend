@@ -24,6 +24,7 @@ use App\Persistance\Repositories\TrialRepository\TableRepository;
 use App\Persistance\Repositories\TrialRepository\TrialInEventRepository;
 use App\Persistance\Repositories\TrialRepository\TrialRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\EmailSendler\EmailSendler;
 use DateTime;
 use Psr\Http\Message\ResponseInterface;
 
@@ -43,6 +44,7 @@ class EventService
     private $sportObjectRepository;
     private $refereeInTrialOnEventRepository;
     private $resultRepository;
+    private $emailSender;
 
     public function __construct(
         LocalAdminRepository $localAdminRepository,
@@ -58,7 +60,8 @@ class EventService
         TrialInEventRepository $trialInEventRepository,
         SportObjectRepository $sportObjectRepository,
         RefereeInTrialOnEventRepository $refereeInTrialOnEventRepository,
-        ResultRepository $resultRepository
+        ResultRepository $resultRepository,
+        EmailSendler $emailSendler
     )
     {
         $this->localAdminRepository = $localAdminRepository;
@@ -75,6 +78,7 @@ class EventService
         $this->sportObjectRepository = $sportObjectRepository;
         $this->refereeInTrialOnEventRepository = $refereeInTrialOnEventRepository;
         $this->resultRepository = $resultRepository;
+        $this->emailSender = $emailSendler;
     }
 
     public function add(Event $event, string $userEmail, ResponseInterface $response)
@@ -156,6 +160,25 @@ class EventService
     {
         $user = $this->userRepository->getByEmail($userEmail);
         $participant = new EventParticipant(-1, $eventId, $user->getId(), $confirmed, $user, $teamId);
+        $event = $this->eventRepository->get($eventId);
+
+        $users = [];
+        $localAdmins = $this->localAdminRepository->getFilteredByOrgId($event->getIdOrganization());
+        $secretaries = $this->secretaryRepository->getFilteredByEventId($eventId);
+
+        foreach ($localAdmins as $localAdmin){
+            $users[] = $localAdmin->getUser()->getEmail();
+        }
+
+        foreach ($secretaries as $secretary){
+            $users[] = $secretary->getUser()->getEmail();
+        }
+
+        $message = EmailSendler::$MESSAGE_FOR_PEOPLE_WHEN_SPORTSMEN_SEND_INVITE;
+        $message = str_replace('user_name', $user->getName(), $message);
+        $message = str_replace('user_id', $user->getId(), $message);
+        $message = str_replace('event_name', $event->getName(), $message);
+        $this->emailSender->sendMessage($users, $message);
         return $this->eventParticipantRepository->add($participant);
     }
 

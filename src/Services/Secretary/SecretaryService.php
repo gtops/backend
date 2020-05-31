@@ -16,8 +16,10 @@ use App\Persistance\Repositories\Role\RoleRepository;
 use App\Persistance\Repositories\Secretary\SecretaryOnOrganizationRepository;
 use App\Persistance\Repositories\Secretary\SecretaryRepository;
 use App\Persistance\Repositories\User\UserRepository;
+use App\Services\EmailSendler\EmailSendler;
 use App\Services\Token\Token;
 use DateTime;
+use PharIo\Manifest\Email;
 use Psr\Http\Message\ResponseInterface;
 
 class SecretaryService
@@ -29,6 +31,7 @@ class SecretaryService
     private $eventRepository;
     private $roleRepository;
     private $secretaryOnOrganizationRepository;
+    private $emailSender;
 
     public function __construct(
         SecretaryRepository $secretaryRepository,
@@ -37,7 +40,8 @@ class SecretaryService
         LocalAdminRepository $localAdminRepository,
         EventRepository $eventRepository,
         RoleRepository $roleRepository,
-        SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository
+        SecretaryOnOrganizationRepository $secretaryOnOrganizationRepository,
+        EmailSendler $emailSendler
     )
     {
         $this->secretaryRepository = $secretaryRepository;
@@ -47,6 +51,7 @@ class SecretaryService
         $this->eventRepository = $eventRepository;
         $this->roleRepository = $roleRepository;
         $this->secretaryOnOrganizationRepository = $secretaryOnOrganizationRepository;
+        $this->emailSender = $emailSendler;
     }
 
     public function addToEvent($localAdminEmail, int $secretaryId, int $organizationId, int $eventId, ResponseInterface $response)
@@ -84,6 +89,10 @@ class SecretaryService
             }
         }
 
+        $message = EmailSendler::$MESSAGE_FOR_SECRETARY_ABOUT_ADDING_HIM;
+        $event = $this->eventRepository->get($eventId);
+        $message = str_replace('event_name', $event->getName(), $message);
+        $this->emailSender->sendMessage([$user->getEmail()], $message);
         return $this->secretaryRepository->add(new Secretary(-1 , $eventId, $organizationId, $user));
     }
 
@@ -162,6 +171,10 @@ class SecretaryService
             return $response->withStatus(400);
         }
 
+        $message = EmailSendler::$MESSAGE_FOR_SECRETARY_ABOUT_DELETE_HIM;
+        $event = $this->eventRepository->get($eventId);
+        $message = str_replace('event_name', $event->getName(), $message);
+        $this->emailSender->sendMessage([$secretary->getUser()->getEmail()], $message);
         $this->secretaryRepository->delete($secretaryId);
     }
 

@@ -328,6 +328,9 @@
                                 },
                                 "gender": {
                                     "type": "integer"
+                                },
+                                "uid": {
+                                    "type": "string"
                                 }
                             }
                         }
@@ -1961,7 +1964,7 @@
                 }
             }
         },
-        "/api/v1/event/{eventId}/csv": {
+        "/api/v1/event/{eventId}/allResults/csv": {
             "get": {
                 "tags": [
                     "Result"
