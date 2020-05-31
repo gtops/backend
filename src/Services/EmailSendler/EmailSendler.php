@@ -32,6 +32,8 @@ class EmailSendler
     public static $MESSAGE_FOR_DELETING_TEAM_LEAD = 'Вы были исключены из числа тренеров команды "team_name" в мероприятии "event_name"';
     public static $MESSAGE_FOR_SECRETARY_ABOUT_ADDING_HIM = 'Вы были назначены секретарем в мероприятии "event_name"';
     public static $MESSAGE_FOR_SECRETARY_ABOUT_DELETE_HIM = 'Вы были исключены из числа секретарей мероприятия "event_name"';
+    public static $MESSAGE_FOR_REFEREE_ON_ADDING_TRIAL_IN_EVENT = 'ВЫ были назначены судьей в мероприятии "event_name" для вида спорта: "trial_name", который пройдет "date_time" в месте "place", находящийся по адресу: "address"';
+    public static $MESSAGE_FOR_REFEREE_ON_DELETING_FROM_TRIAL_IN_EVENT = 'Вы были исключены из числа судей в мероприятии "event_name", которые должны были судить "trial_name"';
 
     public function __construct($config)
     {

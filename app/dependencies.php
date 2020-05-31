@@ -203,7 +203,7 @@ return function (ContainerBuilder $containerBuilder) {
             return new RefereeAction($c->get(AccessService::class), $c->get(RefereeService::class));
         },
         RefereeService::class => function(ContainerInterface $c){
-            return new RefereeService($c->get(RefereeRepository::class), $c->get(UserRepository::class), $c->get(RefereeInTrialOnEventRepository::class));
+            return new RefereeService($c->get(RefereeRepository::class), $c->get(UserRepository::class), $c->get(RefereeInTrialOnEventRepository::class), $c->get(EventRepository::class), $c->get(EmailSendler::class), $c->get(TrialInEventRepository::class));
         },
         RefereeRepository::class =>function(ContainerInterface$c){
             $c->get(DataBase::class);
